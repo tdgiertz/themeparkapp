@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:themeparkapp/core/theme.dart';
 
 /// Widget displaying global crowd level as a gauge.
 class CrowdIndexGauge extends StatelessWidget {
@@ -14,15 +13,13 @@ class CrowdIndexGauge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? Theme.of(context).colorScheme.surface : Colors.blue.shade50,
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDark ? Theme.of(context).colorScheme.surface : Colors.blue.shade200,
+          color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.3),
           width: 1.5,
         ),
       ),
@@ -45,7 +42,7 @@ class CrowdIndexGauge extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
-                  color: _getGaugeColor(busynessScore),
+                  color: _getGaugeColor(context, busynessScore),
                 ),
               ),
             ],
@@ -57,7 +54,7 @@ class CrowdIndexGauge extends StatelessWidget {
             child: CustomPaint(
               painter: _GaugePainter(
                 score: busynessScore,
-                primaryColor: _getGaugeColor(busynessScore),
+                primaryColor: _getGaugeColor(context, busynessScore),
                 needleColor: Theme.of(context).colorScheme.onSurface,
               ),
               size: Size.infinite,
@@ -80,10 +77,11 @@ class CrowdIndexGauge extends StatelessWidget {
     );
   }
 
-  Color _getGaugeColor(int score) {
-    if (score < 30) return AppTheme.statusOpen;
-    if (score < 60) return AppTheme.statusWarning;
-    return AppTheme.statusCritical;
+  Color _getGaugeColor(BuildContext context, int score) {
+    final cs = Theme.of(context).colorScheme;
+    if (score < 30) return cs.primary;
+    if (score < 60) return cs.tertiary;
+    return cs.error;
   }
 
   String _getStatusLabel(int score) {
@@ -111,7 +109,7 @@ class _GaugePainter extends CustomPainter {
 
     // Draw background arc
     final backgroundPaint = Paint()
-      ..color = Colors.grey.shade800
+      ..color = needleColor.withValues(alpha: 0.2)
       ..strokeWidth = 8
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke;
@@ -183,15 +181,13 @@ class WeatherWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? Theme.of(context).colorScheme.surface : Colors.amber.shade50,
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDark ? Theme.of(context).colorScheme.surface : Colors.amber.shade200,
+          color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.3),
           width: 1.5,
         ),
       ),
@@ -209,7 +205,7 @@ class WeatherWidget extends StatelessWidget {
           const SizedBox(height: 12),
           Row(
             children: [
-              _buildWeatherIcon(condition),
+              _buildWeatherIcon(context, condition),
               const SizedBox(width: 12),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -247,21 +243,18 @@ class WeatherWidget extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: precipitationChance > 50
-                  ? AppTheme.statusWarning.withValues(alpha: 0.12)
-                  : Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
+                  ? Theme.of(context).colorScheme.tertiaryContainer
+                  : Theme.of(context).colorScheme.primaryContainer,
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: precipitationChance > 50
-                    ? AppTheme.statusWarning.withValues(alpha: 0.3)
-                    : Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
-              ),
             ),
             child: Row(
               children: [
                 Icon(
                   precipitationChance > 50 ? Icons.warning_amber_rounded : Icons.info_outline,
                   size: 18,
-                  color: precipitationChance > 50 ? Colors.orange.shade800 : Colors.blue.shade700,
+                  color: precipitationChance > 50
+                      ? Theme.of(context).colorScheme.onTertiaryContainer
+                      : Theme.of(context).colorScheme.onPrimaryContainer,
                 ),
                 const SizedBox(width: 8),
                 Expanded(
@@ -272,7 +265,9 @@ class WeatherWidget extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
-                      color: precipitationChance > 50 ? Colors.orange.shade900 : Colors.blue.shade900,
+                      color: precipitationChance > 50
+                          ? Theme.of(context).colorScheme.onTertiaryContainer
+                          : Theme.of(context).colorScheme.onPrimaryContainer,
                     ),
                   ),
                 ),
@@ -284,29 +279,30 @@ class WeatherWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildWeatherIcon(String condition) {
+  Widget _buildWeatherIcon(BuildContext context, String condition) {
     IconData icon;
     Color color;
+    final cs = Theme.of(context).colorScheme;
 
     switch (condition.toLowerCase()) {
       case 'clear':
       case 'sunny':
         icon = Icons.wb_sunny;
-        color = Colors.amber;
+        color = cs.tertiary;
       case 'cloudy':
         icon = Icons.wb_cloudy;
-        color = Colors.grey;
+        color = cs.onSurfaceVariant;
       case 'rainy':
       case 'rain':
         icon = Icons.water_drop;
-        color = Colors.blue;
+        color = cs.primary;
       case 'stormy':
       case 'storm':
         icon = Icons.thunderstorm;
-        color = Colors.indigo;
+        color = cs.secondary;
       default:
         icon = Icons.wb_sunny;
-        color = Colors.amber;
+        color = cs.tertiary;
     }
 
     return Container(

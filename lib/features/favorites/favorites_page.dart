@@ -23,7 +23,7 @@ class FavoritesPage extends ConsumerWidget {
               final status = f.currentWait?['status']?.toString() ?? 'n/a';
               final waitMinutes = f.currentWait?['waitMinutes'];
               return ListTile(
-                leading: const Icon(Icons.favorite, color: Colors.pinkAccent),
+                leading: Icon(Icons.favorite, color: Theme.of(context).colorScheme.primary),
                 title: Text(f.name),
                 subtitle: Text(f.parkName),
                 trailing: Column(

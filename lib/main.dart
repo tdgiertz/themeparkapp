@@ -17,6 +17,7 @@ import 'package:themeparkapp/features/parks/parks_page.dart';
 import 'package:themeparkapp/features/search/search_page.dart';
 import 'package:themeparkapp/l10n/app_localizations.dart';
 import 'package:themeparkapp/widgets/adaptive_image.dart';
+import 'package:themeparkapp/widgets/theme_color_settings_tile.dart';
 
 /// Application entrypoint.
 ///
@@ -124,6 +125,7 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
+    final selectedColor = ref.watch(themeSeedColorProvider);
     // Trigger initial permission check on app start by reading notifier.
     ref.read(locationPermissionProvider.notifier).check();
 
@@ -137,8 +139,8 @@ class MyApp extends ConsumerWidget {
         title: loc?.appTitle ?? 'Flutter Demo',
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
+        theme: AppTheme.lightTheme(selectedColor),
+        darkTheme: AppTheme.darkTheme(selectedColor),
         themeMode: themeMode,
         home: const OnboardingScreen(),
       );
@@ -149,8 +151,8 @@ class MyApp extends ConsumerWidget {
       routerConfig: goRouter,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
+      theme: AppTheme.lightTheme(selectedColor),
+      darkTheme: AppTheme.darkTheme(selectedColor),
       themeMode: themeMode,
     );
   }
@@ -280,8 +282,8 @@ class _ResponsiveScaffoldShellState
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: [
-                                Colors.indigo.shade900.withValues(alpha: 0.95),
-                                Colors.blue.shade900.withValues(alpha: 0.95),
+                                Theme.of(context).colorScheme.primaryContainer,
+                                Theme.of(context).colorScheme.tertiaryContainer,
                               ],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
@@ -289,7 +291,7 @@ class _ResponsiveScaffoldShellState
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
-                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.25),
+                                color: Theme.of(context).colorScheme.shadow,
                                 blurRadius: 10,
                                 offset: const Offset(0, 4),
                               ),
@@ -298,14 +300,14 @@ class _ResponsiveScaffoldShellState
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Row(
+                              Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Icon(Icons.wb_sunny, color: Colors.amberAccent, size: 24),
+                                  Icon(Icons.wb_sunny, color: Theme.of(context).colorScheme.onPrimaryContainer, size: 24),
                                   Text(
                                     '14 Days Left',
                                     style: TextStyle(
-                                      color: Colors.white,
+                                      color: Theme.of(context).colorScheme.onPrimaryContainer,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 14,
                                     ),
@@ -313,18 +315,18 @@ class _ResponsiveScaffoldShellState
                                 ],
                               ),
                               const SizedBox(height: 12),
-                              const Text(
+                              Text(
                                 'Orlando, FL',
                                 style: TextStyle(
-                                  color: Colors.white70,
+                                  color: Theme.of(context).colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
                                   fontSize: 12,
                                 ),
                               ),
                               const SizedBox(height: 4),
-                              const Text(
+                              Text(
                                 '84°F • Sunny',
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color: Theme.of(context).colorScheme.onPrimaryContainer,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
                                 ),
@@ -332,10 +334,10 @@ class _ResponsiveScaffoldShellState
                               const SizedBox(height: 12),
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(4),
-                                child: const LinearProgressIndicator(
+                                child: LinearProgressIndicator(
                                   value: 0.75,
-                                  backgroundColor: Colors.white24,
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.amberAccent),
+                                  backgroundColor: Theme.of(context).colorScheme.onPrimaryContainer.withValues(alpha: 0.2),
+                                  valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.primary),
                                   minHeight: 6,
                                 ),
                               ),
@@ -350,8 +352,8 @@ class _ResponsiveScaffoldShellState
                           message: '14 Days until Arrival | Orlando: 84°F Sunny',
                           child: CircleAvatar(
                             radius: 20,
-                            backgroundColor: Colors.indigo.shade900,
-                            child: const Icon(Icons.wb_sunny, color: Colors.amberAccent, size: 20),
+                            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                            child: Icon(Icons.wb_sunny, color: Theme.of(context).colorScheme.onPrimaryContainer, size: 20),
                           ),
                         ),
                       ),
@@ -437,7 +439,7 @@ class _SidebarTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: selected ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.08) : Colors.transparent,
+      color: selected ? Theme.of(context).colorScheme.secondaryContainer : null,
       child: InkWell(
         onTap: onTap,
         child: Padding(
@@ -698,6 +700,10 @@ class SettingsPage extends ConsumerWidget {
                 ],
               ),
               const SizedBox(height: 8),
+              const Card(
+                child: ThemeColorSettingsTile(),
+              ),
+              const SizedBox(height: 8),
               ElevatedButton(
                 onPressed: () => context.pop(),
                 child: Text(AppLocalizations.of(context)!.back),
@@ -756,6 +762,8 @@ class SettingsPage extends ConsumerWidget {
                               ),
                             ],
                           ),
+                          const SizedBox(height: 12),
+                          const ThemeColorSettingsTile(),
                           const SizedBox(height: 12),
                           ElevatedButton(
                             onPressed: () => context.pop(),
@@ -851,6 +859,8 @@ class SettingsPage extends ConsumerWidget {
                               ),
                             ],
                           ),
+                          const SizedBox(height: 16),
+                          const ThemeColorSettingsTile(),
                         ],
                       ),
                     ),

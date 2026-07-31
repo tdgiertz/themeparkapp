@@ -1,38 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glassmorphism/glassmorphism.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:themeparkapp/core/providers.dart';
-import 'package:themeparkapp/core/theme.dart';
 import 'package:themeparkapp/features/dashboard/widgets/alerts_widget.dart';
 import 'package:themeparkapp/features/dashboard/widgets/context_widgets.dart';
 import 'package:themeparkapp/features/dashboard/widgets/favorite_card_expanded.dart';
-import 'package:themeparkapp/features/park/park_page.dart';
 import 'package:themeparkapp/models/favorite.dart';
 import 'package:themeparkapp/models/park.dart';
 // models are parsed via providers; specific model imports not required here.
 
-Color _crowdColor(String? crowd) {
+Color crowdColor(BuildContext context, String? crowd) {
+  final cs = Theme.of(context).colorScheme;
   switch (crowd?.toLowerCase()) {
     case 'low':
-      return Colors.green.shade600;
+      return cs.primaryContainer;
     case 'moderate':
-      return Colors.orange.shade600;
+      return cs.tertiaryContainer;
     case 'high':
-      return Colors.red.shade600;
+      return cs.errorContainer;
     default:
-      return Colors.grey.shade600;
+      return cs.surfaceContainerHigh;
   }
 }
 
-
 class LinearBinding {
   static LinearGradient timeOfDayGradient(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     final hour = DateTime.now().hour;
-    if (hour < 6) return LinearGradient(colors: [Colors.indigo, Theme.of(context).scaffoldBackgroundColor]); // Night
-    if (hour < 12) return const LinearGradient(colors: [Colors.orange, Colors.blue]); // Morning
-    if (hour < 18) return const LinearGradient(colors: [Colors.blue, Colors.lightBlueAccent]); // Day
-    return const LinearGradient(colors: [Colors.deepPurple, Colors.orangeAccent]); // Evening
+    if (hour < 6) return LinearGradient(colors: [cs.surfaceContainerHighest, cs.surface]); // Night
+    if (hour < 12) return LinearGradient(colors: [cs.primaryContainer, cs.surfaceContainerHigh]); // Morning
+    if (hour < 18) return LinearGradient(colors: [cs.secondaryContainer, cs.surfaceContainerLow]); // Day
+    return LinearGradient(colors: [cs.tertiaryContainer, cs.surfaceContainer]); // Evening
   }
 }
 

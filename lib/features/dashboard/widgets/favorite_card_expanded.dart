@@ -47,10 +47,10 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         clipBehavior: Clip.antiAlias,
         elevation: 4,
-        color: isClosed ? AppTheme.offlineCardSurface : Theme.of(context).colorScheme.surface,
+        color: isClosed ? Theme.of(context).colorScheme.surfaceContainerLow : Theme.of(context).colorScheme.surfaceContainer,
         child: Container(
           decoration: BoxDecoration(
-            color: isClosed ? AppTheme.offlineCardSurface : Theme.of(context).colorScheme.surface,
+            color: isClosed ? Theme.of(context).colorScheme.surfaceContainerLow : Theme.of(context).colorScheme.surfaceContainer,
             borderRadius: BorderRadius.circular(16),
           ),
           child: Stack(
@@ -59,7 +59,9 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
               if (isClosed)
                 Positioned.fill(
                   child: CustomPaint(
-                    painter: _DiagonalStripensPainter(),
+                    painter: _DiagonalStripensPainter(
+                      stripeColor: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.12),
+                    ),
                   ),
                 ),
 
@@ -139,14 +141,13 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
                               ),
                               decoration: BoxDecoration(
                                 color: (isClosed
-                                        ? AppTheme.statusCritical
-                                        : AppTheme.statusOpen)
-                                    .withValues(alpha: 0.2),
+                                        ? Theme.of(context).colorScheme.errorContainer
+                                        : Theme.of(context).colorScheme.primaryContainer),
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
                                   color: isClosed
-                                      ? AppTheme.statusCritical
-                                      : AppTheme.statusOpen,
+                                      ? Theme.of(context).colorScheme.error
+                                      : Theme.of(context).colorScheme.primary,
                                 ),
                               ),
                               child: Text(
@@ -156,8 +157,8 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
                                   fontWeight: FontWeight.w800,
                                   letterSpacing: 0.5,
                                   color: isClosed
-                                      ? AppTheme.statusCritical
-                                      : AppTheme.statusOpen,
+                                      ? Theme.of(context).colorScheme.onErrorContainer
+                                      : Theme.of(context).colorScheme.onPrimaryContainer,
                                 ),
                               ),
                             ),
@@ -241,14 +242,14 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
                                   color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.60),
                                   borderRadius: BorderRadius.circular(10),
                                   border: Border.all(
-                                    color: AppTheme.statusWarning.withValues(alpha: 0.3),
+                                    color: Theme.of(context).colorScheme.tertiary.withValues(alpha: 0.3),
                                   ),
                                 ),
                                 child: Row(
                                   children: [
-                                    const Icon(
+                                    Icon(
                                       Icons.pause_circle_outline,
-                                      color: AppTheme.statusWarning,
+                                      color: Theme.of(context).colorScheme.tertiary,
                                       size: 22,
                                     ),
                                     const SizedBox(width: 10),
@@ -384,10 +385,10 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
                                 const SizedBox(width: 6),
                                 ElevatedButton.icon(
                                   onPressed: widget.onSwipeLeft,
-                                  icon: const Icon(Icons.directions_walk, size: 13, color: Colors.white),
-                                  label: const Text(
+                                  icon: Icon(Icons.directions_walk, size: 13, color: Theme.of(context).colorScheme.onPrimary),
+                                  label: Text(
                                     'Map',
-                                    style: TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.bold),
+                                    style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onPrimary, fontWeight: FontWeight.bold),
                                   ),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Theme.of(context).colorScheme.primary,
@@ -419,7 +420,7 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
       painter: _SparklinePainter(
         data: mockData,
         currentValue: currentWait,
-        lineColor: isPiratesCard ? AppTheme.chartAmber : Theme.of(context).colorScheme.primary,
+        lineColor: isPiratesCard ? Theme.of(context).colorScheme.tertiary : Theme.of(context).colorScheme.primary,
         isPiratesGradient: isPiratesCard,
       ),
       size: Size.infinite,
@@ -429,10 +430,14 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
 
 /// Custom painter for diagonal stripes pattern on offline cards.
 class _DiagonalStripensPainter extends CustomPainter {
+  _DiagonalStripensPainter({this.stripeColor});
+
+  final Color? stripeColor;
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = AppTheme.offlineStripeColor
+      ..color = stripeColor ?? const Color(0xFF272A35)
       ..strokeWidth = 3;
 
     final spacing = 12.0;
@@ -495,15 +500,10 @@ class _SparklinePainter extends CustomPainter {
     final fillShader = LinearGradient(
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
-      colors: isPiratesGradient
-          ? [
-              AppTheme.chartAmber.withValues(alpha: 0.3),
-              AppTheme.chartAmber.withValues(alpha: 0),
-            ]
-          : [
-              lineColor.withValues(alpha: 0.3),
-              lineColor.withValues(alpha: 0),
-            ],
+      colors: [
+        lineColor.withValues(alpha: 0.3),
+        lineColor.withValues(alpha: 0),
+      ],
     ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
 
     final fillPaint = Paint()

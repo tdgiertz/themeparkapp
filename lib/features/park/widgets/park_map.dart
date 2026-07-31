@@ -236,11 +236,12 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
               final loc = AttractionLocation.fromId(f.id, _centerLat, _centerLng);
               final offset = getOffset(loc.latitude, loc.longitude);
               
-              Color heatColor = Colors.green;
+              final cs = Theme.of(context).colorScheme;
+              Color heatColor = cs.primary;
               if (historicalWait > 50) {
-                heatColor = Colors.red;
+                heatColor = cs.error;
               } else if (historicalWait > 20) {
-                heatColor = Colors.orange;
+                heatColor = cs.tertiary;
               }
 
               heatmapData.add(_HeatPoint(
@@ -374,13 +375,18 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
         final isClosed = wait == null || wait.status != 'Open';
         final waitMinutes = wait?.waitMinutes ?? 0;
 
-        var pinColor = Colors.green.shade700;
+        final cs = theme.colorScheme;
+        var pinColor = cs.primaryContainer;
+        var pinFg = cs.onPrimaryContainer;
         if (isClosed) {
-          pinColor = Colors.grey.shade700;
+          pinColor = cs.surfaceContainerHigh;
+          pinFg = cs.onSurfaceVariant;
         } else if (waitMinutes > 50) {
-          pinColor = Colors.red.shade700;
+          pinColor = cs.errorContainer;
+          pinFg = cs.onErrorContainer;
         } else if (waitMinutes > 20) {
-          pinColor = Colors.orange.shade800;
+          pinColor = cs.tertiaryContainer;
+          pinFg = cs.onTertiaryContainer;
         }
 
         final isSelected = widget.selectedFacilityId == f.id;
@@ -406,12 +412,12 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
                       color: pinColor,
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: isSelected ? Colors.white : (isDark ? Colors.black : Colors.white),
+                        color: isSelected ? cs.primary : cs.surface,
                         width: isSelected ? 3 : 2,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.4),
+                          color: cs.shadow,
                           blurRadius: 6,
                           offset: const Offset(0, 3),
                         ),
@@ -419,14 +425,13 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
                     ),
                     alignment: Alignment.center,
                     child: isClosed
-                        ? const Icon(Icons.block, size: 14, color: Colors.white)
+                        ? Icon(Icons.block, size: 14, color: pinFg)
                         : Text(
                             '$waitMinutes',
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: pinFg,
                               fontSize: 12,
                               fontWeight: FontWeight.w900,
-                              shadows: [Shadow(color: Colors.black45, blurRadius: 2)],
                             ),
                           ),
                   ),
@@ -437,6 +442,7 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
         );
       } else {
         // Multi-facility cluster pin
+        final cs = theme.colorScheme;
         final avgX = cluster.map((c) => c.offset.dx).reduce((a, b) => a + b) / cluster.length;
         final avgY = cluster.map((c) => c.offset.dy).reduce((a, b) => a + b) / cluster.length;
         final centerOffset = Offset(avgX, avgY);
@@ -467,12 +473,12 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
                       color: theme.colorScheme.primary,
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: containsSelected ? Colors.amber : Colors.white,
+                        color: containsSelected ? cs.tertiary : cs.surface,
                         width: 2.5,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.5),
+                          color: cs.shadow,
                           blurRadius: 6,
                           offset: const Offset(0, 3),
                         ),
@@ -482,11 +488,11 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.place, size: 12, color: Colors.white),
+                        Icon(Icons.place, size: 12, color: cs.onPrimary),
                         Text(
                           '${cluster.length}',
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: cs.onPrimary,
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                           ),
@@ -599,7 +605,7 @@ class _MapBackgroundPainter extends CustomPainter {
 
     // D. Draw walkways/paths
     final pathPaint = Paint()
-      ..color = isDark ? Colors.grey.shade800 : Colors.white.withValues(alpha: 0.9)
+      ..color = theme.colorScheme.surfaceContainerHigh
       ..strokeWidth = 6
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
@@ -632,15 +638,16 @@ class _MapBackgroundPainter extends CustomPainter {
 
     // F. Draw 5-Minute Walking Radius circle (Mobile)
     if (showWalkingRadius) {
+      final primaryColor = theme.colorScheme.primary;
       // Draw 5-min radius translucent circle
       final walkRadiusPaint = Paint()
-        ..color = Colors.blue.withValues(alpha: 0.08)
+        ..color = primaryColor.withValues(alpha: 0.08)
         ..style = PaintingStyle.fill;
       canvas.drawCircle(userOffset, walkingRadiusPx, walkRadiusPaint);
 
       // Draw walking radius dotted stroke border
       final walkBorderPaint = Paint()
-        ..color = Colors.blue.withValues(alpha: 0.35)
+        ..color = primaryColor.withValues(alpha: 0.35)
         ..strokeWidth = 1.5
         ..style = PaintingStyle.stroke;
       canvas.drawCircle(userOffset, walkingRadiusPx, walkBorderPaint);
@@ -648,19 +655,19 @@ class _MapBackgroundPainter extends CustomPainter {
       // Pulse circle
       final pulseRadius = walkingRadiusPx * (0.8 + 0.2 * pulseValue);
       final pulsePaint = Paint()
-        ..color = Colors.blue.withValues(alpha: 0.04 * (1.0 - pulseValue))
+        ..color = primaryColor.withValues(alpha: 0.04 * (1.0 - pulseValue))
         ..style = PaintingStyle.fill;
       canvas.drawCircle(userOffset, pulseRadius, pulsePaint);
 
       // Draw active GPS marker dot
       final gpsMarkerPaint = Paint()
-        ..color = Colors.blue.shade600
+        ..color = primaryColor
         ..style = PaintingStyle.fill;
       canvas.drawCircle(userOffset, 6, gpsMarkerPaint);
 
       // Pulse dot border
       final gpsBorderPaint = Paint()
-        ..color = Colors.blue.shade600.withValues(alpha: 0.5 * (1.0 - pulseValue))
+        ..color = primaryColor.withValues(alpha: 0.5 * (1.0 - pulseValue))
         ..strokeWidth = 2.0
         ..style = PaintingStyle.stroke;
       canvas.drawCircle(userOffset, 6.0 + 8.0 * pulseValue, gpsBorderPaint);

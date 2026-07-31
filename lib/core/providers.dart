@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:themeparkapp/core/theme.dart';
 import 'package:themeparkapp/models/favorite.dart';
 import 'package:themeparkapp/models/park.dart';
 import 'package:themeparkapp/models/park_detail.dart';
@@ -15,6 +17,38 @@ final counterProvider = StateProvider<int>((ref) => 0);
 
 /// Theme mode provider: system / light / dark
 final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.system);
+
+/// Theme seed color state notifier with SharedPreferences persistence.
+class ThemeSeedColorNotifier extends StateNotifier<Color?> {
+  ThemeSeedColorNotifier() : super(AppTheme.primaryAccent) {
+    _loadFromPrefs();
+  }
+
+  static const String _key = 'theme_seed_color';
+
+  Future<void> _loadFromPrefs() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final colorVal = prefs.getInt(_key);
+      if (colorVal != null) {
+        state = Color(colorVal);
+      }
+    } catch (_) {}
+  }
+
+  Future<void> setColor(Color color) async {
+    state = color;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt(_key, color.value);
+    } catch (_) {}
+  }
+}
+
+final themeSeedColorProvider =
+    StateNotifierProvider<ThemeSeedColorNotifier, Color?>((ref) {
+  return ThemeSeedColorNotifier();
+});
 
 /// Example async provider that simulates fetching details
 final detailsProvider = FutureProvider<String>((ref) async {

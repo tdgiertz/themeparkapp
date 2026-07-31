@@ -129,7 +129,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Joined Virtual Queue for $facilityName!'),
-            backgroundColor: Colors.teal.shade700,
+            backgroundColor: Theme.of(context).colorScheme.primary,
           ),
         );
       }
@@ -218,7 +218,6 @@ class _ParkPageState extends ConsumerState<ParkPage> {
     final waitsAsync = ref.watch(waitTimesProvider(widget.parkId));
     final loc = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -263,7 +262,6 @@ class _ParkPageState extends ConsumerState<ParkPage> {
   ) {
     final items = _getFilteredItems(detail, waits);
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
       body: Stack(
@@ -465,14 +463,14 @@ class _ParkPageState extends ConsumerState<ParkPage> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 14, color: isSelected ? Colors.white : theme.colorScheme.onSurface),
+            Icon(icon, size: 14, color: isSelected ? theme.colorScheme.onPrimary : theme.colorScheme.onSurface),
             const SizedBox(width: 4),
             Text(
               label,
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
-                color: isSelected ? Colors.white : theme.colorScheme.onSurface,
+                color: isSelected ? theme.colorScheme.onPrimary : theme.colorScheme.onSurface,
               ),
             ),
           ],
@@ -727,7 +725,6 @@ class _ParkPageState extends ConsumerState<ParkPage> {
 
   Widget _buildStaticBackground() {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     
     final bgUrl = widget.parkId == 'p2'
         ? 'https://images.unsplash.com/photo-1597466765990-64ad1c35dafc?q=80&w=1200'
@@ -783,11 +780,11 @@ class _ParkPageState extends ConsumerState<ParkPage> {
           final selected = activeFilters.contains(opt.key);
           return FilterChip(
             materialTapTargetSize: MaterialTapTargetSize.padded,
-            avatar: Icon(opt.icon, size: 16, color: selected ? Colors.white : null),
-            label: Text(opt.label, style: TextStyle(color: selected ? Colors.white : null)),
+            avatar: Icon(opt.icon, size: 16, color: selected ? Theme.of(context).colorScheme.onPrimary : null),
+            label: Text(opt.label, style: TextStyle(color: selected ? Theme.of(context).colorScheme.onPrimary : null)),
             selected: selected,
             selectedColor: Theme.of(context).colorScheme.primary,
-            checkmarkColor: Colors.white,
+            checkmarkColor: Theme.of(context).colorScheme.onPrimary,
             onSelected: (_) => toggleFilter(opt.key),
           );
         },
@@ -797,7 +794,6 @@ class _ParkPageState extends ConsumerState<ParkPage> {
 
   Widget _buildDesktopLeftSidebar(ParkDetail detail) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -1126,13 +1122,14 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
     final currentWait = wait?.waitMinutes ?? 0;
     final waitText = isClosed ? 'Closed' : '${currentWait}m';
     
-    var waitColor = Colors.green.shade700;
+    final cs = theme.colorScheme;
+    var waitColor = cs.primary;
     if (isClosed) {
-      waitColor = Colors.grey.shade700;
+      waitColor = cs.outline;
     } else if (currentWait > 50) {
-      waitColor = Colors.red.shade700;
+      waitColor = cs.error;
     } else if (currentWait > 20) {
-      waitColor = Colors.orange.shade800;
+      waitColor = cs.tertiary;
     }
 
     final imageUrl = _getStaticImageUrl(facility);
@@ -1307,19 +1304,19 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
                                   ? Container(
                                       height: 44,
                                       decoration: BoxDecoration(
-                                        color: Colors.teal.shade700,
+                                        color: theme.colorScheme.primaryContainer,
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       alignment: Alignment.center,
-                                      child: const Row(
+                                      child: Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
-                                          Icon(Icons.check_circle, color: Colors.white, size: 18),
-                                          SizedBox(width: 6),
+                                          Icon(Icons.check_circle, color: theme.colorScheme.onPrimaryContainer, size: 18),
+                                          const SizedBox(width: 6),
                                           Text(
                                             'Virtual Queue Joined (Group 14)',
                                             style: TextStyle(
-                                              color: Colors.white,
+                                              color: theme.colorScheme.onPrimaryContainer,
                                               fontWeight: FontWeight.bold,
                                               fontSize: 12,
                                             ),
@@ -1333,7 +1330,7 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
                                         onPressed: onJoinQueue,
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: theme.colorScheme.primary,
-                                          foregroundColor: Colors.white,
+                                          foregroundColor: theme.colorScheme.onPrimary,
                                           shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(12),
                                           ),
@@ -1431,13 +1428,14 @@ class MobileAttractionTile extends StatelessWidget {
     final waitText = isClosed ? 'Closed' : '${wait!.waitMinutes}m';
     final currentWait = wait?.waitMinutes ?? 0;
     
-    var waitColor = Colors.green.shade600;
+    final cs = Theme.of(context).colorScheme;
+    var waitColor = cs.primary;
     if (isClosed) {
-      waitColor = Colors.grey;
+      waitColor = cs.outline;
     } else if (currentWait > 50) {
-      waitColor = Colors.red.shade600;
+      waitColor = cs.error;
     } else if (currentWait > 20) {
-      waitColor = Colors.orange.shade600;
+      waitColor = cs.tertiary;
     }
 
     final imageUrl = _getStaticImageUrl(facility);
@@ -1633,13 +1631,13 @@ class TabletAttractionTile extends StatelessWidget {
     final isClosed = wait == null || wait!.status != 'Open';
     final currentWait = wait?.waitMinutes ?? 0;
     
-    var waitColor = Colors.green.shade600;
+    var waitColor = theme.colorScheme.primary;
     if (isClosed) {
-      waitColor = Colors.grey;
+      waitColor = theme.colorScheme.outline;
     } else if (currentWait > 50) {
-      waitColor = Colors.red.shade600;
+      waitColor = theme.colorScheme.error;
     } else if (currentWait > 20) {
-      waitColor = Colors.orange.shade600;
+      waitColor = theme.colorScheme.tertiary;
     }
 
     final trend = _getWaitTimeTrend(facility.id, currentWait);
@@ -1806,13 +1804,13 @@ class _DesktopAttractionRowState extends State<DesktopAttractionRow> {
     final waitText = isClosed ? 'Closed' : '${widget.wait!.waitMinutes}m';
     final currentWait = widget.wait?.waitMinutes ?? 0;
     
-    var waitColor = Colors.green.shade600;
+    var waitColor = theme.colorScheme.primary;
     if (isClosed) {
-      waitColor = Colors.grey;
+      waitColor = theme.colorScheme.outline;
     } else if (currentWait > 50) {
-      waitColor = Colors.red.shade600;
+      waitColor = theme.colorScheme.error;
     } else if (currentWait > 20) {
-      waitColor = Colors.orange.shade600;
+      waitColor = theme.colorScheme.tertiary;
     }
 
     final hash = widget.facility.id.hashCode;

@@ -176,7 +176,7 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Successfully joined Virtual Queue for $_queueGroup!'),
-            backgroundColor: Colors.teal,
+            backgroundColor: Theme.of(context).colorScheme.primary,
           ),
         );
       }
@@ -186,52 +186,55 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
   void _simulateNavigation() {
     showDialog<void>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Row(
-          children: [
-            Icon(Icons.navigation, color: Colors.teal),
-            SizedBox(width: 8),
-            Text('Navigate Here'),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'Simulating GPS route optimization. Walk north towards Adventureland.',
-              style: TextStyle(fontSize: 14),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              height: 120,
-              decoration: BoxDecoration(
-                color: Colors.teal.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.teal.withValues(alpha: 0.3)),
+      builder: (context) {
+        final cs = Theme.of(context).colorScheme;
+        return AlertDialog(
+          title: Row(
+            children: [
+              Icon(Icons.navigation, color: cs.primary),
+              const SizedBox(width: 8),
+              const Text('Navigate Here'),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Simulating GPS route optimization. Walk north towards Adventureland.',
+                style: TextStyle(fontSize: 14),
               ),
-              child: const Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.explore, size: 40, color: Colors.teal),
-                    SizedBox(height: 8),
-                    Text(
-                      'Distance: 120 yards • 2 min walk',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
+              const SizedBox(height: 16),
+              Container(
+                height: 120,
+                decoration: BoxDecoration(
+                  color: cs.primaryContainer,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: cs.primary),
+                ),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.explore, size: 40, color: cs.onPrimaryContainer),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Distance: 120 yards • 2 min walk',
+                        style: TextStyle(fontWeight: FontWeight.bold, color: cs.onPrimaryContainer),
+                      ),
+                    ],
+                  ),
                 ),
               ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
             ),
           ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -265,8 +268,8 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
       return Container(
         width: width,
         height: height,
-        color: Colors.grey.shade300,
-        child: const Center(child: Icon(Icons.image, color: Colors.grey, size: 16)),
+        color: Theme.of(context).colorScheme.surfaceContainerHigh,
+        child: Center(child: Icon(Icons.image, color: Theme.of(context).colorScheme.onSurfaceVariant, size: 16)),
       );
     }
     return Image.network(
@@ -354,16 +357,14 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                 title: Text(
                   facility.name,
                   style: TextStyle(
-                    color: innerBoxIsScrolled
-                        ? theme.colorScheme.onSurface
-                        : Colors.white,
+                    color: theme.colorScheme.onSurface,
                     fontWeight: FontWeight.bold,
                     shadows: innerBoxIsScrolled
                         ? null
                         : [
                             Shadow(
                               blurRadius: 8,
-                              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                              color: theme.colorScheme.shadow,
                               offset: const Offset(0, 2),
                             ),
                           ],
@@ -376,14 +377,14 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                       staticImage,
                     ),
                     Container(
-                          decoration: BoxDecoration(
+                      decoration: BoxDecoration(
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: [
-                            theme.colorScheme.onSurface.withValues(alpha: 0.38),
-                            Colors.transparent,
-                            theme.colorScheme.onSurface.withValues(alpha: 0.54),
+                            theme.colorScheme.scrim.withValues(alpha: 0.38),
+                            theme.colorScheme.surface.withValues(alpha: 0),
+                            theme.colorScheme.scrim.withValues(alpha: 0.54),
                           ],
                         ),
                       ),
@@ -409,7 +410,7 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                 const SizedBox(height: 8),
                 Text(
                   'Make a go/no-go decision based on live and predicted trends.',
-                  style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                  style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                 ),
                 const SizedBox(height: 16),
                 Card(

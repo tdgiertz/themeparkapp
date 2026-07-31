@@ -49,6 +49,7 @@ dependencies:
   glassmorphism: ^3.0.0
   flutter_blurhash: ^0.9.1
   glass: ^2.0.0+2
+  flex_color_picker: ^3.8.0
 
 dev_dependencies:
   flutter_test:

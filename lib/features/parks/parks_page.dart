@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glassmorphism/glassmorphism.dart';
 import 'package:themeparkapp/core/providers.dart';
 import 'package:themeparkapp/features/park/park_page.dart';
 import 'package:themeparkapp/features/park/widgets/park_map.dart';
@@ -181,140 +180,127 @@ class ParkHeroCard extends ConsumerWidget {
 
     final closeTime = park.operatingHours?['close'] ?? '8:00 PM';
 
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Card(
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: isSelected
-            ? BorderSide(color: Theme.of(context).colorScheme.primary, width: 3)
-            : BorderSide.none,
+            ? BorderSide(color: colorScheme.primary, width: 2.5)
+            : BorderSide(color: colorScheme.outlineVariant.withValues(alpha: 0.5)),
       ),
-      elevation: isSelected ? 8 : 4,
+      elevation: isSelected ? 4 : 1,
+      color: colorScheme.surfaceContainerLow,
       child: InkWell(
         onTap: onTap,
-        child: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: NetworkImage(imageUrl),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: Stack(
-            fit: StackFit.expand,
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Gradient Overlay
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                    colors: [
-                      Colors.black.withValues(alpha: 0.85),
-                      Colors.black.withValues(alpha: 0.3),
-                      Colors.transparent,
-                    ],
-                    stops: const [0.0, 0.5, 1.0],
+              // Upper Section: Left side (Park Image), Right side (Title & Wait/Close info)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Upper Left Image Thumbnail
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.network(
+                      imageUrl,
+                      width: 96,
+                      height: 84,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        width: 96,
+                        height: 84,
+                        color: colorScheme.surfaceContainerHighest,
+                        child: Icon(Icons.park, color: colorScheme.onSurfaceVariant),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              // Frosted Glassmorphism Badge (top-right corner)
-              Positioned(
-                top: 12,
-                right: 12,
-                child: GlassmorphicContainer(
-                  width: 120,
-                  height: 44,
-                  borderRadius: 12,
-                  blur: 10,
-                  alignment: Alignment.center,
-                  border: 0,
-                  linearGradient: LinearGradient(
-                    colors: [
-                      Colors.white.withValues(alpha: 0.2),
-                      Colors.white.withValues(alpha: 0.05),
-                    ],
-                  ),
-                  borderGradient: LinearGradient(
-                    colors: [
-                      Colors.white.withValues(alpha: 0.3),
-                      Colors.white.withValues(alpha: 0.1),
-                    ],
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  const SizedBox(width: 12),
+                  Expanded(
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Avg Wait: ${currentAvg}m',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 11,
+                          park.name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: colorScheme.onSurface,
+                            fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        Text(
-                          'Close: $closeTime',
-                          style: const TextStyle(
-                            color: Colors.white70,
-                            fontSize: 10,
+                        const SizedBox(height: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: colorScheme.surfaceContainerHigh,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: colorScheme.outlineVariant.withValues(alpha: 0.4),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Avg Wait: ${currentAvg}m',
+                                style: TextStyle(
+                                  color: colorScheme.primary,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'Close: $closeTime',
+                                style: TextStyle(
+                                  color: colorScheme.onSurfaceVariant,
+                                  fontSize: 11,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
                   ),
-                ),
+                ],
               ),
-              // Content Area (bottom)
-              Positioned(
-                bottom: 12,
-                left: 12,
-                right: 12,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              const SizedBox(height: 8),
+              // Bottom Section: Sparkline Trend Visualization
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainer.withValues(alpha: 0.6),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      park.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        shadows: [
-                          Shadow(
-                            color: Colors.black.withValues(alpha: 0.6),
-                            offset: const Offset(0, 2),
-                            blurRadius: 4,
-                          ),
-                        ],
+                    Flexible(
+                      child: Text(
+                        'Wait Time Trend',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: colorScheme.onSurfaceVariant,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    // Sparkline Trend Visualization
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Flexible(
-                          child: Text(
-                            'Wait Time Trend',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 10,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        SparklineChart(
-                          data: trendData,
-                          lineColor: Colors.amberAccent,
-                          width: 60,
-                          height: 18,
-                        ),
-                      ],
+                    const SizedBox(width: 6),
+                    SparklineChart(
+                      data: trendData,
+                      lineColor: colorScheme.primary,
+                      width: 70,
+                      height: 20,
                     ),
                   ],
                 ),
@@ -468,13 +454,21 @@ class ParkDetailPane extends ConsumerWidget {
                                           name: 'Attraction ${w.rideId}',
                                         ),
                                       );
-                                      final waitColor = w.waitMinutes != null
+                                      final cs = Theme.of(context).colorScheme;
+                                      final waitBg = w.waitMinutes != null
                                           ? (w.waitMinutes! <= 20
-                                              ? Colors.green.shade600
+                                              ? cs.primaryContainer
                                               : (w.waitMinutes! <= 50
-                                                  ? Colors.orange.shade600
-                                                  : Colors.red.shade600))
-                                          : Colors.grey.shade600;
+                                                  ? cs.tertiaryContainer
+                                                  : cs.errorContainer))
+                                          : cs.surfaceContainerHigh;
+                                      final waitFg = w.waitMinutes != null
+                                          ? (w.waitMinutes! <= 20
+                                              ? cs.onPrimaryContainer
+                                              : (w.waitMinutes! <= 50
+                                                  ? cs.onTertiaryContainer
+                                                  : cs.onErrorContainer))
+                                          : cs.onSurfaceVariant;
 
                                       return Card(
                                         margin: const EdgeInsets.only(bottom: 8),
@@ -498,13 +492,13 @@ class ParkDetailPane extends ConsumerWidget {
                                               vertical: 4,
                                             ),
                                             decoration: BoxDecoration(
-                                              color: waitColor,
+                                              color: waitBg,
                                               borderRadius: BorderRadius.circular(8),
                                             ),
                                             child: Text(
                                               '${w.waitMinutes}m',
-                                              style: const TextStyle(
-                                                color: Colors.white,
+                                              style: TextStyle(
+                                                color: waitFg,
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 11,
                                               ),

@@ -198,16 +198,16 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
         // GPS Ping status indicator
         Container(
           width: double.infinity,
-          color: Colors.blue.withValues(alpha: 0.08),
+          color: Theme.of(context).colorScheme.primaryContainer,
           padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.gps_fixed, size: 14, color: Colors.blueAccent),
+              Icon(Icons.gps_fixed, size: 14, color: Theme.of(context).colorScheme.onPrimaryContainer),
               const SizedBox(width: 6),
               Text(
                 'Live Location: ${userPos.latitude.toStringAsFixed(4)}, ${userPos.longitude.toStringAsFixed(4)}',
-                style: const TextStyle(fontSize: 11, color: Colors.blueAccent, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -228,11 +228,11 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                   onTap: _startVoiceInput,
                   child: Container(
                     padding: const EdgeInsets.all(12),
-                    decoration: const BoxDecoration(
-                      color: Colors.teal,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.mic, color: Colors.white),
+                    child: Icon(Icons.mic, color: Theme.of(context).colorScheme.onPrimary),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -247,9 +247,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                         borderSide: BorderSide.none,
                       ),
                       filled: true,
-                      fillColor: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.grey.shade800
-                          : Colors.grey.shade100,
+                      fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     ),
                     onSubmitted: _submitText,
@@ -257,7 +255,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                 ),
                 const SizedBox(width: 8),
                 IconButton(
-                  icon: const Icon(Icons.send, color: Colors.teal),
+                  icon: Icon(Icons.send, color: Theme.of(context).colorScheme.primary),
                   onPressed: () => _submitText(_textController.text),
                 ),
               ],
@@ -285,7 +283,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                 padding: const EdgeInsets.all(12),
                 child: Row(
                   children: [
-                    const Icon(Icons.chat_bubble_outline, color: Colors.teal),
+                    Icon(Icons.chat_bubble_outline, color: Theme.of(context).colorScheme.primary),
                     const SizedBox(width: 8),
                     Text('Chat History & Thread', style: Theme.of(context).textTheme.titleSmall),
                   ],
@@ -307,7 +305,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
               // Keyboard Priority Input
               Container(
                 padding: const EdgeInsets.all(12),
-                color: Theme.of(context).cardColor,
+                color: Theme.of(context).colorScheme.surfaceContainer,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -324,7 +322,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                               ),
                               contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                               suffixIcon: IconButton(
-                                icon: const Icon(Icons.mic, color: Colors.teal),
+                                icon: Icon(Icons.mic, color: Theme.of(context).colorScheme.primary),
                                 tooltip: 'Simulate Voice Input',
                                 onPressed: _startVoiceInput,
                               ),
@@ -335,9 +333,9 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                       ],
                     ),
                     const SizedBox(height: 6),
-                    const Text(
+                    Text(
                       'Keyboard priority: Type query and press Enter to search.',
-                      style: TextStyle(fontSize: 10, color: Colors.grey),
+                      style: TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
                   ],
                 ),
@@ -350,9 +348,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
         Expanded(
           flex: 3,
           child: ColoredBox(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.grey.shade900
-                : Colors.grey.shade50,
+            color: Theme.of(context).colorScheme.surfaceContainerLow,
             child: _buildActiveWidgetsPane(state),
           ),
         ),
@@ -374,7 +370,6 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
   // --- CHAT MESSAGE BUBBLE WIDGET ---
   Widget _buildChatMessageItem(ChatMessage msg, {required bool isMobile}) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
@@ -387,11 +382,11 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
               padding: const EdgeInsets.only(bottom: 4),
               child: Row(
                 children: [
-                  const Icon(Icons.location_on, size: 10, color: Colors.teal),
+                  Icon(Icons.location_on, size: 10, color: theme.colorScheme.secondary),
                   const SizedBox(width: 4),
                   Text(
                     msg.statusInfo!,
-                    style: TextStyle(fontSize: 10, color: Colors.teal.shade400, fontStyle: FontStyle.italic),
+                    style: TextStyle(fontSize: 10, color: theme.colorScheme.secondary, fontStyle: FontStyle.italic),
                   ),
                 ],
               ),
@@ -403,10 +398,10 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (!msg.isUser)
-                const CircleAvatar(
+                CircleAvatar(
                   radius: 14,
-                  backgroundColor: Colors.teal,
-                  child: Icon(Icons.support_agent, size: 16, color: Colors.white),
+                  backgroundColor: theme.colorScheme.secondaryContainer,
+                  child: Icon(Icons.support_agent, size: 16, color: theme.colorScheme.onSecondaryContainer),
                 ),
               const SizedBox(width: 8),
               Flexible(
@@ -414,17 +409,17 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   decoration: BoxDecoration(
                     color: msg.isUser
-                        ? Colors.teal.shade700
-                        : (isDark ? Colors.grey.shade800 : Colors.white),
+                        ? theme.colorScheme.primaryContainer
+                        : theme.colorScheme.surfaceContainerHigh,
                     borderRadius: BorderRadius.only(
                       topLeft: const Radius.circular(16),
                       topRight: const Radius.circular(16),
                       bottomLeft: Radius.circular(msg.isUser ? 16 : 4),
                       bottomRight: Radius.circular(msg.isUser ? 4 : 16),
                     ),
-                      boxShadow: [
+                    boxShadow: [
                       BoxShadow(
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
+                        color: theme.colorScheme.shadow,
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),
@@ -433,7 +428,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                   child: Text(
                     msg.text,
                     style: TextStyle(
-                      color: msg.isUser ? Colors.white : theme.colorScheme.onSurface,
+                      color: msg.isUser ? theme.colorScheme.onPrimaryContainer : theme.colorScheme.onSurface,
                       fontSize: 14,
                     ),
                   ),
@@ -481,8 +476,8 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: isDining
-                              ? [Colors.orange.shade800, Colors.deepOrange.shade900]
-                              : [Colors.teal.shade800, Colors.indigo.shade900],
+                              ? [theme.colorScheme.tertiaryContainer, theme.colorScheme.secondaryContainer]
+                              : [theme.colorScheme.primaryContainer, theme.colorScheme.secondaryContainer],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
@@ -499,14 +494,14 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                             Icon(
                               isDining ? Icons.restaurant : Icons.attractions,
                               size: 16,
-                              color: Colors.white,
+                              color: theme.colorScheme.onPrimaryContainer,
                             ),
                             const SizedBox(width: 6),
                             Expanded(
                               child: Text(
                                 f.name,
-                                style: const TextStyle(
-                                  color: Colors.white,
+                                style: TextStyle(
+                                  color: theme.colorScheme.onPrimaryContainer,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 13,
                                   overflow: TextOverflow.ellipsis,
@@ -520,25 +515,25 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: Colors.white24,
+                            color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
                             f.category,
-                            style: const TextStyle(color: Colors.white, fontSize: 10),
+                            style: TextStyle(color: theme.colorScheme.onPrimaryContainer, fontSize: 10),
                           ),
                         ),
                         const Spacer(),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
+                            Text(
                               'Open',
-                              style: TextStyle(color: Colors.greenAccent, fontSize: 12, fontWeight: FontWeight.bold),
+                              style: TextStyle(color: theme.colorScheme.onPrimaryContainer, fontSize: 12, fontWeight: FontWeight.bold),
                             ),
                             ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
+                                backgroundColor: theme.colorScheme.surface,
                                 foregroundColor: theme.colorScheme.onSurface,
                                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                 minimumSize: const Size(60, 24),
@@ -575,16 +570,16 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
       margin: const EdgeInsets.only(top: 8, bottom: 4),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.teal.withValues(alpha: 0.3)),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(Icons.event_note, color: Colors.teal, size: 18),
+              Icon(Icons.event_note, color: Theme.of(context).colorScheme.primary, size: 18),
               const SizedBox(width: 8),
               Text(
                 'Magic Kingdom Timeline (${itinerary.length} items)',
@@ -597,7 +592,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: itinerary.length,
-            separatorBuilder: (_, __) => const Icon(Icons.arrow_downward, size: 12, color: Colors.grey),
+            separatorBuilder: (_, __) => Icon(Icons.arrow_downward, size: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
             itemBuilder: (context, index) {
               final item = itinerary[index];
               return Padding(
@@ -606,7 +601,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                   children: [
                     Text(
                       item.time,
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Colors.teal),
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Theme.of(context).colorScheme.primary),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -621,10 +616,10 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
             },
           ),
           const SizedBox(height: 6),
-          const Center(
+          Center(
             child: Text(
               'Switch to Desktop dashboard to Drag & Drop and modify times!',
-              style: TextStyle(fontSize: 10, color: Colors.grey, fontStyle: FontStyle.italic),
+              style: TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.onSurfaceVariant, fontStyle: FontStyle.italic),
             ),
           ),
         ],
@@ -644,23 +639,23 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
           // Header info
           Container(
             padding: const EdgeInsets.all(16),
-            color: Colors.teal.shade800,
+            color: Theme.of(context).colorScheme.primaryContainer,
             width: double.infinity,
             child: Row(
               children: [
-                const Icon(Icons.restaurant, color: Colors.white, size: 28),
+                Icon(Icons.restaurant, color: Theme.of(context).colorScheme.onPrimaryContainer, size: 28),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(f.name, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-                      Text('Dining Location • Magic Kingdom', style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 12)),
+                      Text(f.name, style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer, fontSize: 18, fontWeight: FontWeight.bold)),
+                      Text('Dining Location • Magic Kingdom', style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer.withValues(alpha: 0.8), fontSize: 12)),
                     ],
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close, color: Colors.white),
+                  icon: Icon(Icons.close, color: Theme.of(context).colorScheme.onPrimaryContainer),
                   onPressed: () {
                     ref.read(searchProvider.notifier).selectFacility(null);
                   },
@@ -685,9 +680,9 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                   children: ['Vegan', 'Vegetarian', 'Gluten-Free', 'Dairy-Free'].map((filter) {
                     final active = _activeDietaryFilters.contains(filter);
                     return ChoiceChip(
-                      label: Text(filter, style: TextStyle(color: active ? Colors.white : null)),
+                      label: Text(filter, style: TextStyle(color: active ? Theme.of(context).colorScheme.onPrimary : null)),
                       selected: active,
-                      selectedColor: Colors.teal,
+                      selectedColor: Theme.of(context).colorScheme.primary,
                       onSelected: (selected) {
                         setState(() {
                           if (selected) {
@@ -721,17 +716,17 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
         children: [
           Container(
             padding: const EdgeInsets.all(16),
-            color: Colors.teal.shade800,
+            color: Theme.of(context).colorScheme.primaryContainer,
             width: double.infinity,
             child: Row(
               children: [
-                const Icon(Icons.timeline, color: Colors.white, size: 28),
+                Icon(Icons.timeline, color: Theme.of(context).colorScheme.onPrimaryContainer, size: 28),
                 const SizedBox(width: 12),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Generative Daily Itinerary Planner', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-                    Text('Drag and drop items to reorder and calculate path routes.', style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 12)),
+                    Text('Generative Daily Itinerary Planner', style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer, fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text('Drag and drop items to reorder and calculate path routes.', style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer.withValues(alpha: 0.8), fontSize: 12)),
                   ],
                 ),
               ],
@@ -751,25 +746,25 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                   child: ListTile(
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     leading: CircleAvatar(
-                      backgroundColor: Colors.teal.shade50,
-                      child: Text('${index + 1}', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.teal)),
+                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                      child: Text('${index + 1}', style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onPrimaryContainer)),
                     ),
                     title: Text(item.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                     subtitle: Padding(
                       padding: const EdgeInsets.only(top: 4),
                       child: Row(
                         children: [
-                          const Icon(Icons.access_time, size: 12, color: Colors.teal),
+                          Icon(Icons.access_time, size: 12, color: Theme.of(context).colorScheme.primary),
                           const SizedBox(width: 4),
-                          Text(item.time, style: const TextStyle(color: Colors.teal, fontWeight: FontWeight.bold, fontSize: 12)),
+                          Text(item.time, style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 12)),
                           const SizedBox(width: 12),
-                          const Icon(Icons.hourglass_empty, size: 12, color: Colors.grey),
+                          Icon(Icons.hourglass_empty, size: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
                           const SizedBox(width: 4),
-                          Text('${item.durationMinutes} min', style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                          Text('${item.durationMinutes} min', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12)),
                         ],
                       ),
                     ),
-                    trailing: const Icon(Icons.drag_handle, color: Colors.grey),
+                    trailing: Icon(Icons.drag_handle, color: Theme.of(context).colorScheme.onSurfaceVariant),
                   ),
                 );
               },
@@ -789,17 +784,17 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.assistant, size: 80, color: Colors.teal.shade200),
+            Icon(Icons.assistant, size: 80, color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5)),
             const SizedBox(height: 16),
             const Text(
               'Active Interactive Widget Panel',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Interactive response details and drag-and-drop itinerary timelines will be displayed here when you ask planning questions.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey),
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
           ],
         ),
@@ -849,7 +844,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
               Expanded(
                 child: Container(
                   width: double.infinity,
-                  color: Colors.grey.shade200,
+                  color: Theme.of(context).colorScheme.surfaceContainerHigh,
                   child: Image.network(
                     item['imageUrl'] as String,
                     fit: BoxFit.cover,
@@ -864,7 +859,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                   children: [
                     Text(item['name'] as String, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12), maxLines: 1, overflow: TextOverflow.ellipsis),
                     const SizedBox(height: 2),
-                    Text('\$${(item['price'] as double).toStringAsFixed(2)}', style: const TextStyle(color: Colors.teal, fontWeight: FontWeight.bold, fontSize: 11)),
+                    Text('\$${(item['price'] as double).toStringAsFixed(2)}', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 11)),
                     const SizedBox(height: 4),
                     Wrap(
                       spacing: 4,
@@ -872,10 +867,10 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                         return Container(
                           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                           decoration: BoxDecoration(
-                            color: Colors.teal.withValues(alpha: 0.1),
+                            color: Theme.of(context).colorScheme.secondaryContainer,
                             borderRadius: BorderRadius.circular(4),
                           ),
-                          child: Text(t, style: const TextStyle(fontSize: 8, color: Colors.teal)),
+                          child: Text(t, style: TextStyle(fontSize: 8, color: Theme.of(context).colorScheme.onSecondaryContainer)),
                         );
                       }).toList(),
                     ),
@@ -972,13 +967,13 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
           }
         }
 
+        final colorScheme = Theme.of(context).colorScheme;
+
         return Center(
           child: Container(
             width: mapSize.width,
             height: mapSize.height,
-            color: Theme.of(context).brightness == Brightness.dark
-                ? const Color(0xFF0F0F0F)
-                : Colors.grey.shade100,
+            color: colorScheme.surfaceContainerLowest,
             child: Stack(
               children: [
                 // Custom Paint for grid and route lines
@@ -989,8 +984,10 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                       route: routeLines,
                       userOffset: userOffset,
                       isDark: Theme.of(context).brightness == Brightness.dark,
-                      gridColor: Theme.of(context).colorScheme.onSurface.withValues(
+                      gridColor: colorScheme.onSurface.withValues(
                           alpha: Theme.of(context).brightness == Brightness.dark ? 0.10 : 0.04),
+                      accentColor: colorScheme.primary,
+                      secondaryColor: colorScheme.secondary,
                     ),
                   ),
                 ),
@@ -1006,18 +1003,18 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                         height: 24,
                         decoration: BoxDecoration(
                           color: pin.isUser
-                              ? Colors.blueAccent
-                              : (pin.isSnack ? Colors.orange : Colors.teal),
+                              ? colorScheme.primary
+                              : (pin.isSnack ? colorScheme.tertiary : colorScheme.secondary),
                           shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 2),
-                          boxShadow: const [
-                            BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2)),
+                          border: Border.all(color: colorScheme.surface, width: 2),
+                          boxShadow: [
+                            BoxShadow(color: colorScheme.shadow, blurRadius: 4, offset: const Offset(0, 2)),
                           ],
                         ),
                         child: Center(
                           child: Text(
                             pin.label,
-                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 10),
+                            style: TextStyle(color: colorScheme.onPrimary, fontWeight: FontWeight.bold, fontSize: 10),
                           ),
                         ),
                       ),
@@ -1036,12 +1033,12 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
   Widget _buildVoiceOverlayWidget() {
     final theme = Theme.of(context);
     return Container(
-      color: theme.colorScheme.onSurface.withValues(alpha: 0.87),
+      color: theme.colorScheme.scrim.withValues(alpha: 0.87),
       width: double.infinity,
       height: double.infinity,
       child: Center(
         child: Card(
-          color: Colors.grey.shade900,
+          color: theme.colorScheme.surfaceContainerHighest,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: Container(
             width: 300,
@@ -1049,17 +1046,17 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.mic, size: 64, color: Colors.tealAccent),
+                Icon(Icons.mic, size: 64, color: theme.colorScheme.primary),
                 const SizedBox(height: 16),
-                const Text(
+                Text(
                   'AI TRAVEL AGENT DICTATION',
-                  style: TextStyle(color: Colors.grey, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.5),
+                  style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.5),
                 ),
                 const SizedBox(height: 12),
                 Text(
                   _voiceStatusText,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: theme.colorScheme.onSurface, fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 24),
                 // Audio Wave Visualizer
@@ -1067,7 +1064,10 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                   height: 40,
                   width: double.infinity,
                   child: CustomPaint(
-                    painter: _VoiceWaveformPainter(animationValue: _waveController.value),
+                    painter: _VoiceWaveformPainter(
+                      animationValue: _waveController.value,
+                      waveColor: theme.colorScheme.primary,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -1079,7 +1079,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                     });
                     ref.read(searchProvider.notifier).setListening(false);
                   },
-                  child: const Text('Cancel', style: TextStyle(color: Colors.redAccent)),
+                  child: Text('Cancel', style: TextStyle(color: theme.colorScheme.error)),
                 ),
               ],
             ),
@@ -1114,6 +1114,8 @@ class _AIHelperMapPainter extends CustomPainter {
     required this.userOffset,
     required this.isDark,
     required this.gridColor,
+    required this.accentColor,
+    required this.secondaryColor,
   });
 
   final List<MapPin> pins;
@@ -1121,6 +1123,8 @@ class _AIHelperMapPainter extends CustomPainter {
   final Offset userOffset;
   final bool isDark;
   final Color gridColor;
+  final Color accentColor;
+  final Color secondaryColor;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -1139,7 +1143,7 @@ class _AIHelperMapPainter extends CustomPainter {
 
     // Draw coordinate zones (mock park boundaries for styling)
     final zonePaint = Paint()
-      ..color = Colors.teal.withValues(alpha: isDark ? 0.05 : 0.03)
+      ..color = secondaryColor.withValues(alpha: isDark ? 0.05 : 0.03)
       ..style = PaintingStyle.fill;
     
     canvas.drawCircle(Offset(size.width * 0.45, size.height * 0.45), size.width * 0.35, zonePaint);
@@ -1149,7 +1153,7 @@ class _AIHelperMapPainter extends CustomPainter {
     // Draw route lines connecting the itinerary points in order
     if (route.length > 1) {
       final routePaint = Paint()
-        ..color = Colors.tealAccent.shade400
+        ..color = accentColor
         ..strokeWidth = 3.0
         ..style = PaintingStyle.stroke
         ..strokeCap = StrokeCap.round;
@@ -1190,14 +1194,18 @@ class _AIHelperMapPainter extends CustomPainter {
 
 // --- VOICE AUDIO PULSING WAVEFORM PAINTER ---
 class _VoiceWaveformPainter extends CustomPainter {
-  _VoiceWaveformPainter({required this.animationValue});
+  _VoiceWaveformPainter({
+    required this.animationValue,
+    required this.waveColor,
+  });
 
   final double animationValue;
+  final Color waveColor;
 
   @override
   void paint(Canvas canvas, Size size) {
     final wavePaint = Paint()
-      ..color = Colors.tealAccent
+      ..color = waveColor
       ..strokeWidth = 3.0
       ..strokeCap = StrokeCap.round;
 

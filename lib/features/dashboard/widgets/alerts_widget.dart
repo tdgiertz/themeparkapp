@@ -85,6 +85,25 @@ class _AlertTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    Color bgContainer;
+    Color fgOnContainer;
+
+    switch (alert.type) {
+      case 'wait_drop':
+        bgContainer = cs.primaryContainer;
+        fgOnContainer = cs.onPrimaryContainer;
+      case 'schedule':
+        bgContainer = cs.secondaryContainer;
+        fgOnContainer = cs.onSecondaryContainer;
+      case 'downtime':
+        bgContainer = cs.errorContainer;
+        fgOnContainer = cs.onErrorContainer;
+      default:
+        bgContainer = cs.surfaceContainerHigh;
+        fgOnContainer = cs.onSurface;
+    }
+
     return Dismissible(
       key: Key(alert.id),
       onDismissed: (_) => onDismiss(),
@@ -92,11 +111,7 @@ class _AlertTile extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 16),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: alert.backgroundColor.withValues(alpha: 0.15),
-          border: Border.all(
-            color: alert.backgroundColor.withValues(alpha: 0.5),
-            width: 1.5,
-          ),
+          color: bgContainer,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
@@ -109,12 +124,12 @@ class _AlertTile extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: alert.backgroundColor.withValues(alpha: 0.2),
+                    color: fgOnContainer.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
                     alert.icon,
-                    color: alert.backgroundColor,
+                    color: fgOnContainer,
                     size: 20,
                   ),
                 ),
@@ -125,9 +140,10 @@ class _AlertTile extends StatelessWidget {
                     children: [
                       Text(
                         alert.title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
+                          color: fgOnContainer,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -135,9 +151,9 @@ class _AlertTile extends StatelessWidget {
                       const SizedBox(height: 2),
                       Text(
                         alert.message,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey,
+                          color: fgOnContainer.withValues(alpha: 0.8),
                         ),
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
@@ -162,7 +178,7 @@ class _AlertTile extends StatelessWidget {
                     alert.actionLabel!,
                     style: TextStyle(
                       fontSize: 11,
-                      color: alert.backgroundColor,
+                      color: fgOnContainer,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -198,7 +214,7 @@ List<DashboardAlert> generateMockAlerts(List<FavoriteRide> favorites) {
           title: '${ride.name} – Wait Time Drop!',
           message: "${ride.name}'s wait time just dropped to ${wait}m—the lowest it has been all day!",
           icon: Icons.trending_down,
-          backgroundColor: Colors.green.shade600,
+          backgroundColor: const Color(0xFF10B981),
           actionLabel: 'Directions',
           onAction: () {},
         ),
@@ -214,7 +230,7 @@ List<DashboardAlert> generateMockAlerts(List<FavoriteRide> favorites) {
       title: 'Festival of Fantasy Parade – Starts in 25m',
       message: 'Grab a viewing spot on Main Street, U.S.A. before crowds form!',
       icon: Icons.access_time_filled,
-      backgroundColor: Colors.purple.shade600,
+      backgroundColor: const Color(0xFF8B5CF6),
       actionLabel: 'Set Reminder',
       onAction: () {},
     ),
@@ -236,7 +252,7 @@ List<DashboardAlert> generateMockAlerts(List<FavoriteRide> favorites) {
           title: '${ride.name} is Temporarily Offline',
           message: 'Ride is currently experiencing technical difficulties. We will notify you when it reopens.',
           icon: Icons.warning_amber_rounded,
-          backgroundColor: Colors.orange.shade700,
+          backgroundColor: const Color(0xFFEF4444),
           actionLabel: 'View Alt',
           onAction: () {},
         ),

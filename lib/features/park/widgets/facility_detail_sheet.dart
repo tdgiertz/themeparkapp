@@ -162,7 +162,7 @@ class _FacilityDetailSheetContentState extends ConsumerState<FacilityDetailSheet
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Successfully joined Virtual Queue for $_queueGroup!'),
-            backgroundColor: Colors.teal,
+            backgroundColor: Theme.of(context).colorScheme.primary,
           ),
         );
       }
@@ -203,13 +203,14 @@ class _FacilityDetailSheetContentState extends ConsumerState<FacilityDetailSheet
     final currentWait = widget.wait?.waitMinutes ?? 0;
     final waitText = isClosed ? 'Closed' : '${currentWait}m';
     
-    var waitColor = Colors.green.shade600;
+    final cs = theme.colorScheme;
+    var waitColor = cs.primary;
     if (isClosed) {
-      waitColor = Colors.grey;
+      waitColor = cs.outline;
     } else if (currentWait > 50) {
-      waitColor = Colors.red.shade600;
+      waitColor = cs.error;
     } else if (currentWait > 20) {
-      waitColor = Colors.orange.shade600;
+      waitColor = cs.tertiary;
     }
 
     final isDining = widget.facility.name.toLowerCase().contains(
@@ -248,8 +249,8 @@ class _FacilityDetailSheetContentState extends ConsumerState<FacilityDetailSheet
                         errorBuilder: (_, __, ___) => Container(
                           width: 90,
                           height: 90,
-                          color: Colors.grey.shade300,
-                          child: const Icon(Icons.image, size: 40, color: Colors.grey),
+                          color: theme.colorScheme.surfaceContainerHigh,
+                          child: Icon(Icons.image, size: 40, color: theme.colorScheme.onSurfaceVariant),
                         ),
                       ),
                     ),
@@ -278,14 +279,14 @@ class _FacilityDetailSheetContentState extends ConsumerState<FacilityDetailSheet
                           const SizedBox(height: 4),
                           Row(
                             children: [
-                              Icon(Icons.location_on, size: 14, color: Colors.grey.shade600),
+                              Icon(Icons.location_on, size: 14, color: theme.colorScheme.onSurfaceVariant),
                               const SizedBox(width: 4),
                               Expanded(
                                 child: Text(
                                   widget.facility.thrillLevel != null
                                       ? 'Thrill: ${widget.facility.thrillLevel}'
                                       : 'Relaxing ride',
-                                  style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                                  style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontSize: 13),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -296,11 +297,11 @@ class _FacilityDetailSheetContentState extends ConsumerState<FacilityDetailSheet
                             const SizedBox(height: 4),
                             Row(
                               children: [
-                                Icon(Icons.height, size: 14, color: Colors.grey.shade600),
+                                Icon(Icons.height, size: 14, color: theme.colorScheme.onSurfaceVariant),
                                 const SizedBox(width: 4),
                                 Text(
                                   'Min Height: ${widget.facility.heightRequirementInches}"',
-                                  style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                                  style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontSize: 13),
                                 ),
                               ],
                             ),
@@ -332,11 +333,11 @@ class _FacilityDetailSheetContentState extends ConsumerState<FacilityDetailSheet
                     children: ['Vegan', 'Vegetarian', 'Gluten-Free', 'Dairy-Free'].map((filter) {
                       final active = _activeDietaryFilters.contains(filter);
                       return FilterChip(
-                        label: Text(filter, style: TextStyle(fontSize: 12, color: active ? Colors.white : null)),
+                        label: Text(filter, style: TextStyle(fontSize: 12, color: active ? theme.colorScheme.onPrimary : null)),
                         selected: active,
                         onSelected: (_) => _toggleDietaryFilter(filter),
                         selectedColor: theme.colorScheme.primary,
-                        checkmarkColor: Colors.white,
+                        checkmarkColor: theme.colorScheme.onPrimary,
                       );
                     }).toList(),
                   ),
@@ -369,7 +370,7 @@ class _FacilityDetailSheetContentState extends ConsumerState<FacilityDetailSheet
                             final item = items[idx];
                             return Card(
                               elevation: 0,
-                              color: isDark ? Colors.white.withValues(alpha: 0.04) : Colors.white,
+                              color: theme.colorScheme.surfaceContainer,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 side: BorderSide(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3)),
@@ -399,7 +400,7 @@ class _FacilityDetailSheetContentState extends ConsumerState<FacilityDetailSheet
                                           const SizedBox(height: 2),
                                           Text(
                                             item.dietaryTags.join(', '),
-                                            style: TextStyle(color: Colors.grey.shade600, fontSize: 11),
+                                            style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontSize: 11),
                                           ),
                                         ],
                                       ),
@@ -455,7 +456,7 @@ class _FacilityDetailSheetContentState extends ConsumerState<FacilityDetailSheet
                   // Virtual Queue Card
                   Card(
                     elevation: 0,
-                    color: isDark ? Colors.white.withValues(alpha: 0.04) : Colors.white,
+                    color: theme.colorScheme.surfaceContainer,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                       side: BorderSide(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3)),
@@ -479,7 +480,7 @@ class _FacilityDetailSheetContentState extends ConsumerState<FacilityDetailSheet
                           if (!_joinedQueue) ...[
                             Text(
                               'Skip the standby line by joining the virtual queue. Standby lines can be extremely long during peak hours.',
-                              style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                              style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontSize: 13),
                             ),
                             const SizedBox(height: 16),
                             SizedBox(
@@ -496,7 +497,7 @@ class _FacilityDetailSheetContentState extends ConsumerState<FacilityDetailSheet
                                 label: Text(_isJoiningQueue ? 'Joining...' : 'Join Virtual Queue'),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: theme.colorScheme.primary,
-                                  foregroundColor: Colors.white,
+                                  foregroundColor: theme.colorScheme.onPrimary,
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                                 ),
                               ),
@@ -505,13 +506,13 @@ class _FacilityDetailSheetContentState extends ConsumerState<FacilityDetailSheet
                             Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: Colors.teal.withValues(alpha: 0.15),
+                                color: theme.colorScheme.primaryContainer,
                                 borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: Colors.teal.withValues(alpha: 0.4)),
+                                border: Border.all(color: theme.colorScheme.primary),
                               ),
                               child: Row(
                                 children: [
-                                  const Icon(Icons.check_circle, color: Colors.teal),
+                                  Icon(Icons.check_circle, color: theme.colorScheme.onPrimaryContainer),
                                   const SizedBox(width: 12),
                                   Expanded(
                                     child: Column(
@@ -519,12 +520,12 @@ class _FacilityDetailSheetContentState extends ConsumerState<FacilityDetailSheet
                                       children: [
                                         Text(
                                           'Assigned: $_queueGroup',
-                                          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.teal),
+                                          style: TextStyle(fontWeight: FontWeight.bold, color: theme.colorScheme.onPrimaryContainer),
                                         ),
                                         const SizedBox(height: 2),
                                         Text(
                                           'Estimated Return: $_queueEstimate',
-                                          style: const TextStyle(fontSize: 12, color: Colors.teal),
+                                          style: TextStyle(fontSize: 12, color: theme.colorScheme.onPrimaryContainer),
                                         ),
                                       ],
                                     ),
@@ -548,13 +549,13 @@ class _FacilityDetailSheetContentState extends ConsumerState<FacilityDetailSheet
                   const SizedBox(height: 4),
                   Text(
                     'Average queues over the last 3 hours',
-                    style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                    style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontSize: 12),
                   ),
                   const SizedBox(height: 12),
                   
                   Card(
                     elevation: 0,
-                    color: isDark ? Colors.white.withValues(alpha: 0.04) : Colors.white,
+                    color: theme.colorScheme.surfaceContainer,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                       side: BorderSide(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3)),

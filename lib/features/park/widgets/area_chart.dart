@@ -19,10 +19,10 @@ class AreaChartWidget extends StatelessWidget {
     if (data.isEmpty) {
       return SizedBox(
         height: height,
-        child: const Center(
+        child: Center(
           child: Text(
             'No historical data available',
-            style: TextStyle(color: Colors.grey, fontSize: 12),
+            style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12),
           ),
         ),
       );

@@ -5,14 +5,14 @@ import 'package:flutter/material.dart';
 class SparklineChart extends StatelessWidget {
   const SparklineChart({
     required this.data,
-    this.lineColor = Colors.blue,
+    this.lineColor,
     this.width = 100.0,
     this.height = 36.0,
     super.key,
   });
 
   final List<int> data;
-  final Color lineColor;
+  final Color? lineColor;
   final double width;
   final double height;
 
@@ -20,11 +20,13 @@ class SparklineChart extends StatelessWidget {
   Widget build(BuildContext context) {
     if (data.isEmpty) return SizedBox(width: width, height: height);
 
+    final effectiveColor = lineColor ?? Theme.of(context).colorScheme.primary;
+
     return SizedBox(
       width: width,
       height: height,
       child: CustomPaint(
-        painter: _SparklinePainter(data: data, lineColor: lineColor),
+        painter: _SparklinePainter(data: data, lineColor: effectiveColor),
       ),
     );
   }
