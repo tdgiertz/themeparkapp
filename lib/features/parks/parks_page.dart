@@ -6,6 +6,7 @@ import 'package:themeparkapp/features/park/widgets/park_map.dart';
 import 'package:themeparkapp/features/park/widgets/sparkline_chart.dart';
 import 'package:themeparkapp/models/park.dart';
 import 'package:themeparkapp/models/park_detail.dart';
+import 'package:themeparkapp/models/wait_time.dart';
 
 /// Mapping of beautiful Unsplash hero images for each park.
 const Map<String, String> parkImages = {
@@ -43,7 +44,7 @@ final parkWaitTimeTrendProvider = Provider.family<List<int>, String>((ref, parkI
 /// State provider for selected park on large screens
 final selectedParkIdProvider = StateProvider<String?>((ref) => null);
 
-/// Upgraded Parks Page supporting Master-Detail layout for desktop/tablet views.
+// Upgraded Parks Page supporting Master-Detail layout for desktop/tablet views.
 class ParksPage extends ConsumerWidget {
   const ParksPage({super.key});
 
@@ -68,7 +69,7 @@ class ParksPage extends ConsumerWidget {
                 final isLargeScreen = constraints.maxWidth > 768;
 
                 if (isLargeScreen) {
-                  // Master-Detail Split Pane for Tablet/Desktop
+                  // Tablet/Desktop Layout: Top horizontal tab ribbon + 2/3 Map & 1/3 Wait Times split
                   final activeParkId = selectedParkId ?? parksResp.parks.first.id;
                   
                   // Safe initialization of selected park
@@ -83,52 +84,29 @@ class ParksPage extends ConsumerWidget {
                     orElse: () => parksResp.parks.first,
                   );
 
-                  return Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                  return Column(
                     children: [
-                      // Left Pane: Parks List Grid
-                      SizedBox(
-                        width: constraints.maxWidth * 0.42,
-                        child: GridView.builder(
-                          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent: 300,
-                            mainAxisExtent: 220,
-                            crossAxisSpacing: 12,
-                            mainAxisSpacing: 12,
-                          ),
-                          itemCount: parksResp.parks.length,
-                          itemBuilder: (context, index) {
-                            final p = parksResp.parks[index];
-                            final isCurrent = p.id == activeParkId;
-                            return ParkHeroCard(
-                              park: p,
-                              isSelected: isCurrent,
-                              onTap: () {
-                                ref.read(selectedParkIdProvider.notifier).state = p.id;
-                              },
-                            );
-                          },
-                        ),
+                      // Top horizontal ribbon tab bar for park selection
+                      ParkNavigationRibbon(
+                        parks: parksResp.parks,
+                        selectedParkId: activeParkId,
+                        onParkSelected: (id) {
+                          ref.read(selectedParkIdProvider.notifier).state = id;
+                        },
                       ),
-                      const SizedBox(width: 12),
-                      const VerticalDivider(width: 1),
-                      const SizedBox(width: 12),
-                      // Right Pane: Detail Panel
+                      const SizedBox(height: 12),
+                      // Main Content Area: Left 2/3 Map, Right 1/3 Urgent Wait Times
                       Expanded(
-                        child: ParkDetailPane(park: selectedPark),
+                        child: DesktopParkDashboard(park: selectedPark),
                       ),
                     ],
                   );
                 } else {
-                  // Mobile View: Single column Grid of upgraded cards
-                  return GridView.builder(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 1,
-                      mainAxisExtent: 200,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                    ),
+                  // Mobile View: Single column List of upgraded cards with dynamic quick context expansion
+                  return ListView.separated(
+                    padding: const EdgeInsets.only(bottom: 24),
                     itemCount: parksResp.parks.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 12),
                     itemBuilder: (context, index) {
                       final p = parksResp.parks[index];
                       return ParkHeroCard(
@@ -152,9 +130,166 @@ class ParksPage extends ConsumerWidget {
   }
 }
 
-/// Upgraded Park Hero Card containing background imagery, gradient overlay,
-/// glassmorphism badges, and inline sparkline.
-class ParkHeroCard extends ConsumerWidget {
+/// Slim horizontal tab ribbon across the top of desktop/tablet views for park selection.
+class ParkNavigationRibbon extends ConsumerWidget {
+  const ParkNavigationRibbon({
+    required this.parks,
+    required this.selectedParkId,
+    required this.onParkSelected,
+    super.key,
+  });
+
+  final List<Park> parks;
+  final String selectedParkId;
+  final ValueChanged<String> onParkSelected;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      height: 62,
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: colorScheme.outlineVariant.withValues(alpha: 0.4),
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: parks.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        itemBuilder: (context, index) {
+          final park = parks[index];
+          final isSelected = park.id == selectedParkId;
+          final imageUrl = parkImages[park.id] ??
+              'https://images.unsplash.com/photo-1597466765990-64ad1c35dafc?w=500&q=80';
+
+          final trendData = ref.watch(parkWaitTimeTrendProvider(park.id));
+          final currentAvg = trendData.isNotEmpty ? trendData.last : 30;
+
+          return Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () => onParkSelected(park.id),
+              borderRadius: BorderRadius.circular(12),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? colorScheme.primaryContainer
+                      : colorScheme.surfaceContainerHigh.withValues(alpha: 0.6),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: isSelected
+                        ? colorScheme.primary
+                        : colorScheme.outlineVariant.withValues(alpha: 0.3),
+                    width: isSelected ? 2 : 1,
+                  ),
+                  boxShadow: isSelected
+                      ? [
+                          BoxShadow(
+                            color: colorScheme.primary.withValues(alpha: 0.15),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ]
+                      : null,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(
+                        imageUrl,
+                        width: 32,
+                        height: 32,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          width: 32,
+                          height: 32,
+                          color: colorScheme.surfaceContainerHighest,
+                          child: Icon(
+                            Icons.park,
+                            size: 18,
+                            color: isSelected
+                                ? colorScheme.onPrimaryContainer
+                                : colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          park.name,
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                            color: isSelected
+                                ? colorScheme.onPrimaryContainer
+                                : colorScheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 1),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 6,
+                              height: 6,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: isSelected
+                                    ? colorScheme.primary
+                                    : colorScheme.outline,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Avg ${currentAvg}m',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                                color: isSelected
+                                    ? colorScheme.onPrimaryContainer.withValues(alpha: 0.85)
+                                    : colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    if (isSelected) ...[
+                      const SizedBox(width: 8),
+                      Icon(
+                        Icons.check_circle_rounded,
+                        size: 16,
+                        color: colorScheme.primary,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+/// Upgraded Park Hero Card supporting hybrid interaction model:
+/// - Tap Park Image, Title, or Right Chevron -> Deep Dive Navigation (Park Explorer).
+/// - Tap Downward Chevron or Card Body -> Inline Quick Context Accordion Expansion.
+class ParkHeroCard extends ConsumerStatefulWidget {
   const ParkHeroCard({
     required this.park,
     required this.isSelected,
@@ -167,7 +302,15 @@ class ParkHeroCard extends ConsumerWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ParkHeroCard> createState() => _ParkHeroCardState();
+}
+
+class _ParkHeroCardState extends ConsumerState<ParkHeroCard> {
+  bool _isExpanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final park = widget.park;
     final trendData = ref.watch(parkWaitTimeTrendProvider(park.id));
     final imageUrl = parkImages[park.id] ?? 'https://images.unsplash.com/photo-1597466765990-64ad1c35dafc?w=500&q=80';
 
@@ -178,144 +321,291 @@ class ParkHeroCard extends ConsumerWidget {
         ? (park.id == 'p1' ? 30 : (park.id == 'p2' ? 45 : (park.id == 'p3' ? 25 : (park.id == 'p4' ? 55 : 35))))
         : (openRides.map((w) => w.waitMinutes!).reduce((a, b) => a + b) / openRides.length).round();
 
-    final closeTime = park.operatingHours?['close'] ?? '8:00 PM';
+    final openTime = park.operatingHours?['open'] ?? '08:00';
+    final closeTime = park.operatingHours?['close'] ?? '20:00';
+    final hoursDisplay = '$openTime - $closeTime';
 
     final colorScheme = Theme.of(context).colorScheme;
+
+    // Top 3 urgent wait times for Quick Context
+    final sortedRides = List<WaitTime>.from(openRides)
+      ..sort((a, b) => (b.waitMinutes ?? 0).compareTo(a.waitMinutes ?? 0));
+    final topRides = sortedRides.take(3).toList();
 
     return Card(
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: isSelected
+        side: widget.isSelected
             ? BorderSide(color: colorScheme.primary, width: 2.5)
             : BorderSide(color: colorScheme.outlineVariant.withValues(alpha: 0.5)),
       ),
-      elevation: isSelected ? 4 : 1,
+      elevation: widget.isSelected ? 4 : 1,
       color: colorScheme.surfaceContainerLow,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(14),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Upper Section: Left side (Park Image), Right side (Title & Wait/Close info)
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Upper Left Image Thumbnail
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.network(
-                      imageUrl,
-                      width: 96,
-                      height: 84,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Container(
-                        width: 96,
-                        height: 84,
-                        color: colorScheme.surfaceContainerHighest,
-                        child: Icon(Icons.park, color: colorScheme.onSurfaceVariant),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Header: Tapping card background toggles Quick Context expansion
+            InkWell(
+              onTap: () {
+                setState(() {
+                  _isExpanded = !_isExpanded;
+                });
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Upper Section: Left Image, Right compact column
+                    Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          park.name,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: colorScheme.onSurface,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: colorScheme.surfaceContainerHigh,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: colorScheme.outlineVariant.withValues(alpha: 0.4),
+                        // Park Image
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.network(
+                            imageUrl,
+                            width: 84,
+                            height: 84,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) => Container(
+                              width: 84,
+                              height: 84,
+                              color: colorScheme.surfaceContainerHighest,
+                              child: Icon(Icons.park, color: colorScheme.onSurfaceVariant),
                             ),
                           ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                'Avg Wait: ${currentAvg}m',
-                                style: TextStyle(
-                                  color: colorScheme.primary,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              // Park Title Row with Up/Down Accordion Chevron
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      park.name,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: colorScheme.onSurface,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  // Up/Down Chevron Indicator for Accordion Expansion
+                                  Icon(
+                                    _isExpanded
+                                        ? Icons.keyboard_arrow_up_rounded
+                                        : Icons.keyboard_arrow_down_rounded,
+                                    color: colorScheme.primary,
+                                    size: 26,
+                                  ),
+                                ],
                               ),
-                              const SizedBox(height: 2),
-                              Text(
-                                'Close: $closeTime',
-                                style: TextStyle(
-                                  color: colorScheme.onSurfaceVariant,
-                                  fontSize: 11,
-                                ),
+                              const SizedBox(height: 4),
+                              Wrap(
+                                spacing: 6,
+                                runSpacing: 6,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: colorScheme.primaryContainer,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      'Avg Wait: ${currentAvg}m',
+                                      style: TextStyle(
+                                        color: colorScheme.onPrimaryContainer,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: colorScheme.surfaceContainerHigh,
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                        color: colorScheme.outlineVariant.withValues(alpha: 0.4),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.access_time_rounded,
+                                          size: 12,
+                                          color: colorScheme.onSurfaceVariant,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          hoursDisplay,
+                                          style: TextStyle(
+                                            color: colorScheme.onSurfaceVariant,
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
                         ),
                       ],
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              // Bottom Section: Sparkline Trend Visualization
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainer.withValues(alpha: 0.6),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Flexible(
-                      child: Text(
-                        'Wait Time Trend',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: colorScheme.onSurfaceVariant,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w500,
-                        ),
+                    const SizedBox(height: 8),
+                    // Bottom Section: 100% width Sparkline chart
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(6),
+                      child: SparklineChart(
+                        data: trendData,
+                        lineColor: colorScheme.primary,
+                        width: double.infinity,
+                        height: 32,
                       ),
                     ),
-                    const SizedBox(width: 6),
-                    SparklineChart(
-                      data: trendData,
-                      lineColor: colorScheme.primary,
-                      width: 70,
-                      height: 20,
+                  ],
+                ),
+              ),
+            ),
+
+            // Inline Quick Context Accordion Body
+            if (_isExpanded) ...[
+              const Divider(height: 1, indent: 12, endIndent: 12),
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Quick Context (TimescaleDB Aggregate)',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: colorScheme.primary,
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: colorScheme.tertiaryContainer,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            'Live TimescaleDB',
+                            style: TextStyle(
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.onTertiaryContainer,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    if (topRides.isNotEmpty) ...[
+                      Text(
+                        'Top Wait Times:',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Column(
+                        children: topRides.map<Widget>((w) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 2),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'Ride ${w.rideId}',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                      color: colorScheme.onSurface,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: (w.waitMinutes ?? 0) > 45
+                                        ? colorScheme.errorContainer
+                                        : colorScheme.primaryContainer,
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Text(
+                                    '${w.waitMinutes}m',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.bold,
+                                      color: (w.waitMinutes ?? 0) > 45
+                                          ? colorScheme.onErrorContainer
+                                          : colorScheme.onPrimaryContainer,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: widget.onTap,
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: colorScheme.primary,
+                          side: BorderSide(color: colorScheme.primary),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        icon: const Icon(Icons.map_rounded, size: 16),
+                        label: const Text(
+                          'Open Full Park Explorer & Map',
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                        ),
+                      ),
                     ),
                   ],
                 ),
               ),
             ],
-          ),
+          ],
         ),
       ),
     );
   }
 }
 
-/// Detail Panel showing the interactive map and most urgent wait times for the selected park.
-class ParkDetailPane extends ConsumerWidget {
-  const ParkDetailPane({required this.park, super.key});
+/// Desktop/Tablet Dashboard Pane allocating left 2/3 for interactive vector map (100% height)
+/// and right 1/3 for continuous aggregate downsampled wait times list.
+class DesktopParkDashboard extends ConsumerWidget {
+  const DesktopParkDashboard({required this.park, super.key});
   final Park park;
 
   @override
@@ -323,208 +613,329 @@ class ParkDetailPane extends ConsumerWidget {
     final detailAsync = ref.watch(parkDetailProvider(park.id));
     final waitsAsync = ref.watch(waitTimesProvider(park.id));
 
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 4,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Detail Header
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Left 2/3: The Map Component (Primary Focus - 100% vertical space below tabs)
+        Expanded(
+          flex: 2,
+          child: Card(
+            margin: EdgeInsets.zero,
+            clipBehavior: Clip.antiAlias,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+              side: BorderSide(
+                color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.4),
+              ),
+            ),
+            elevation: 2,
+            child: Stack(
               children: [
-                Expanded(
-                  child: Text(
-                    park.name,
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                detailAsync.when(
+                  data: (detail) => waitsAsync.when(
+                    data: (waits) {
+                      final allFacilities = detail.children.expand((l) => l.children).toList();
+                      return ParkMapWidget(
+                        parkId: park.id,
+                        facilities: allFacilities,
+                        waitTimes: waits.waitTimes,
+                        isMobile: false,
+                        onFacilityTapped: (facility) {
+                          showDialog<void>(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text(facility.name),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Type: ${facility.type}'),
+                                  Text('Category: ${facility.category}'),
+                                  if (facility.thrillLevel != null)
+                                    Text('Thrill Level: ${facility.thrillLevel}'),
+                                  if (facility.heightRequirementInches != null)
+                                    Text('Height Req: ${facility.heightRequirementInches}"'),
+                                ],
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text('Close'),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    loading: () => const Center(child: CircularProgressIndicator()),
+                    error: (err, st) => Center(child: Text('Error loading wait times: $err')),
                   ),
+                  loading: () => const Center(child: CircularProgressIndicator()),
+                  error: (err, st) => Center(child: Text('Error loading park details: $err')),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    'Hours: ${park.operatingHours?['open'] ?? '9 AM'} - ${park.operatingHours?['close'] ?? '9 PM'}',
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimaryContainer,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
+                // Overlay header banner on top left of map
+                Positioned(
+                  top: 12,
+                  left: 12,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surfaceContainerHigh.withValues(alpha: 0.9),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.1),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.map_rounded,
+                          size: 18,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          park.name,
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                        const SizedBox(width: 12),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            'Hours: ${park.operatingHours?['open'] ?? '9 AM'} - ${park.operatingHours?['close'] ?? '9 PM'}',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).colorScheme.onPrimaryContainer,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            const Divider(),
-            const SizedBox(height: 8),
-            // Map + Urgent wait times split layout
-            Expanded(
-              child: detailAsync.when(
-                data: (detail) => waitsAsync.when(
-                  data: (waits) {
-                    final allFacilities = detail.children.expand((l) => l.children).toList();
-                    final urgentWaits = waits.waitTimes
-                        .where((w) => w.status == 'Open' && w.waitMinutes != null)
-                        .toList()
-                      ..sort((a, b) => (b.waitMinutes ?? 0).compareTo(a.waitMinutes ?? 0));
-                    
-                    final topUrgent = urgentWaits.take(5).toList();
-
-                    return Row(
-                      children: [
-                        // Interactive Vector Map
-                        Expanded(
-                          flex: 3,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: ParkMapWidget(
-                              parkId: park.id,
-                              facilities: allFacilities,
-                              waitTimes: waits.waitTimes,
-                              isMobile: false,
-                              onFacilityTapped: (facility) {
-                                showDialog<void>(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                    title: Text(facility.name),
-                                    content: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text('Type: ${facility.type}'),
-                                        Text('Category: ${facility.category}'),
-                                        if (facility.thrillLevel != null)
-                                          Text('Thrill Level: ${facility.thrillLevel}'),
-                                        if (facility.heightRequirementInches != null)
-                                          Text('Height Req: ${facility.heightRequirementInches}"'),
-                                      ],
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(context),
-                                        child: const Text('Close'),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        const VerticalDivider(width: 1),
-                        const SizedBox(width: 16),
-                        // Top Wait Times List
-                        SizedBox(
-                          width: 250,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Most Urgent Wait Times',
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                              ),
-                              const SizedBox(height: 12),
-                              if (topUrgent.isEmpty)
-                                const Expanded(
-                                  child: Center(
-                                    child: Text('No active wait times'),
-                                  ),
-                                )
-                              else
-                                Expanded(
-                                  child: ListView.builder(
-                                    itemCount: topUrgent.length,
-                                    itemBuilder: (context, index) {
-                                      final w = topUrgent[index];
-                                      final fac = allFacilities.firstWhere(
-                                        (f) => f.id == w.rideId,
-                                        orElse: () => Facility(
-                                          id: w.rideId,
-                                          type: 'Ride',
-                                          category: 'Attraction',
-                                          name: 'Attraction ${w.rideId}',
-                                        ),
-                                      );
-                                      final cs = Theme.of(context).colorScheme;
-                                      final waitBg = w.waitMinutes != null
-                                          ? (w.waitMinutes! <= 20
-                                              ? cs.primaryContainer
-                                              : (w.waitMinutes! <= 50
-                                                  ? cs.tertiaryContainer
-                                                  : cs.errorContainer))
-                                          : cs.surfaceContainerHigh;
-                                      final waitFg = w.waitMinutes != null
-                                          ? (w.waitMinutes! <= 20
-                                              ? cs.onPrimaryContainer
-                                              : (w.waitMinutes! <= 50
-                                                  ? cs.onTertiaryContainer
-                                                  : cs.onErrorContainer))
-                                          : cs.onSurfaceVariant;
-
-                                      return Card(
-                                        margin: const EdgeInsets.only(bottom: 8),
-                                        child: ListTile(
-                                          contentPadding: const EdgeInsets.symmetric(
-                                            horizontal: 12,
-                                            vertical: 4,
-                                          ),
-                                          title: Text(
-                                            fac.name,
-                                            style: const TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          trailing: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 8,
-                                              vertical: 4,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: waitBg,
-                                              borderRadius: BorderRadius.circular(8),
-                                            ),
-                                            child: Text(
-                                              '${w.waitMinutes}m',
-                                              style: TextStyle(
-                                                color: waitFg,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 11,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                  loading: () => const Center(child: CircularProgressIndicator()),
-                  error: (err, st) => Center(child: Text('Error: $err')),
-                ),
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (err, st) => Center(child: Text('Error: $err')),
+          ),
+        ),
+        const SizedBox(width: 12),
+        // Right 1/3: Wait Times Component (Secondary Focus)
+        Expanded(
+          child: Card(
+            margin: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+              side: BorderSide(
+                color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.4),
               ),
             ),
-          ],
+            elevation: 2,
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Section Header
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.access_time_filled_rounded,
+                        size: 20,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Most Urgent Wait Times',
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  // Continuous Aggregates Downsampled Dataset Subtitle/Badge
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.tertiaryContainer,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          'TimescaleDB Aggregate',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onTertiaryContainer,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          'Downsampled live data',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  const Divider(height: 1),
+                  const SizedBox(height: 8),
+                  // Urgent Wait Times List
+                  Expanded(
+                    child: detailAsync.when(
+                      data: (detail) => waitsAsync.when(
+                        data: (waits) {
+                          final allFacilities = detail.children.expand((l) => l.children).toList();
+                          final urgentWaits = waits.waitTimes
+                              .where((w) => w.status == 'Open' && w.waitMinutes != null)
+                              .toList()
+                            ..sort((a, b) => (b.waitMinutes ?? 0).compareTo(a.waitMinutes ?? 0));
+
+                          if (urgentWaits.isEmpty) {
+                            return const Center(
+                              child: Text(
+                                'No active wait times available',
+                                style: TextStyle(fontSize: 12),
+                              ),
+                            );
+                          }
+
+                          return ListView.separated(
+                            itemCount: urgentWaits.length,
+                            separatorBuilder: (_, __) => const SizedBox(height: 8),
+                            itemBuilder: (context, index) {
+                              final w = urgentWaits[index];
+                              final fac = allFacilities.firstWhere(
+                                (f) => f.id == w.rideId,
+                                orElse: () => Facility(
+                                  id: w.rideId,
+                                  type: 'Ride',
+                                  category: 'Attraction',
+                                  name: 'Attraction ${w.rideId}',
+                                ),
+                              );
+
+                              final cs = Theme.of(context).colorScheme;
+                              final waitBg = w.waitMinutes != null
+                                  ? (w.waitMinutes! <= 20
+                                      ? cs.primaryContainer
+                                      : (w.waitMinutes! <= 50
+                                          ? cs.tertiaryContainer
+                                          : cs.errorContainer))
+                                  : cs.surfaceContainerHigh;
+                              final waitFg = w.waitMinutes != null
+                                  ? (w.waitMinutes! <= 20
+                                      ? cs.onPrimaryContainer
+                                      : (w.waitMinutes! <= 50
+                                          ? cs.onTertiaryContainer
+                                          : cs.onErrorContainer))
+                                  : cs.onSurfaceVariant;
+
+                              return Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: cs.surfaceContainerLow,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: cs.outlineVariant.withValues(alpha: 0.4),
+                                  ),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // Stack attraction name and badge vertically if horizontal space is tight
+                                    Text(
+                                      fac.name,
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold,
+                                        color: cs.onSurface,
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              Icons.attractions_rounded,
+                                              size: 14,
+                                              color: cs.onSurfaceVariant,
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              fac.category,
+                                              style: TextStyle(
+                                                fontSize: 11,
+                                                color: cs.onSurfaceVariant,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 3,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: waitBg,
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                          child: Text(
+                                            '${w.waitMinutes} min',
+                                            style: TextStyle(
+                                              color: waitFg,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 11,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        },
+                        loading: () => const Center(child: CircularProgressIndicator()),
+                        error: (err, st) => Center(child: Text('Error loading wait times: $err')),
+                      ),
+                      loading: () => const Center(child: CircularProgressIndicator()),
+                      error: (err, st) => Center(child: Text('Error loading park detail: $err')),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 }
+

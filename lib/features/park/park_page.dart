@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:go_router/go_router.dart';
 import 'package:themeparkapp/core/providers.dart';
+import 'package:themeparkapp/features/park/facility_detail_page.dart';
 import 'package:themeparkapp/features/park/park_explorer_state.dart';
 import 'package:themeparkapp/features/park/widgets/area_chart.dart';
 import 'package:themeparkapp/features/park/widgets/facility_detail_sheet.dart';
@@ -330,16 +331,28 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                     Expanded(
                       child: Container(
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.surface.withValues(alpha: 0.92),
+                          color: theme.colorScheme.surface.withValues(alpha: 0.95),
                           borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(20),
                             topRight: Radius.circular(20),
                           ),
+                          border: Border(
+                            top: BorderSide(
+                              color: theme.colorScheme.primary.withValues(alpha: 0.4),
+                              width: 1.5,
+                            ),
+                          ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.15),
-                              blurRadius: 10,
-                              offset: const Offset(0, -3),
+                              color: theme.colorScheme.primary.withValues(alpha: 0.15),
+                              blurRadius: 16,
+                              spreadRadius: 1,
+                              offset: const Offset(0, -4),
+                            ),
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.3),
+                              blurRadius: 12,
+                              offset: const Offset(0, -2),
                             ),
                           ],
                         ),
@@ -1135,6 +1148,32 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
     final imageUrl = _getStaticImageUrl(facility);
     final trendData = _getWaitTimeTrend(facility.id, currentWait);
 
+    final waitBg = isClosed
+        ? cs.surfaceContainerHigh
+        : (currentWait > 50
+            ? cs.errorContainer
+            : (currentWait > 20
+                ? cs.tertiaryContainer
+                : cs.primaryContainer));
+    final waitFg = isClosed
+        ? cs.onSurfaceVariant
+        : (currentWait > 50
+            ? cs.onErrorContainer
+            : (currentWait > 20
+                ? cs.onTertiaryContainer
+                : cs.onPrimaryContainer));
+
+    void navigateToDetails() {
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => FacilityDetailPage(
+            facilityId: facility.id,
+            parkId: parkId,
+          ),
+        ),
+      );
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: AnimatedContainer(
@@ -1159,40 +1198,66 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
         ),
         child: Column(
           children: [
-            // Header Row (Touch Target 44x44pt)
+            // Card Header Row wrapped in InkWell for Quick Context Accordion expansion
             InkWell(
-              onTap: onTap,
+              onTap: onTap, // Toggles inline accordion (Quick Context)
               borderRadius: BorderRadius.circular(16),
               child: Padding(
                 padding: const EdgeInsets.all(8),
                 child: Row(
                   children: [
-                    ClipRRect(
+                    // Attraction Image (Deep Dive Tap Target)
+                    InkWell(
+                      onTap: navigateToDetails,
                       borderRadius: BorderRadius.circular(12),
-                      child: Image.network(
-                        imageUrl,
-                        width: 60,
-                        height: 60,
-                        fit: BoxFit.cover,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.network(
+                          imageUrl,
+                          width: 60,
+                          height: 60,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 10),
 
+                    // Attraction Info Column (Title = Deep Dive; rest = Quick Context)
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            facility.name,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                              color: theme.colorScheme.onSurface,
+                          InkWell(
+                            onTap: navigateToDetails,
+                            borderRadius: BorderRadius.circular(6),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      facility.name,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: theme.textTheme.bodyLarge?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                        color: theme.colorScheme.primary,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Icon(
+                                    Icons.open_in_new_rounded,
+                                    size: 14,
+                                    color: theme.colorScheme.primary.withValues(alpha: 0.8),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                          const SizedBox(height: 3),
+                          const SizedBox(height: 2),
                           Text(
                             '$landName • Thrill: ${facility.thrillLevel ?? "Low"}',
                             maxLines: 1,
@@ -1202,7 +1267,7 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
                               fontSize: 11,
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 3),
                           Text.rich(
                             TextSpan(
                               children: [
@@ -1236,30 +1301,45 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
                       ),
                     ),
 
+                    // Right side: Emphasized Wait Badge + Downward Chevron Accordion Toggle
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        PulseDot(color: waitColor),
-                        const SizedBox(width: 6),
-                        Text(
-                          waitText,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w900,
-                            color: waitColor,
-                            fontSize: 18,
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: waitBg,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: waitColor.withValues(alpha: 0.3),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              PulseDot(color: waitFg, size: 6),
+                              const SizedBox(width: 6),
+                              Text(
+                                waitText,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w900,
+                                  color: waitFg,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        
-                        // Minimum 44x44 Touch Target Chevron
-                        SizedBox(
-                          width: 44,
-                          height: 44,
-                          child: Icon(
+                        const SizedBox(width: 4),
+                        // Downward chevron button
+                        IconButton(
+                          onPressed: onTap,
+                          icon: Icon(
                             isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
                             color: theme.colorScheme.primary,
                             size: 26,
                           ),
+                          tooltip: isExpanded ? 'Collapse Quick Context' : 'Expand Quick Context',
                         ),
                       ],
                     ),
@@ -1268,7 +1348,7 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
               ),
             ),
 
-            // Inline Accordion Expanded Details
+            // Inline Accordion Expanded Details (Quick Context & Sparkline)
             if (isExpanded) ...[
               const Divider(height: 1, indent: 12, endIndent: 12),
               Padding(
@@ -1276,9 +1356,52 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Description
+                    // Sparkline chart of downsampled wait-time trend
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Wait Time Trend (Continuous Aggregate)',
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                        Text(
+                          'Downsampled',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: theme.colorScheme.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.surfaceContainerLow,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
+                          ),
+                        ),
+                        child: SparklineChart(
+                          data: trendData,
+                          lineColor: waitColor,
+                          width: double.infinity,
+                          height: 36,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+
+                    // Concise 1-sentence description
                     Text(
-                      'Experience thrilling excitement in $landName. Enjoy cutting-edge theme park technology, detailed environments, and dynamic attraction queues.',
+                      'Experience thrilling excitement in $landName with real-time downsampled queue insights and immersive environments.',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurface.withValues(alpha: 0.85),
                         height: 1.35,
