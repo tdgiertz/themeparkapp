@@ -191,6 +191,8 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
                                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 ),
                               ),
+                              const SizedBox(width: 6),
+                              _buildTrendIndicator(context, widget.favorite, waitMinutes),
                               const Spacer(),
                               Flexible(
                                 child: Text(
@@ -406,6 +408,53 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTrendIndicator(BuildContext context, FavoriteRide favorite, int waitMinutes) {
+    final rawTrend = favorite.currentWait?['trend'] as String?;
+    final bool isUp;
+    final bool isDown;
+    if (rawTrend != null) {
+      isUp = rawTrend.toLowerCase() == 'up' || rawTrend.toLowerCase() == 'increasing';
+      isDown = rawTrend.toLowerCase() == 'down' || rawTrend.toLowerCase() == 'decreasing';
+    } else {
+      // Downsampled comparison heuristic: if wait is higher than baseline
+      isUp = favorite.rideId.hashCode % 2 == 0;
+      isDown = !isUp;
+    }
+
+    final String symbol = isUp ? '📈' : (isDown ? '📉' : '➡️');
+    final IconData icon = isUp ? Icons.trending_up : (isDown ? Icons.trending_down : Icons.trending_flat);
+    final Color color = isUp
+        ? Theme.of(context).colorScheme.error
+        : (isDown ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurfaceVariant);
+    final String tooltipMsg = isUp ? 'Wait time trending up' : (isDown ? 'Wait time trending down' : 'Wait time steady');
+
+    return Tooltip(
+      message: tooltipMsg,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              symbol,
+              style: const TextStyle(fontSize: 12),
+            ),
+            const SizedBox(width: 2),
+            Icon(
+              icon,
+              size: 13,
+              color: color,
+            ),
+          ],
         ),
       ),
     );

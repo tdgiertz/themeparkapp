@@ -6,8 +6,8 @@ import 'package:themeparkapp/l10n/app_localizations.dart';
 /// Exposes and manages location permission state for the app.
 final locationPermissionProvider =
     StateNotifierProvider<LocationPermissionNotifier, LocationPermission?>(
-  (ref) => LocationPermissionNotifier(),
-);
+      (ref) => LocationPermissionNotifier(),
+    );
 
 class LocationPermissionNotifier extends StateNotifier<LocationPermission?> {
   LocationPermissionNotifier() : super(null) {
@@ -22,10 +22,14 @@ class LocationPermissionNotifier extends StateNotifier<LocationPermission?> {
   Future<LocationPermission> check() async {
     try {
       final p = await Geolocator.checkPermission();
-      state = p;
+      if (mounted) {
+        state = p;
+      }
       return p;
     } catch (_) {
-      state = LocationPermission.denied;
+      if (mounted) {
+        state = LocationPermission.denied;
+      }
       return LocationPermission.denied;
     }
   }
@@ -33,7 +37,9 @@ class LocationPermissionNotifier extends StateNotifier<LocationPermission?> {
   /// Requests permission from the user (may show native prompt).
   Future<LocationPermission> request() async {
     final p = await Geolocator.requestPermission();
-    state = p;
+    if (mounted) {
+      state = p;
+    }
     return p;
   }
 
@@ -58,15 +64,17 @@ class LocationPermissionRequestTile extends ConsumerWidget {
     final label = perm == null
         ? 'Permission: unknown'
         : perm == LocationPermission.always ||
-                perm == LocationPermission.whileInUse
-            ? 'Location: granted'
-            : 'Location: denied';
+              perm == LocationPermission.whileInUse
+        ? 'Location: granted'
+        : 'Location: denied';
 
     final loc = AppLocalizations.of(context);
 
     return ListTile(
       title: Text(label),
-      subtitle: Text(loc?.onboarding_body ?? 'Used for in-park maps and contextual features'),
+      subtitle: Text(
+        loc?.onboarding_body ?? 'Used for in-park maps and contextual features',
+      ),
       trailing: ElevatedButton(
         onPressed: () => ref
             .read(locationPermissionProvider.notifier)

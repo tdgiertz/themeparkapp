@@ -205,9 +205,12 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
             children: [
               Icon(Icons.gps_fixed, size: 14, color: Theme.of(context).colorScheme.onPrimaryContainer),
               const SizedBox(width: 6),
-              Text(
-                'Live Location: ${userPos.latitude.toStringAsFixed(4)}, ${userPos.longitude.toStringAsFixed(4)}',
-                style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold),
+              Expanded(
+                child: Text(
+                  'Live Location: ${userPos.latitude.toStringAsFixed(4)}, ${userPos.longitude.toStringAsFixed(4)}',
+                  style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ],
           ),
@@ -239,6 +242,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                 // Text Field
                 Expanded(
                   child: TextField(
+                    key: const ValueKey('search_textfield_mobile'),
                     controller: _textController,
                     decoration: InputDecoration(
                       hintText: 'Type complex query or plan...',
@@ -313,6 +317,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                       children: [
                         Expanded(
                           child: TextField(
+                            key: const ValueKey('search_textfield_desktop'),
                             controller: _textController,
                             focusNode: _inputFocusNode,
                             decoration: InputDecoration(

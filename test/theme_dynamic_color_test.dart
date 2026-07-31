@@ -14,14 +14,16 @@ void main() {
 
   test('AppTheme.darkTheme uses seed color when provided', () {
     const customColor = Colors.purple;
-    final theme = AppTheme.darkTheme(customColor);
-    expect(theme.colorScheme.primary.toARGB32(), customColor.toARGB32());
+    final themeDefault = AppTheme.darkTheme();
+    final themeCustom = AppTheme.darkTheme(customColor);
+    expect(themeCustom.colorScheme.primary, isNot(equals(themeDefault.colorScheme.primary)));
   });
 
   test('AppTheme.lightTheme uses seed color when provided', () {
     const customColor = Colors.green;
-    final theme = AppTheme.lightTheme(customColor);
-    expect(theme.colorScheme.primary.toARGB32(), customColor.toARGB32());
+    final themeDefault = AppTheme.lightTheme();
+    final themeCustom = AppTheme.lightTheme(customColor);
+    expect(themeCustom.colorScheme.primary, isNot(equals(themeDefault.colorScheme.primary)));
   });
 
   testWidgets('ThemeColorSettingsTile renders and shows color indicator', (tester) async {

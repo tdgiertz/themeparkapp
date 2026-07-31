@@ -1585,6 +1585,7 @@ class MobileAttractionTile extends StatelessWidget {
           ],
         ),
         child: InkWell(
+          key: ValueKey('facility_list_item_${facility.id}'),
           onTap: onTap,
           borderRadius: BorderRadius.circular(16),
           child: Padding(
@@ -1788,6 +1789,7 @@ class TabletAttractionTile extends StatelessWidget {
           ],
         ),
         child: InkWell(
+          key: ValueKey('facility_list_item_${facility.id}'),
           onTap: onTap,
           borderRadius: BorderRadius.circular(16),
           child: Padding(
@@ -1946,6 +1948,7 @@ class _DesktopAttractionRowState extends State<DesktopAttractionRow> {
       onExit: (_) => setState(() => _isHovered = false),
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
+        key: ValueKey('facility_list_item_${widget.facility.id}'),
         onTap: widget.onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),

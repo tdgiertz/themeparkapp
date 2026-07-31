@@ -192,13 +192,17 @@ class _AlertTile extends StatelessWidget {
   }
 }
 
-/// Generator for mock alerts based on favorites data.
-List<DashboardAlert> generateMockAlerts(List<FavoriteRide> favorites) {
+/// Generator for mock alerts based on favorites data and selected park context.
+List<DashboardAlert> generateMockAlerts(List<FavoriteRide> favorites, [String selectedParkId = 'all']) {
   final alerts = <DashboardAlert>[];
 
+  final filteredFavorites = selectedParkId == 'all'
+      ? favorites
+      : favorites.where((f) => f.parkId == selectedParkId).toList();
+
   // 1. Wait Time Drop Alerts
-  if (favorites.isNotEmpty) {
-    final favWithLowWait = favorites.where((f) {
+  if (filteredFavorites.isNotEmpty) {
+    final favWithLowWait = filteredFavorites.where((f) {
       final wait = f.currentWait?['waitMinutes'] as int? ?? 0;
       final status = f.currentWait?['status'] as String? ?? '';
       return status == 'Open' && wait <= 25;
@@ -223,22 +227,37 @@ List<DashboardAlert> generateMockAlerts(List<FavoriteRide> favorites) {
   }
 
   // 2. Schedule Reminders (e.g. 30 min before showtime)
-  alerts.add(
-    DashboardAlert(
-      id: 'schedule_reminder_parade',
-      type: 'schedule',
-      title: 'Festival of Fantasy Parade – Starts in 25m',
-      message: 'Grab a viewing spot on Main Street, U.S.A. before crowds form!',
-      icon: Icons.access_time_filled,
-      backgroundColor: const Color(0xFF8B5CF6),
-      actionLabel: 'Set Reminder',
-      onAction: () {},
-    ),
-  );
+  if (selectedParkId == 'all' || selectedParkId == 'p2') {
+    alerts.add(
+      DashboardAlert(
+        id: 'schedule_reminder_parade',
+        type: 'schedule',
+        title: 'Festival of Fantasy Parade – Starts in 25m',
+        message: 'Grab a viewing spot on Main Street, U.S.A. before crowds form!',
+        icon: Icons.access_time_filled,
+        backgroundColor: const Color(0xFF8B5CF6),
+        actionLabel: 'Set Reminder',
+        onAction: () {},
+      ),
+    );
+  } else if (selectedParkId == 'p1') {
+    alerts.add(
+      DashboardAlert(
+        id: 'schedule_reminder_lion_king',
+        type: 'schedule',
+        title: 'Festival of the Lion King – Starts in 20m',
+        message: 'Head to Harambe Theater for the next performance!',
+        icon: Icons.access_time_filled,
+        backgroundColor: const Color(0xFF8B5CF6),
+        actionLabel: 'Set Reminder',
+        onAction: () {},
+      ),
+    );
+  }
 
   // 3. Downtime Notifications
-  if (favorites.isNotEmpty) {
-    final closedRides = favorites.where((f) {
+  if (filteredFavorites.isNotEmpty) {
+    final closedRides = filteredFavorites.where((f) {
       final status = f.currentWait?['status'] as String? ?? '';
       return status != 'Open';
     }).toList();

@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:themeparkapp/core/providers.dart';
+import 'package:themeparkapp/features/dashboard/dashboard_geofence_provider.dart';
 import 'package:themeparkapp/features/dashboard/widgets/alerts_widget.dart';
 import 'package:themeparkapp/features/dashboard/widgets/context_widgets.dart';
 import 'package:themeparkapp/features/dashboard/widgets/favorite_card_expanded.dart';
+import 'package:themeparkapp/features/dashboard/widgets/upcoming_shows_widget.dart';
 import 'package:themeparkapp/models/favorite.dart';
 import 'package:themeparkapp/models/park.dart';
-// models are parsed via providers; specific model imports not required here.
 
 Color crowdColor(BuildContext context, String? crowd) {
   final cs = Theme.of(context).colorScheme;
@@ -34,6 +35,9 @@ class LinearBinding {
   }
 }
 
+/// Track whether user has manually modified the dashboard park selection
+final isParkSelectionManualProvider = StateProvider<bool>((ref) => false);
+
 /// Dashboard main screen showing parks and user favorites with enhanced layout.
 class Dashboard extends ConsumerWidget {
   const Dashboard({super.key});
@@ -43,75 +47,183 @@ class Dashboard extends ConsumerWidget {
     final parksAsync = ref.watch(parksProvider);
     final favsAsync = ref.watch(favoritesProvider);
 
+    // Location-aware default: if geofenced park is detected and selection wasn't manual, auto-select it
+    final detectedParkId = ref.watch(userDetectedParkIdProvider);
+    final isManual = ref.watch(isParkSelectionManualProvider);
+    if (!isManual && detectedParkId != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (ref.read(selectedDashboardParkProvider) != detectedParkId) {
+          ref.read(selectedDashboardParkProvider.notifier).state = detectedParkId;
+        }
+      });
+    }
+
     return ScreenTypeLayout.builder(
-      mobile: (context) => _buildMobileLayout(favsAsync, parksAsync, context),
-      tablet: (context) => _buildTabletLayout(favsAsync, parksAsync, context),
-      desktop: (context) => _buildDesktopLayout(favsAsync, parksAsync, context),
+      mobile: (context) => _buildMobileLayout(favsAsync, parksAsync, context, ref),
+      tablet: (context) => _buildTabletLayout(favsAsync, parksAsync, context, ref),
+      desktop: (context) => _buildDesktopLayout(favsAsync, parksAsync, context, ref),
     );
   }
 
-  /// Mobile layout: vertical feed with alerts at top, context widgets, then expanded favorites
+  /// Prominent Sticky Global Park Selector Chip Ribbon
+  Widget _buildParkSelector(BuildContext context, WidgetRef ref, ParksResponse? parks) {
+    final selectedParkId = ref.watch(selectedDashboardParkProvider);
+    final detectedParkId = ref.watch(userDetectedParkIdProvider);
+    final allParks = parks?.parks ?? [];
+
+    return Container(
+      color: Theme.of(context).colorScheme.surface,
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: SizedBox(
+        height: 42,
+        child: ListView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          children: [
+            ChoiceChip(
+              key: const ValueKey('park_selector_all'),
+              label: const Text('All Parks'),
+              selected: selectedParkId == 'all',
+              onSelected: (val) {
+                if (val) {
+                  ref.read(isParkSelectionManualProvider.notifier).state = true;
+                  ref.read(selectedDashboardParkProvider.notifier).state = 'all';
+                }
+              },
+            ),
+            const SizedBox(width: 8),
+            ...allParks.map((p) {
+              final isDetected = p.id == detectedParkId;
+              final isSelected = selectedParkId == p.id;
+
+              return Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: ChoiceChip(
+                  key: ValueKey('park_selector_${p.id}'),
+                  avatar: isDetected
+                      ? Icon(
+                          Icons.my_location,
+                          size: 16,
+                          color: isSelected
+                              ? Theme.of(context).colorScheme.onPrimary
+                              : Theme.of(context).colorScheme.primary,
+                        )
+                      : null,
+                  label: Text(
+                    isDetected ? '${p.name} (Nearby)' : p.name,
+                  ),
+                  selected: isSelected,
+                  onSelected: (val) {
+                    if (val) {
+                      ref.read(isParkSelectionManualProvider.notifier).state = true;
+                      ref.read(selectedDashboardParkProvider.notifier).state = p.id;
+                    }
+                  },
+                ),
+              );
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Mobile layout: sticky park selector at top, vertical feed with compact weather banner, upcoming shows, alerts, and expanded favorites
   Widget _buildMobileLayout(
     AsyncValue<FavoritesResponse> favsAsync,
     AsyncValue<ParksResponse> parksAsync,
     BuildContext context,
+    WidgetRef ref,
   ) {
-    return SingleChildScrollView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          favsAsync.when(
-            data: (favorites) {
-              final alerts = generateMockAlerts(favorites.favoriteRides);
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Next Best Action Alerts
-                  AlertsWidget(alerts: alerts),
-                  // Global Environmental Context
-                  _buildContextWidgets(context, isMobile: true),
-                  const SizedBox(height: 16),
-                  // Expanded Favorites Matrix
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Favorites Matrix',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Chip(
-                          avatar: const Icon(Icons.compare_arrows, size: 14),
-                          label: Text(
-                            '${favorites.favoriteRides.length} Cross-Park Rides',
-                            style: const TextStyle(fontSize: 11),
-                          ),
-                          visualDensity: VisualDensity.compact,
-                        ),
-                      ],
-                    ),
+    final selectedParkId = ref.watch(selectedDashboardParkProvider);
+
+    return Column(
+      children: [
+        _buildParkSelector(context, ref, parksAsync.valueOrNull),
+        Divider(height: 1, thickness: 1, color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.3)),
+        Expanded(
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 12),
+                // Compact Weather Widget Banner at top
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: WeatherWidget(
+                    tempF: 82,
+                    condition: 'Clear',
+                    precipitationChance: 80,
+                    windMph: 9,
                   ),
-                  const SizedBox(height: 8),
-                  _buildFavoritesList(favorites.favoriteRides),
-                  const SizedBox(height: 24),
-                ],
-              );
-            },
-            loading: () => const Padding(
-              padding: EdgeInsets.all(32),
-              child: Center(child: CircularProgressIndicator()),
-            ),
-            error: (_, __) => const Padding(
-              padding: EdgeInsets.all(16),
-              child: Text('Error loading dashboard favorites'),
+                ),
+                const SizedBox(height: 16),
+                // Upcoming Shows & Entertainment horizontal scroll list
+                const UpcomingShowsWidget(),
+                favsAsync.when(
+                  data: (favorites) {
+                    final alerts = generateMockAlerts(favorites.favoriteRides, selectedParkId);
+                    final filteredFavs = selectedParkId == 'all'
+                        ? favorites.favoriteRides
+                        : favorites.favoriteRides.where((f) => f.parkId == selectedParkId).toList();
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Next Best Action Alerts
+                        AlertsWidget(alerts: alerts),
+                        // Expanded Favorites Matrix Header
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  'Favorites Matrix',
+                                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              ActionChip(
+                                avatar: const Icon(Icons.compare_arrows, size: 14),
+                                label: Text(
+                                  '${favorites.favoriteRides.length} Cross-Park Rides',
+                                  style: const TextStyle(fontSize: 11),
+                                ),
+                                onPressed: () {
+                                  ref.read(isParkSelectionManualProvider.notifier).state = true;
+                                  ref.read(selectedDashboardParkProvider.notifier).state = 'all';
+                                },
+                                visualDensity: VisualDensity.compact,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        _buildFavoritesList(filteredFavs),
+                        const SizedBox(height: 24),
+                      ],
+                    );
+                  },
+                  loading: () => const Padding(
+                    padding: EdgeInsets.all(32),
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                  error: (_, __) => const Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Text('Error loading dashboard favorites'),
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -120,146 +232,166 @@ class Dashboard extends ConsumerWidget {
     AsyncValue<FavoritesResponse> favsAsync,
     AsyncValue<ParksResponse> parksAsync,
     BuildContext context,
+    WidgetRef ref,
   ) {
     final width = MediaQuery.of(context).size.width;
     if (width < 900) {
-      return _buildMobileLayout(favsAsync, parksAsync, context);
+      return _buildMobileLayout(favsAsync, parksAsync, context, ref);
     }
-    return _buildDesktopLayout(favsAsync, parksAsync, context);
+    return _buildDesktopLayout(favsAsync, parksAsync, context, ref);
   }
 
   /// Desktop/Tablet layout: Multi-pane dashboard.
-  /// Left column: Global Context Widgets & Action Alerts.
-  /// Right column: Expanded Favorites Grid.
+  /// Sticky Top Park Selector.
+  /// Left column: Compact Weather Widget & Action Alerts.
+  /// Right column: Upcoming Shows & Expanded Favorites Grid.
   Widget _buildDesktopLayout(
     AsyncValue<FavoritesResponse> favsAsync,
     AsyncValue<ParksResponse> parksAsync,
     BuildContext context,
+    WidgetRef ref,
   ) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: favsAsync.when(
-        data: (favorites) {
-          final alerts = generateMockAlerts(favorites.favoriteRides);
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Left Pane: Global Context Widgets & Proactive Alerts
-              SizedBox(
-                width: 340,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Live Insights',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                    const SizedBox(height: 12),
-                    AlertsWidget(alerts: alerts),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Environmental Context',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                    const SizedBox(height: 12),
-                    const CrowdIndexGauge(busynessScore: 64),
-                    const SizedBox(height: 16),
-                    const WeatherWidget(
-                      tempF: 82,
-                      condition: 'Clear',
-                      precipitationChance: 80,
-                      windMph: 9,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 24),
-              // Right Pane: Expanded Favorites Matrix (Cross-Park comparison & area charts)
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    final selectedParkId = ref.watch(selectedDashboardParkProvider);
+
+    return Column(
+      children: [
+        _buildParkSelector(context, ref, parksAsync.valueOrNull),
+        Divider(height: 1, thickness: 1, color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.3)),
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                favsAsync.when(
+                  data: (favorites) {
+                    final alerts = generateMockAlerts(favorites.favoriteRides, selectedParkId);
+                    final filteredFavs = selectedParkId == 'all'
+                        ? favorites.favoriteRides
+                        : favorites.favoriteRides.where((f) => f.parkId == selectedParkId).toList();
+
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
+                        // Left Pane: Compact Weather Widget & Next Best Action Alerts
+                        SizedBox(
+                          width: 340,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Favorites Matrix',
-                                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                'Hyper-Local Weather',
+                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                       fontWeight: FontWeight.bold,
                                     ),
                               ),
+                              const SizedBox(height: 10),
+                              const WeatherWidget(
+                                tempF: 82,
+                                condition: 'Clear',
+                                precipitationChance: 80,
+                                windMph: 9,
+                              ),
+                              const SizedBox(height: 16),
                               Text(
-                                'Compare live wait times & continuous historical averages across all resort parks side-by-side.',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                ),
+                                'Live Insights',
+                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                              ),
+                              const SizedBox(height: 10),
+                              AlertsWidget(alerts: alerts),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 24),
+                        // Right Pane: Upcoming Shows & Expanded Favorites Matrix
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const UpcomingShowsWidget(),
+                              const SizedBox(height: 16),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Favorites Matrix',
+                                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                        ),
+                                        Text(
+                                          'Compare live wait times & continuous historical averages across all resort parks side-by-side.',
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Wrap(
+                                    spacing: 8,
+                                    runSpacing: 8,
+                                    children: [
+                                      OutlinedButton.icon(
+                                        onPressed: () {
+                                          ref.read(isParkSelectionManualProvider.notifier).state = true;
+                                          ref.read(selectedDashboardParkProvider.notifier).state = 'all';
+                                        },
+                                        icon: const Icon(Icons.compare_arrows, size: 16),
+                                        label: Text('${favorites.favoriteRides.length} Cross-Park Rides'),
+                                        style: OutlinedButton.styleFrom(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                        ),
+                                      ),
+                                      ElevatedButton.icon(
+                                        onPressed: () {},
+                                        icon: const Icon(Icons.add, size: 18),
+                                        label: const Text('Add Favorite'),
+                                        style: ElevatedButton.styleFrom(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 20),
+                              _buildFavoritesGrid(
+                                context,
+                                filteredFavs,
+                                crossAxisCount: MediaQuery.of(context).size.width > 1200 ? 3 : 2,
                               ),
                             ],
                           ),
                         ),
-                        const SizedBox(width: 12),
-                        ElevatedButton.icon(
-                          onPressed: () {},
-                          icon: const Icon(Icons.add, size: 18),
-                          label: const Text('Add Favorite'),
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        ),
                       ],
+                    );
+                  },
+                  loading: () => const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(48),
+                      child: CircularProgressIndicator(),
                     ),
-                    const SizedBox(height: 20),
-                    _buildFavoritesGrid(
-                      context,
-                      favorites.favoriteRides,
-                      crossAxisCount: MediaQuery.of(context).size.width > 1200 ? 3 : 2,
-                    ),
-                  ],
+                  ),
+                  error: (_, __) => const Text('Error loading dashboard data'),
                 ),
-              ),
-            ],
-          );
-        },
-        loading: () => const Center(
-          child: Padding(
-            padding: EdgeInsets.all(48),
-            child: CircularProgressIndicator(),
+              ],
+            ),
           ),
         ),
-        error: (_, __) => const Text('Error loading dashboard data'),
-      ),
-    );
-  }
-
-  /// Build alerts and context widgets for mobile
-  Widget _buildContextWidgets(BuildContext context, {required bool isMobile}) {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(height: 8),
-          CrowdIndexGauge(busynessScore: 64),
-          SizedBox(height: 12),
-          WeatherWidget(
-            tempF: 82,
-            condition: 'Clear',
-            precipitationChance: 80,
-            windMph: 9,
-          ),
-        ],
-      ),
+      ],
     );
   }
 

@@ -390,26 +390,31 @@ class _ResponsiveScaffoldShellState
         },
         destinations: [
           NavigationDestination(
+            key: const ValueKey('nav_home'),
             icon: const Icon(Icons.home_outlined),
             selectedIcon: const Icon(Icons.home),
             label: AppLocalizations.of(context)!.nav_home,
           ),
           NavigationDestination(
+            key: const ValueKey('nav_search'),
             icon: const Icon(Icons.assistant_outlined),
             selectedIcon: const Icon(Icons.assistant),
             label: AppLocalizations.of(context)?.nav_search ?? 'AI Search',
           ),
           const NavigationDestination(
+            key: ValueKey('nav_parks'),
             icon: Icon(Icons.park_outlined),
             selectedIcon: Icon(Icons.park),
             label: 'Parks',
           ),
           const NavigationDestination(
+            key: ValueKey('nav_favorites'),
             icon: Icon(Icons.favorite_outline),
             selectedIcon: Icon(Icons.favorite),
             label: 'Favorites',
           ),
           NavigationDestination(
+            key: const ValueKey('nav_settings'),
             icon: const Icon(Icons.settings_outlined),
             selectedIcon: const Icon(Icons.settings),
             label: AppLocalizations.of(context)!.nav_settings,

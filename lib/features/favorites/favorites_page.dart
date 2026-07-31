@@ -26,10 +26,15 @@ class FavoritesPage extends ConsumerWidget {
                 leading: Icon(Icons.favorite, color: Theme.of(context).colorScheme.primary),
                 title: Text(f.name),
                 subtitle: Text(f.parkName),
-                trailing: Column(
+                trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Chip(label: Text(status)),
+                    Chip(
+                      label: Text(status),
+                      padding: EdgeInsets.zero,
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    const SizedBox(width: 8),
                     Text(waitMinutes != null ? '${waitMinutes}m' : '-'),
                   ],
                 ),

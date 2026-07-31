@@ -350,6 +350,7 @@ class _ParkHeroCardState extends ConsumerState<ParkHeroCard> {
           children: [
             // Header: Tapping card background toggles Quick Context expansion
             InkWell(
+              key: ValueKey('park_card_inkwell_${park.id}'),
               onTap: () {
                 setState(() {
                   _isExpanded = !_isExpanded;
@@ -576,6 +577,7 @@ class _ParkHeroCardState extends ConsumerState<ParkHeroCard> {
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton.icon(
+                        key: ValueKey('park_card_explorer_btn_${park.id}'),
                         onPressed: widget.onTap,
                         style: OutlinedButton.styleFrom(
                           foregroundColor: colorScheme.primary,

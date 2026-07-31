@@ -36,6 +36,7 @@ class OnboardingScreen extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 TextButton(
+                  key: const ValueKey('onboarding_skip'),
                   onPressed: () async {
                     // Persist that the user skipped onboarding so we don't show it again.
                     await ref.read(onboardingCompletedProvider.notifier).complete();
