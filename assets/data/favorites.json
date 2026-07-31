@@ -1,0 +1,28 @@
+{
+  "userId": "user-9876",
+  "lastUpdated": "2026-07-28T14:30:00Z",
+  "favoriteRides": [
+    {
+      "rideId": "1",
+      "name": "Pirates of the Caribbean",
+      "parkId": "1",
+      "parkName": "Magic Kingdom",
+      "currentWait": {
+        "status": "Open",
+        "waitMinutes": 45,
+        "updatedAt": "2026-07-28T14:25:00Z"
+      }
+    },
+    {
+      "rideId": "88",
+      "name": "Hagrid's Magical Creatures Motorbike Adventure",
+      "parkId": "3",
+      "parkName": "Universal Studios",
+      "currentWait": {
+        "status": "Delayed",
+        "waitMinutes": null,
+        "updatedAt": "2026-07-28T14:28:00Z"
+      }
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "data": {
+    "parks": [
+      {
+        "id": "p1",
+        "type": "Park",
+        "name": "Animal Kingdom",
+        "operatingHours": { "open": "08:00", "close": "20:00" },
+        "crowdLevel": "Moderate",
+        "highlights": {
+          "shortestWaitTimes": [
+            { "rideId": "a4", "name": "Gorilla Falls Exploration Trail", "waitMinutes": 5 },
+            { "rideId": "a7", "name": "Maharajah Jungle Trek", "waitMinutes": 10 }
+          ],
+          "nextShowtimes": [
+            { "showId": "s1", "name": "Festival of the Lion King", "time": "11:00" }
+          ]
+        }
+      },
+      {
+        "id": "p2",
+        "type": "Park",
+        "name": "Magic Kingdom",
+        "operatingHours": { "open": "09:00", "close": "22:00" },
+        "crowdLevel": "High",
+        "highlights": {
+          "shortestWaitTimes": [
+            { "rideId": "a46", "name": "Tomorrowland Transit Authority PeopleMover", "waitMinutes": 10 },
+            { "rideId": "a37", "name": "Swiss Family Treehouse", "waitMinutes": 5 }
+          ],
+          "nextShowtimes": [
+            { "showId": "s2", "name": "Mickey's Magical Friendship Faire", "time": "12:50" }
+          ]
+        }
+      },
+      {
+        "id": "p3",
+        "type": "Park",
+        "name": "Epcot",
+        "operatingHours": { "open": "09:00", "close": "21:00" },
+        "crowdLevel": "Moderate",
+        "highlights": {
+          "shortestWaitTimes": [
+            { "rideId": "a56", "name": "Living with the Land", "waitMinutes": 15 },
+            { "rideId": "a64", "name": "The Seas with Nemo & Friends", "waitMinutes": 10 }
+          ],
+          "nextShowtimes": [
+            { "showId": "s3", "name": "Luminous The Symphony of Us", "time": "21:00" }
+          ]
+        }
+      },
+      {
+        "id": "p4",
+        "type": "Park",
+        "name": "Hollywood Studios",
+        "operatingHours": { "open": "08:30", "close": "21:00" },
+        "crowdLevel": "High",
+        "highlights": {
+          "shortestWaitTimes": [
+            { "rideId": "a78", "name": "Vacation Fun", "waitMinutes": 0 },
+            { "rideId": "a75", "name": "Star Tours", "waitMinutes": 20 }
+          ],
+          "nextShowtimes": [
+            { "showId": "s4", "name": "Fantasmic!", "time": "20:30" }
+          ]
+        }
+      },
+      {
+        "id": "p5",
+        "type": "Park",
+        "name": "Universal Studios",
+        "operatingHours": { "open": "09:00", "close": "21:00" },
+        "crowdLevel": "Moderate",
+        "highlights": {
+          "shortestWaitTimes": [
+            { "rideId": "a83", "name": "Kang & Kodos' Twirl 'n' Hurl", "waitMinutes": 10 },
+            { "rideId": "a85", "name": "Race Through New York", "waitMinutes": 25 }
+          ],
+          "nextShowtimes": []
+        }
+      },
+      {
+        "id": "p6",
+        "type": "Park",
+        "name": "Islands of Adventure",
+        "operatingHours": { "open": "09:00", "close": "20:00" },
+        "crowdLevel": "High",
+        "highlights": {
+          "shortestWaitTimes": [
+            { "rideId": "a90", "name": "Caro-Seuss-el", "waitMinutes": 5 },
+            { "rideId": "a103", "name": "Storm Force Accelatron", "waitMinutes": 10 }
+          ],
+          "nextShowtimes": []
+        }
+      },
+      {
+        "id": "p7",
+        "type": "Park",
+        "name": "Epic Universe",
+        "operatingHours": { "open": "09:00", "close": "22:00" },
+        "crowdLevel": "High",
+        "highlights": {
+          "shortestWaitTimes": [
+            { "rideId": "a109", "name": "Constellation Carousel", "waitMinutes": 15 },
+            { "rideId": "a112", "name": "Fyre Drill", "waitMinutes": 20 }
+          ],
+          "nextShowtimes": []
+        }
+      }
+    ]
+  }
+}

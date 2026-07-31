@@ -1,0 +1,1088 @@
+{
+  "meta": {
+    "updateType": "Full",
+    "timestamp": "2026-07-29T12:00:00Z"
+  },
+  "waitTimes": [
+    {
+      "rideId": "a1",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a2",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a3",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a4",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a5",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a6",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a7",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a8",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a9",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a10",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a11",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a12",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a13",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a14",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a15",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a16",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a17",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a18",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a19",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a20",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a21",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a22",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a23",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a24",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a25",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a26",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a27",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a28",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a29",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a30",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a31",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a32",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a33",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a34",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a35",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a36",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a37",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a38",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a39",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a40",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a41",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a42",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a43",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a44",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a45",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a46",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a47",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a48",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a49",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a50",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a51",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a52",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a53",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a54",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a55",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a56",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a57",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a58",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a59",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a60",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a61",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a62",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a63",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a64",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a65",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a66",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a67",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a68",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a69",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a70",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a71",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a72",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a73",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a74",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a75",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a76",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a77",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a78",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a79",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a80",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a81",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a82",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a83",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a84",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a85",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a86",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a87",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a88",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a89",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a90",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a91",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a92",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a93",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a94",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a95",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a96",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a97",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a98",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a99",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a100",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a101",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a102",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a103",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a104",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a105",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a106",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a107",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a108",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a109",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a110",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a111",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a112",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a113",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a114",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a115",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a116",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a117",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a118",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a119",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    },
+    {
+      "rideId": "a120",
+      "updatedAt": "2026-07-29T12:00:00Z",
+      "status": "Open",
+      "waitMinutes": 15,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-full"
+    }
+  ]
+}

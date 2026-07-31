@@ -1,0 +1,7 @@
+- [x] Update `assets/data/parks.json` with 7 new parks and generated properties
+- [x] Update `assets/data/park_1_children.json` with detailed attraction data for 7 parks
+- [ ] Split `park_1_children.json` into individual files (`park_p1_children.json`, etc.) to match app's loading logic
+- [ ] Create corresponding `wait_times_p*.json` files for the new parks
+- [ ] Update `pubspec.yaml` with new asset files
+- [ ] Update `lib/models/park_detail.dart` to be more robust (handle "Attraction" type vs "Facility")
+- [ ] Verify changes with `test/models_test.dart`

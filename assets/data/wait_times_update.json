@@ -1,0 +1,44 @@
+{
+  "meta": {
+    "updateType": "Partial",
+    "timestamp": "2026-07-29T14:00:00Z"
+  },
+  "waitTimes": [
+    {
+      "rideId": "a1",
+      "updatedAt": "2026-07-29T14:00:00Z",
+      "status": "Open",
+      "waitMinutes": 75,
+      "singleRider": true,
+      "fastLane": true,
+      "sourceId": "sys-update"
+    },
+    {
+      "rideId": "a3",
+      "updatedAt": "2026-07-29T14:00:00Z",
+      "status": "Closed",
+      "waitMinutes": null,
+      "singleRider": false,
+      "fastLane": true,
+      "sourceId": "sys-update"
+    },
+    {
+      "rideId": "a15",
+      "updatedAt": "2026-07-29T14:00:00Z",
+      "status": "Open",
+      "waitMinutes": 45,
+      "singleRider": false,
+      "fastLane": true,
+      "sourceId": "sys-update"
+    },
+    {
+      "rideId": "a46",
+      "updatedAt": "2026-07-29T14:00:00Z",
+      "status": "Open",
+      "waitMinutes": 25,
+      "singleRider": false,
+      "fastLane": false,
+      "sourceId": "sys-update"
+    }
+  ]
+}
