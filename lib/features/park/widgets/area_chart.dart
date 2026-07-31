@@ -56,8 +56,9 @@ class _AreaChartPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final isDark = theme.brightness == Brightness.dark;
+    final textColor = theme.textTheme.bodySmall?.color ?? theme.colorScheme.onSurface.withOpacity(isDark ? 0.7 : 0.7);
     final textStyle = TextStyle(
-      color: isDark ? Colors.white54 : Colors.black54,
+      color: textColor,
       fontSize: 9,
       fontWeight: FontWeight.w500,
     );
@@ -65,11 +66,10 @@ class _AreaChartPainter extends CustomPainter {
     // Determine the Y scale
     final dataMax = data.reduce(math.max);
     final maxVal = math.max(60.0, (((dataMax + 19) ~/ 20) * 20).toDouble());
-    const minVal = 0.0;
 
     // Draw horizontal grid lines and Y-axis labels
     final gridPaint = Paint()
-      ..color = isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.06)
+      ..color = theme.colorScheme.onSurface.withOpacity(isDark ? 0.08 : 0.06)
       ..strokeWidth = 1.0;
 
     const gridLinesCount = 3;

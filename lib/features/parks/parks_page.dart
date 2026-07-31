@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:themeparkapp/core/providers.dart';
 import 'package:themeparkapp/features/park/park_page.dart';
-import 'package:themeparkapp/features/park/park_explorer_state.dart';
 import 'package:themeparkapp/features/park/widgets/sparkline_chart.dart';
 import 'package:themeparkapp/features/park/widgets/park_map.dart';
 import 'package:themeparkapp/models/park.dart';
@@ -92,9 +91,9 @@ class ParksPage extends ConsumerWidget {
                       SizedBox(
                         width: constraints.maxWidth * 0.42,
                         child: GridView.builder(
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            mainAxisExtent: 180,
+                          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                            maxCrossAxisExtent: 300.0,
+                            mainAxisExtent: 220,
                             crossAxisSpacing: 12,
                             mainAxisSpacing: 12,
                           ),
@@ -136,7 +135,7 @@ class ParksPage extends ConsumerWidget {
                       return ParkHeroCard(
                         park: p,
                         isSelected: false,
-                        onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                        onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(
                           builder: (_) => ParkPage(parkId: p.id, parkName: p.name),
                         )),
                       );
@@ -210,8 +209,8 @@ class ParkHeroCard extends ConsumerWidget {
                     begin: Alignment.bottomCenter,
                     end: Alignment.topCenter,
                     colors: [
-                      Colors.black.withValues(alpha: 0.85),
-                      Colors.black.withValues(alpha: 0.3),
+                      Colors.black.withOpacity(0.85),
+                      Colors.black.withOpacity(0.3),
                       Colors.transparent,
                     ],
                     stops: const [0.0, 0.5, 1.0],
@@ -277,37 +276,44 @@ class ParkHeroCard extends ConsumerWidget {
                   children: [
                     Text(
                       park.name,
-                      style: const TextStyle(
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
                         color: Colors.white,
-                        fontSize: 18,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                         shadows: [
                           Shadow(
-                            color: Colors.black54,
-                            offset: Offset(0, 2),
+                            color: Colors.black.withOpacity(0.6),
+                            offset: const Offset(0, 2),
                             blurRadius: 4,
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 4),
                     // Sparkline Trend Visualization
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const Text(
-                          'Wait Time Trend',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 11,
+                        const Flexible(
+                          child: Text(
+                            'Wait Time Trend',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 10,
+                            ),
                           ),
                         ),
+                        const SizedBox(width: 4),
                         SparklineChart(
                           data: trendData,
                           lineColor: Colors.amberAccent,
-                          width: 80,
-                          height: 24,
+                          width: 60,
+                          height: 18,
                         ),
                       ],
                     ),
@@ -398,7 +404,7 @@ class ParkDetailPane extends ConsumerWidget {
                               waitTimes: waits.waitTimes,
                               isMobile: false,
                               onFacilityTapped: (facility) {
-                                showDialog(
+                                showDialog<void>(
                                   context: context,
                                   builder: (context) => AlertDialog(
                                     title: Text(facility.name),

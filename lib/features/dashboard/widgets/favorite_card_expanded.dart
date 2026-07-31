@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+import 'package:themeparkapp/core/theme.dart';
 import 'package:themeparkapp/models/favorite.dart';
 
 /// Enhanced favorite card with sparkline chart and swipe actions.
@@ -25,6 +26,8 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
     final waitMinutes = widget.favorite.currentWait?['waitMinutes'] as int? ?? 0;
     final status = widget.favorite.currentWait?['status'] as String? ?? 'Unknown';
     final isClosed = status != 'Open';
+    final isPiratesCard = widget.favorite.rideId.toLowerCase().contains('pirates') ||
+        widget.favorite.name.toLowerCase().contains('pirates');
 
     return GestureDetector(
       onHorizontalDragStart: (details) {
@@ -44,41 +47,40 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         clipBehavior: Clip.antiAlias,
         elevation: 4,
+        color: isClosed ? AppTheme.offlineCardSurface : AppTheme.cardSurface,
         child: Container(
           decoration: BoxDecoration(
+            color: isClosed ? AppTheme.offlineCardSurface : AppTheme.cardSurface,
             borderRadius: BorderRadius.circular(16),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: isClosed
-                  ? [Colors.grey.shade400, Colors.grey.shade600]
-                  : _getGradientColors(waitMinutes),
-            ),
           ),
           child: Stack(
             children: [
               // Diagonal striping pattern for closed/offline rides
               if (isClosed)
                 Positioned.fill(
-                  child: Opacity(
-                    opacity: 0.2,
-                    child: CustomPaint(
-                      painter: _DiagonalStripensPainter(),
-                    ),
+                  child: CustomPaint(
+                    painter: _DiagonalStripensPainter(),
                   ),
                 ),
 
               // Content
               Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(12),
                 child: LayoutBuilder(
                   builder: (context, constraints) {
-                    final showSwipeText = getValueForScreenType<bool>(
+                    final isDesktopOrTablet = getValueForScreenType<bool>(
                       context: context,
-                      mobile: true,
-                      tablet: false,
-                      desktop: false,
+                      mobile: false,
+                      tablet: true,
+                      desktop: true,
                     );
+
+                    final isDining = widget.favorite.rideId.toLowerCase().contains('restaurant') ||
+                        widget.favorite.rideId.toLowerCase().contains('dining') ||
+                        widget.favorite.name.toLowerCase().contains('cafe') ||
+                        widget.favorite.name.toLowerCase().contains('grill');
+
+                    final swipeRightAction = isDining ? 'View Menu' : 'Join Queue';
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -96,29 +98,29 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
                                   Text(
                                     widget.favorite.name,
                                     style: const TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 15,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.white,
+                                      color: AppTheme.primaryText,
                                     ),
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                  const SizedBox(height: 4),
+                                  const SizedBox(height: 2),
                                   Row(
                                     children: [
                                       const Icon(
                                         Icons.location_on,
-                                        size: 13,
-                                        color: Colors.white70,
+                                        size: 12,
+                                        color: AppTheme.secondaryText,
                                       ),
                                       const SizedBox(width: 2),
                                       Expanded(
                                         child: Text(
                                           widget.favorite.parkName,
-                                          style: TextStyle(
-                                            fontSize: 12,
+                                          style: const TextStyle(
+                                            fontSize: 11,
                                             fontWeight: FontWeight.w500,
-                                            color: Colors.white.withOpacity(0.9),
+                                            color: AppTheme.secondaryText,
                                           ),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
@@ -130,38 +132,43 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
                               ),
                             ),
 
-                            const SizedBox(width: 8),
+                            const SizedBox(width: 6),
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 5,
+                                horizontal: 8,
+                                vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: isClosed
-                                    ? Colors.black38
-                                    : Colors.white.withOpacity(0.25),
+                                color: (isClosed
+                                        ? AppTheme.statusCritical
+                                        : AppTheme.statusOpen)
+                                    .withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
-                                  color: Colors.white30,
+                                  color: isClosed
+                                      ? AppTheme.statusCritical
+                                      : AppTheme.statusOpen,
                                   width: 1,
                                 ),
                               ),
                               child: Text(
                                 isClosed ? 'OFFLINE' : status.toUpperCase(),
-                                style: const TextStyle(
-                                  fontSize: 10,
+                                style: TextStyle(
+                                  fontSize: 9,
                                   fontWeight: FontWeight.w800,
                                   letterSpacing: 0.5,
-                                  color: Colors.white,
+                                  color: isClosed
+                                      ? AppTheme.statusCritical
+                                      : AppTheme.statusOpen,
                                 ),
                               ),
                             ),
                           ],
                         ),
 
-                        const SizedBox(height: 14),
+                        const SizedBox(height: 6),
 
-                        // Wait time display
+                        // Wait time display or Offline announcement
                         if (!isClosed) ...[
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -170,113 +177,233 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
                               Text(
                                 '$waitMinutes',
                                 style: const TextStyle(
-                                  fontSize: 32,
+                                  fontSize: 28,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                                  color: AppTheme.primaryText,
                                   height: 1,
                                 ),
                               ),
                               const SizedBox(width: 4),
-                              Text(
+                              const Text(
                                 'min wait',
                                 style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 13,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.white.withOpacity(0.9),
+                                  color: AppTheme.secondaryText,
                                 ),
                               ),
                               const Spacer(),
-                              Text(
-                                'Avg: ${(waitMinutes * 1.15).round()} min',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: Colors.white.withOpacity(0.75),
+                              Flexible(
+                                child: Text(
+                                  'Avg: ${(waitMinutes * 1.15).round()} min',
+                                  style: const TextStyle(
+                                    fontSize: 11,
+                                    color: AppTheme.secondaryText,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                             ],
                           ),
 
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 6),
 
                           // Sparkline chart showing historical area comparison
-                          // Use Expanded so the chart respects the parent constraints
-                          Expanded(
-                            child: LayoutBuilder(
-                              builder: (ctx, innerConstraints) {
-                                final height = innerConstraints.maxHeight.isFinite && innerConstraints.maxHeight > 0
-                                    ? innerConstraints.maxHeight
-                                    : 54.0;
-                                return SizedBox(
-                                  height: height,
-                                  width: double.infinity,
-                                  child: _buildSparkline(ctx),
-                                );
-                              },
+                          if (constraints.maxHeight.isFinite)
+                            Expanded(
+                              child: LayoutBuilder(
+                                builder: (ctx, innerConstraints) {
+                                  final height = innerConstraints.maxHeight.isFinite && innerConstraints.maxHeight > 0
+                                      ? innerConstraints.maxHeight
+                                      : 48.0;
+                                  return SizedBox(
+                                    height: height,
+                                    width: double.infinity,
+                                    child: _buildSparkline(ctx, isPiratesCard),
+                                  );
+                                },
+                              ),
+                            )
+                          else
+                            SizedBox(
+                              height: 48,
+                              width: double.infinity,
+                              child: _buildSparkline(context, isPiratesCard),
                             ),
-                          ),
                         ] else ...[
-                          // Closed state: stronger semi-transparent background for readability
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            margin: const EdgeInsets.symmetric(vertical: 8),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.7),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Row(
-                              children: [
-                                Icon(Icons.pause_circle_outline, color: Colors.white70, size: 20),
-                                SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    'Temporarily closed for maintenance. Check back soon.',
-                                    style: TextStyle(color: Colors.white, fontSize: 12),
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
+                          // Closed state: container with #0F111A at 60% opacity for high readability against stripes
+                          if (constraints.maxHeight.isFinite)
+                            Expanded(
+                              child: Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(12),
+                                margin: const EdgeInsets.symmetric(vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.appBackground.withOpacity(0.60),
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    color: AppTheme.statusWarning.withOpacity(0.3),
+                                    width: 1,
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
-                        ],
-
-                        // Swipe action hints
-                        const SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            if (showSwipeText)
-                              Row(
+                                child: const Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.pause_circle_outline,
+                                      color: AppTheme.statusWarning,
+                                      size: 22,
+                                    ),
+                                    SizedBox(width: 10),
+                                    Expanded(
+                                      child: Text(
+                                        'Temporarily closed for maintenance. Check back soon.',
+                                        style: TextStyle(
+                                          color: AppTheme.primaryText,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                        maxLines: 3,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          else
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(12),
+                              margin: const EdgeInsets.symmetric(vertical: 4),
+                              decoration: BoxDecoration(
+                                color: AppTheme.appBackground.withOpacity(0.60),
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: AppTheme.statusWarning.withOpacity(0.3),
+                                  width: 1,
+                                ),
+                              ),
+                              child: const Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.queue, size: 12, color: Colors.white.withOpacity(0.7)),
-                                  const SizedBox(width: 3),
-                                  Text(
-                                    'Swipe Right: Join Queue',
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      color: Colors.white.withOpacity(0.75),
+                                  Icon(
+                                    Icons.pause_circle_outline,
+                                    color: AppTheme.statusWarning,
+                                    size: 22,
+                                  ),
+                                  SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(
+                                      'Temporarily closed for maintenance. Check back soon.',
+                                      style: TextStyle(
+                                        color: AppTheme.primaryText,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      maxLines: 3,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
                                 ],
-                              )
-                            else
-                              const SizedBox.shrink(),
+                              ),
+                            ),
+                        ],
 
-                            Row(
+                        // Footer actions: Swipe hints on Mobile, clean action buttons on Desktop/Tablet
+                        const SizedBox(height: 6),
+                        if (!isDesktopOrTablet)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 10,
+                                      color: AppTheme.secondaryText,
+                                    ),
+                                    const SizedBox(width: 3),
+                                    Expanded(
+                                      child: Text(
+                                        'Swipe Right: $swipeRightAction',
+                                        style: const TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w500,
+                                          color: AppTheme.secondaryText,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'Swipe Left: Map',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w500,
+                                      color: AppTheme.secondaryText,
+                                    ),
+                                  ),
+                                  SizedBox(width: 3),
+                                  Icon(
+                                    Icons.arrow_back_ios,
+                                    size: 10,
+                                    color: AppTheme.secondaryText,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          )
+                        else
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerRight,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                Text(
-                                  'Swipe Left: Map',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: Colors.white.withOpacity(0.75),
+                                OutlinedButton.icon(
+                                  onPressed: widget.onSwipeRight,
+                                  icon: Icon(
+                                    isDining ? Icons.restaurant_menu : Icons.queue,
+                                    size: 13,
+                                    color: AppTheme.primaryText,
+                                  ),
+                                  label: Text(
+                                    swipeRightAction,
+                                    style: const TextStyle(fontSize: 11, color: AppTheme.primaryText),
+                                  ),
+                                  style: OutlinedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    side: const BorderSide(color: AppTheme.secondaryText),
+                                    visualDensity: VisualDensity.compact,
                                   ),
                                 ),
-                                const SizedBox(width: 3),
-                                Icon(Icons.directions_walk, size: 12, color: Colors.white.withOpacity(0.7)),
+                                const SizedBox(width: 6),
+                                ElevatedButton.icon(
+                                  onPressed: widget.onSwipeLeft,
+                                  icon: const Icon(Icons.directions_walk, size: 13, color: Colors.white),
+                                  label: const Text(
+                                    'Map',
+                                    style: TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.bold),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppTheme.primaryAccent,
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    visualDensity: VisualDensity.compact,
+                                  ),
+                                ),
                               ],
                             ),
-                          ],
-                        ),
+                          ),
                       ],
                     );
                   },
@@ -289,7 +416,7 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
     );
   }
 
-  Widget _buildSparkline(BuildContext context) {
+  Widget _buildSparkline(BuildContext context, bool isPiratesCard) {
     // Mock historical data showing wait times over time
     final mockData = [5, 12, 15, 18, 22, 25, 28, 26, 24, 22, 20, 18];
     final currentWait = widget.favorite.currentWait?['waitMinutes'] as int? ?? 0;
@@ -298,33 +425,23 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
       painter: _SparklinePainter(
         data: mockData,
         currentValue: currentWait,
-        lineColor: Colors.white.withOpacity(0.8),
-        fillColor: Colors.white.withOpacity(0.2),
+        lineColor: isPiratesCard ? AppTheme.chartAmber : AppTheme.primaryAccent,
+        isPiratesGradient: isPiratesCard,
       ),
       size: Size.infinite,
     );
   }
-
-  List<Color> _getGradientColors(int waitMinutes) {
-    if (waitMinutes <= 20) {
-      return [Colors.green.shade600, Colors.green.shade400];
-    } else if (waitMinutes <= 45) {
-      return [Colors.orange.shade600, Colors.orange.shade400];
-    } else {
-      return [Colors.red.shade600, Colors.red.shade400];
-    }
-  }
 }
 
-/// Custom painter for diagonal stripes pattern.
+/// Custom painter for diagonal stripes pattern on offline cards.
 class _DiagonalStripensPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.black
-      ..strokeWidth = 2;
+      ..color = AppTheme.offlineStripeColor
+      ..strokeWidth = 3;
 
-    const spacing = 10.0;
+    const spacing = 12.0;
     for (double i = -size.height; i < size.width; i += spacing) {
       canvas.drawLine(
         Offset(i, 0),
@@ -344,13 +461,13 @@ class _SparklinePainter extends CustomPainter {
     required this.data,
     required this.currentValue,
     required this.lineColor,
-    required this.fillColor,
+    this.isPiratesGradient = false,
   });
 
   final List<int> data;
   final int currentValue;
   final Color lineColor;
-  final Color fillColor;
+  final bool isPiratesGradient;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -368,42 +485,60 @@ class _SparklinePainter extends CustomPainter {
       points.add(Offset(x, y));
     }
 
-    // Draw filled area
-    final fillPaint = Paint()
-      ..color = fillColor
-      ..style = PaintingStyle.fill;
-
-    final path = Path();
-    path.moveTo(points.first.dx, size.height);
-    for (final point in points) {
-      path.lineTo(point.dx, point.dy);
-    }
-    path.lineTo(points.last.dx, size.height);
-    path.close();
-    canvas.drawPath(path, fillPaint);
-
-    // Draw line
-    final linePaint = Paint()
-      ..color = lineColor
-      ..strokeWidth = 2
-      ..style = PaintingStyle.stroke;
-
+    // Path for line and fill
     final linePath = Path();
     linePath.moveTo(points.first.dx, points.first.dy);
     for (int i = 1; i < points.length; i++) {
       linePath.lineTo(points[i].dx, points[i].dy);
     }
+
+    final fillPath = Path.from(linePath);
+    fillPath.lineTo(points.last.dx, size.height);
+    fillPath.lineTo(points.first.dx, size.height);
+    fillPath.close();
+
+    // Draw filled area gradient
+    final fillShader = LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: isPiratesGradient
+          ? [
+              AppTheme.chartAmber.withOpacity(0.3),
+              AppTheme.chartAmber.withOpacity(0.0),
+            ]
+          : [
+              lineColor.withOpacity(0.3),
+              lineColor.withOpacity(0.0),
+            ],
+    ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+
+    final fillPaint = Paint()
+      ..shader = fillShader
+      ..style = PaintingStyle.fill;
+
+    canvas.drawPath(fillPath, fillPaint);
+
+    // Draw solid line
+    final linePaint = Paint()
+      ..color = lineColor
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke;
+
     canvas.drawPath(linePath, linePaint);
 
     // Draw current value marker
     final currentPoint = points.last;
     final markerPaint = Paint()
-      ..color = Colors.white
+      ..color = lineColor
       ..style = PaintingStyle.fill;
     canvas.drawCircle(currentPoint, 4, markerPaint);
   }
 
   @override
   bool shouldRepaint(_SparklinePainter oldDelegate) =>
-      oldDelegate.data != data || oldDelegate.currentValue != currentValue;
+      oldDelegate.data != data ||
+      oldDelegate.currentValue != currentValue ||
+      oldDelegate.lineColor != lineColor ||
+      oldDelegate.isPiratesGradient != isPiratesGradient;
 }
+

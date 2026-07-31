@@ -7,6 +7,7 @@ import 'package:themeparkapp/core/environment_providers.dart';
 import 'package:themeparkapp/core/permissions.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:themeparkapp/core/providers.dart';
+import 'package:themeparkapp/core/theme.dart';
 import 'package:themeparkapp/features/dashboard/dashboard.dart';
 import 'package:themeparkapp/features/parks/parks_page.dart';
 import 'package:themeparkapp/features/favorites/favorites_page.dart';
@@ -136,8 +137,8 @@ class MyApp extends ConsumerWidget {
         title: loc?.appTitle ?? 'Flutter Demo',
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        theme: ThemeData.light(),
-        darkTheme: ThemeData.dark(),
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
         themeMode: themeMode,
         home: const OnboardingScreen(),
       );
@@ -148,8 +149,8 @@ class MyApp extends ConsumerWidget {
       routerConfig: goRouter,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
       themeMode: themeMode,
     );
   }
@@ -288,7 +289,7 @@ class _ResponsiveScaffoldShellState
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.25),
+                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.25),
                                 blurRadius: 10,
                                 offset: const Offset(0, 4),
                               ),

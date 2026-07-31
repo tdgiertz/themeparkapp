@@ -78,17 +78,17 @@ void main() {
       });
       await tester.pump();
 
-      // Mobile FAB toggling list/map should render
-      expect(find.byType(FloatingActionButton), findsOneWidget);
-      expect(find.text('Map View'), findsOneWidget);
+      // Mobile mode toggle segment bar should render
+      expect(find.text('Split'), findsOneWidget);
+      expect(find.text('Full Map'), findsOneWidget);
       
-      // Should render the mobile attraction tiles
-      expect(find.byType(MobileAttractionTile), findsWidgets);
+      // Should render the mobile inline accordion attraction tiles
+      expect(find.byType(InlineAccordionAttractionTile), findsWidgets);
       expect(find.byType(PulseDot), findsWidgets);
     });
 
-    testWidgets('ParkPage renders on Tablet with split view, inline sparklines, and drag handle', (WidgetTester tester) async {
-      tester.view.physicalSize = const Size(800, 800);
+    testWidgets('ParkPage renders on Tablet with split view, map, and collapsible side panel toggle', (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1000, 600);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(() {
         tester.view.resetPhysicalSize();
@@ -118,10 +118,9 @@ void main() {
       });
       await tester.pump();
 
-      // Map and list tiles with inline sparklines should be visible side-by-side
+      // Map and inline accordion list tiles should be visible side-by-side
       expect(find.byType(ParkMapWidget), findsOneWidget);
-      expect(find.byType(TabletAttractionTile), findsWidgets);
-      expect(find.byType(SparklineChart), findsWidgets);
+      expect(find.byType(InlineAccordionAttractionTile), findsWidgets);
       
       // Mobile FAB should not render on tablet
       expect(find.byType(FloatingActionButton), findsNothing);
@@ -238,11 +237,6 @@ class MockLocationPermissionNotifier extends LocationPermissionNotifier {
   MockLocationPermissionNotifier() : super();
 
   @override
-  Future<void> _init() async {
-    state = LocationPermission.denied;
-  }
-
-  @override
   Future<LocationPermission> check() async {
     state = LocationPermission.denied;
     return LocationPermission.denied;
@@ -251,10 +245,5 @@ class MockLocationPermissionNotifier extends LocationPermissionNotifier {
 
 class MockUserLocationNotifier extends UserLocationNotifier {
   MockUserLocationNotifier(Ref ref) : super(ref, 'p1');
-
-  @override
-  void _init() {
-    state = const ParkCoordinate(28.3575, -81.5907);
-  }
 }
 

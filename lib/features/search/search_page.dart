@@ -3,9 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:responsive_builder/responsive_builder.dart';
-import 'package:glassmorphism/glassmorphism.dart';
 import 'package:go_router/go_router.dart';
-import 'package:themeparkapp/core/providers.dart';
 import 'package:themeparkapp/features/park/park_explorer_state.dart';
 import 'package:themeparkapp/features/search/search_state.dart';
 import 'package:themeparkapp/models/park_detail.dart';
@@ -424,9 +422,9 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                       bottomLeft: Radius.circular(msg.isUser ? 16 : 4),
                       bottomRight: Radius.circular(msg.isUser ? 4 : 16),
                     ),
-                    boxShadow: [
+                      boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: theme.colorScheme.onSurface.withOpacity(0.05),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),
@@ -435,7 +433,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                   child: Text(
                     msg.text,
                     style: TextStyle(
-                      color: msg.isUser ? Colors.white : (isDark ? Colors.white : Colors.black87),
+                      color: msg.isUser ? Colors.white : theme.colorScheme.onSurface,
                       fontSize: 14,
                     ),
                   ),
@@ -465,6 +463,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
         scrollDirection: Axis.horizontal,
         itemCount: facilities.length,
         itemBuilder: (context, index) {
+          final theme = Theme.of(context);
           final f = facilities[index];
           final isDining = f.name.toLowerCase().contains(RegExp('pretzel|cafe|restaurant|grill|dining|eats|table|bakery'));
           
@@ -540,7 +539,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                             ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white,
-                                foregroundColor: Colors.black87,
+                                foregroundColor: theme.colorScheme.onSurface,
                                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                 minimumSize: const Size(60, 24),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -635,7 +634,6 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
 
   // --- PANE 2: ACTIVE INTERACTIVE WIDGETS ---
   Widget _buildActiveWidgetsPane(SearchState state) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     // Case 1: Selected Restaurant Details showing menu items and dietary filters
     if (state.selectedFacilityDetails != null) {
@@ -993,6 +991,8 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                       route: routeLines,
                       userOffset: userOffset,
                       isDark: Theme.of(context).brightness == Brightness.dark,
+                      gridColor: Theme.of(context).colorScheme.onSurface.withOpacity(
+                          Theme.of(context).brightness == Brightness.dark ? 0.10 : 0.04),
                     ),
                   ),
                 ),
@@ -1036,8 +1036,9 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
 
   // --- VOICE VOICE SIMULATOR FLOATING WIDGET ---
   Widget _buildVoiceOverlayWidget() {
+    final theme = Theme.of(context);
     return Container(
-      color: Colors.black87,
+      color: theme.colorScheme.onSurface.withOpacity(0.87),
       width: double.infinity,
       height: double.infinity,
       child: Center(
@@ -1115,17 +1116,19 @@ class _AIHelperMapPainter extends CustomPainter {
     required this.route,
     required this.userOffset,
     required this.isDark,
+    required this.gridColor,
   });
 
   final List<MapPin> pins;
   final List<Offset> route;
   final Offset userOffset;
   final bool isDark;
+  final Color gridColor;
 
   @override
   void paint(Canvas canvas, Size size) {
     final gridPaint = Paint()
-      ..color = isDark ? Colors.white10 : Colors.black.withOpacity(0.04)
+      ..color = gridColor
       ..strokeWidth = 1.0;
 
     // Draw background grid lines

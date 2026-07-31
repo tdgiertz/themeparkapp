@@ -9,6 +9,7 @@ import 'package:themeparkapp/features/dashboard/widgets/favorite_card_expanded.d
 import 'package:themeparkapp/models/favorite.dart';
 import 'package:themeparkapp/models/park.dart';
 import 'package:glassmorphism/glassmorphism.dart';
+import 'package:themeparkapp/core/theme.dart';
 // models are parsed via providers; specific model imports not required here.
 
 Color _crowdColor(String? crowd) {
@@ -24,107 +25,11 @@ Color _crowdColor(String? crowd) {
   }
 }
 
-Color _waitColor(int waitTime) {
-  if (waitTime <= 30) return Colors.green.shade600;
-  if (waitTime <= 60) return Colors.orange.shade600;
-  return Colors.red.shade600;
-}
-
-Widget _parkCard(BuildContext context, Park p) {
-  return Card(
-    clipBehavior: Clip.antiAlias,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-    elevation: 2,
-    child: InkWell(
-      onTap: () => Navigator.of(context).push<Widget>(
-        MaterialPageRoute<Widget>(
-          builder: (_) => ParkPage(parkId: p.id, parkName: p.name),
-        ),
-      ),
-      borderRadius: BorderRadius.circular(12),
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearBinding.timeOfDayGradient(),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 28,
-                  backgroundColor: _crowdColor(p.crowdLevel),
-                  child: Text(
-                    p.name.isNotEmpty ? p.name[0] : '?',
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        p.name,
-                        style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-                      ),
-                      const SizedBox(height: 6),
-                      GlassmorphicContainer(
-                        width: 100,
-                        height: 24,
-                        borderRadius: 12,
-                        blur: 10,
-                        alignment: Alignment.center,
-                        border: 0,
-                        linearGradient: LinearGradient(
-                          colors: [
-                            Colors.white.withOpacity(0.2),
-                            Colors.white.withOpacity(0.1),
-                          ],
-                        ),
-                        borderGradient: LinearGradient(
-                          colors: [
-                            Colors.white.withOpacity(0.5),
-                            Colors.white.withOpacity(0.2),
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.people,
-                              size: 14,
-                              color: Colors.white,
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              p.crowdLevel ?? 'Unknown',
-                              style: const TextStyle(color: Colors.white, fontSize: 12),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const Icon(Icons.chevron_right, color: Colors.white),
-              ],
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
 
 class LinearBinding {
   static LinearGradient timeOfDayGradient() {
     final hour = DateTime.now().hour;
-    if (hour < 6) return const LinearGradient(colors: [Colors.indigo, Colors.black]); // Night
+    if (hour < 6) return const LinearGradient(colors: [Colors.indigo, AppTheme.appBackground]); // Night
     if (hour < 12) return const LinearGradient(colors: [Colors.orange, Colors.blue]); // Morning
     if (hour < 18) return const LinearGradient(colors: [Colors.blue, Colors.lightBlueAccent]); // Day
     return const LinearGradient(colors: [Colors.deepPurple, Colors.orangeAccent]); // Evening
@@ -218,6 +123,10 @@ class Dashboard extends ConsumerWidget {
     AsyncValue<ParksResponse> parksAsync,
     BuildContext context,
   ) {
+    final width = MediaQuery.of(context).size.width;
+    if (width < 900) {
+      return _buildMobileLayout(favsAsync, parksAsync, context);
+    }
     return _buildDesktopLayout(favsAsync, parksAsync, context);
   }
 
@@ -279,24 +188,27 @@ class Dashboard extends ConsumerWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Favorites Matrix',
-                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                            ),
-                            Text(
-                              'Compare live wait times & continuous historical averages across all resort parks side-by-side.',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.grey.shade600,
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Favorites Matrix',
+                                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
                               ),
-                            ),
-                          ],
+                              Text(
+                                'Compare live wait times & continuous historical averages across all resort parks side-by-side.',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
+                        const SizedBox(width: 12),
                         ElevatedButton.icon(
                           onPressed: () {},
                           icon: const Icon(Icons.add, size: 18),
@@ -370,24 +282,27 @@ class Dashboard extends ConsumerWidget {
       separatorBuilder: (_, __) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         final favorite = favorites[index];
-        return ExpandedFavoriteCard(
-          favorite: favorite,
-          onSwipeLeft: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Opening map & directions for ${favorite.name} (${favorite.parkName})'),
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          },
-          onSwipeRight: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Opening menu & virtual queue for ${favorite.name}'),
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          },
+        return SizedBox(
+          height: 185,
+          child: ExpandedFavoriteCard(
+            favorite: favorite,
+            onSwipeLeft: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Opening map & directions for ${favorite.name} (${favorite.parkName})'),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            },
+            onSwipeRight: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Opening menu & virtual queue for ${favorite.name}'),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            },
+          ),
         );
       },
     );
@@ -398,17 +313,17 @@ class Dashboard extends ConsumerWidget {
     if (favorites.isEmpty) {
       return const Text('No favorites added yet.');
     }
-    // Compute a responsive childAspectRatio to allow slightly taller cards on wide screens
+    // Compute a responsive childAspectRatio to allow proper card heights on all screen sizes
     final width = MediaQuery.of(context).size.width;
     double childAspectRatio;
     if (width > 1500) {
-      childAspectRatio = 0.78; // taller cards on very wide screens
+      childAspectRatio = 1.05;
     } else if (width > 1200) {
-      childAspectRatio = 0.82;
+      childAspectRatio = 0.85;
     } else if (width > 900) {
-      childAspectRatio = 0.9;
+      childAspectRatio = 0.68;
     } else {
-      childAspectRatio = 0.95;
+      childAspectRatio = 0.64;
     }
 
     return GridView.builder(

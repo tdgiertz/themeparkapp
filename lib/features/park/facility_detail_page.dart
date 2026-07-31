@@ -359,10 +359,10 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                     shadows: innerBoxIsScrolled
                         ? null
                         : [
-                            const Shadow(
+                            Shadow(
                               blurRadius: 8,
-                              color: Colors.black54,
-                              offset: Offset(0, 2),
+                              color: theme.colorScheme.onSurface.withOpacity(0.6),
+                              offset: const Offset(0, 2),
                             ),
                           ],
                   ),
@@ -375,14 +375,14 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                       fit: BoxFit.cover,
                     ),
                     Container(
-                      decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: [
-                            Colors.black38,
+                            theme.colorScheme.onSurface.withOpacity(0.38),
                             Colors.transparent,
-                            Colors.black54,
+                            theme.colorScheme.onSurface.withOpacity(0.54),
                           ],
                         ),
                       ),
@@ -489,7 +489,7 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                       border: Border.all(color: theme.colorScheme.outlineVariant.withOpacity(0.5)),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: theme.colorScheme.onSurface.withOpacity(0.1),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
@@ -521,7 +521,7 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                           ),
                           // Dark Overlay for text legibility
                           Container(
-                            color: Colors.black.withOpacity(0.15),
+                            color: theme.colorScheme.onSurface.withOpacity(0.15),
                           ),
                           // Compass UI Overlay
                           Positioned(
@@ -561,7 +561,7 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                             bottom: 16,
                             left: 16,
                             child: Card(
-                              color: Colors.black54,
+                              color: theme.cardColor,
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
                                 child: Row(
@@ -1214,8 +1214,8 @@ class _InteractiveWaitTimeChartState extends State<InteractiveWaitTimeChart> {
         border: 1,
         linearGradient: LinearGradient(
           colors: [
-            Colors.black.withOpacity(0.75),
-            Colors.black.withOpacity(0.6),
+            Theme.of(context).colorScheme.onSurface.withOpacity(0.75),
+            Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
           ],
         ),
         borderGradient: LinearGradient(

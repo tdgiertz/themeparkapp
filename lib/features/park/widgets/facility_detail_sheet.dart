@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:glassmorphism/glassmorphism.dart';
 import 'package:themeparkapp/models/park_detail.dart';
 import 'package:themeparkapp/models/wait_time.dart';
 import 'package:themeparkapp/features/park/widgets/area_chart.dart';
@@ -580,7 +579,7 @@ class _FacilityDetailSheetContentState extends ConsumerState<FacilityDetailSheet
                 icon: Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: isDark ? Colors.black38 : Colors.white54,
+                    color: theme.colorScheme.onSurface.withOpacity(isDark ? 0.38 : 0.54),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(Icons.close, size: 20),

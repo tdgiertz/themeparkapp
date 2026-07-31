@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:themeparkapp/core/theme.dart';
 
 /// Widget displaying global crowd level as a gauge.
 class CrowdIndexGauge extends StatelessWidget {
@@ -17,10 +18,10 @@ class CrowdIndexGauge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? Colors.grey.shade900 : Colors.blue.shade50,
+        color: isDark ? AppTheme.cardSurface : Colors.blue.shade50,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDark ? Colors.grey.shade800 : Colors.blue.shade200,
+          color: isDark ? AppTheme.cardSurface : Colors.blue.shade200,
           width: 1.5,
         ),
       ),
@@ -35,6 +36,7 @@ class CrowdIndexGauge extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
+                  color: AppTheme.primaryText,
                 ),
               ),
               Text(
@@ -64,9 +66,9 @@ class CrowdIndexGauge extends StatelessWidget {
           Center(
             child: Text(
               _getStatusLabel(busynessScore),
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 12,
-                color: Colors.grey.shade600,
+                color: AppTheme.secondaryText,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -77,9 +79,9 @@ class CrowdIndexGauge extends StatelessWidget {
   }
 
   Color _getGaugeColor(int score) {
-    if (score < 30) return Colors.green;
-    if (score < 60) return Colors.orange;
-    return Colors.red;
+    if (score < 30) return AppTheme.statusOpen;
+    if (score < 60) return AppTheme.statusWarning;
+    return AppTheme.statusCritical;
   }
 
   String _getStatusLabel(int score) {
@@ -105,7 +107,7 @@ class _GaugePainter extends CustomPainter {
 
     // Draw background arc
     final backgroundPaint = Paint()
-      ..color = Colors.grey.shade300
+      ..color = Colors.grey.shade800
       ..strokeWidth = 8
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke;
@@ -141,7 +143,7 @@ class _GaugePainter extends CustomPainter {
     );
 
     final needlePaint = Paint()
-      ..color = Colors.black87
+      ..color = AppTheme.primaryText
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
 
@@ -149,7 +151,7 @@ class _GaugePainter extends CustomPainter {
 
     // Draw center dot
     final dotPaint = Paint()
-      ..color = Colors.black87
+      ..color = AppTheme.primaryText
       ..style = PaintingStyle.fill;
 
     canvas.drawCircle(Offset(centerX, centerY), 4, dotPaint);
@@ -182,10 +184,10 @@ class WeatherWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? Colors.grey.shade900 : Colors.amber.shade50,
+        color: isDark ? AppTheme.cardSurface : Colors.amber.shade50,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDark ? Colors.grey.shade800 : Colors.amber.shade200,
+          color: isDark ? AppTheme.cardSurface : Colors.amber.shade200,
           width: 1.5,
         ),
       ),
@@ -197,6 +199,7 @@ class WeatherWidget extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
+              color: AppTheme.primaryText,
             ),
           ),
           const SizedBox(height: 12),
@@ -212,6 +215,7 @@ class WeatherWidget extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
+                      color: AppTheme.primaryText,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -219,14 +223,14 @@ class WeatherWidget extends StatelessWidget {
                     '${precipitationChance}% chance of rain',
                     style: const TextStyle(
                       fontSize: 11,
-                      color: Colors.grey,
+                      color: AppTheme.secondaryText,
                     ),
                   ),
                   Text(
                     'Wind: ${windMph} mph',
                     style: const TextStyle(
                       fontSize: 11,
-                      color: Colors.grey,
+                      color: AppTheme.secondaryText,
                     ),
                   ),
                 ],
@@ -239,13 +243,13 @@ class WeatherWidget extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: precipitationChance > 50
-                  ? Colors.orange.withOpacity(0.12)
-                  : Colors.blue.withOpacity(0.08),
+                  ? AppTheme.statusWarning.withOpacity(0.12)
+                  : AppTheme.primaryAccent.withOpacity(0.08),
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
                 color: precipitationChance > 50
-                    ? Colors.orange.withOpacity(0.3)
-                    : Colors.blue.withOpacity(0.2),
+                    ? AppTheme.statusWarning.withOpacity(0.3)
+                    : AppTheme.primaryAccent.withOpacity(0.2),
               ),
             ),
             child: Row(

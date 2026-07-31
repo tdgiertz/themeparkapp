@@ -113,7 +113,6 @@ void main() {
         if (op.child is Container) {
           final containerChild = op.child as Container;
           if (containerChild.child is Card) {
-            final card = containerChild.child as Card;
             // Let's inspect the hierarchy to find the name text
             // Or just check if the opacity corresponds to the item.
             if (op.opacity == 0.12) {

@@ -307,74 +307,14 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
                     },
                   ),
 
-                  // 2. Interactive pins
-                  ...filteredFacilities.map((f) {
-                    final loc = AttractionLocation.fromId(f.id, _centerLat, _centerLng);
-                    final offset = getOffset(loc.latitude, loc.longitude);
-
-                    final matchedWait = widget.waitTimes.where((w) => w.rideId == f.id);
-                    final wait = matchedWait.isEmpty ? null : matchedWait.first;
-
-                    final isClosed = wait == null || wait.status != 'Open';
-                    final waitMinutes = wait?.waitMinutes ?? 0;
-                    
-                    Color pinColor = Colors.green;
-                    if (isClosed) {
-                      pinColor = Colors.grey.shade500;
-                    } else if (waitMinutes > 50) {
-                      pinColor = Colors.red.shade600;
-                    } else if (waitMinutes > 20) {
-                      pinColor = Colors.orange.shade600;
-                    }
-
-                    final isSelected = widget.selectedFacilityId == f.id;
-
-                    return Positioned(
-                      left: offset.dx - 18,
-                      top: offset.dy - 36,
-                      child: GestureDetector(
-                        onTap: () => widget.onFacilityTapped(f),
-                        child: Tooltip(
-                          message: '${f.name} - ${isClosed ? 'Closed' : '$waitMinutes min'}',
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            width: isSelected ? 40 : 36,
-                            height: isSelected ? 40 : 36,
-                            decoration: BoxDecoration(
-                              color: pinColor,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: isSelected ? Colors.white : Colors.transparent,
-                                width: 2,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.3),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            alignment: Alignment.center,
-                            child: isClosed
-                                ? const Icon(
-                                    Icons.block,
-                                    size: 14,
-                                    color: Colors.white,
-                                  )
-                                : Text(
-                                    '$waitMinutes',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
+                  // 2. Interactive clustered pins with minimum 44x44 touch targets and high outdoor contrast
+                  ..._buildClusteredPins(
+                    facilities: filteredFacilities,
+                    mapSize: mapSize,
+                    getOffset: getOffset,
+                    theme: theme,
+                    isDark: isDark,
+                  ),
                 ],
               ),
             ),
@@ -382,6 +322,187 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
         );
       },
     );
+  }
+
+  List<Widget> _buildClusteredPins({
+    required List<Facility> facilities,
+    required Size mapSize,
+    required Offset Function(double lat, double lng) getOffset,
+    required ThemeData theme,
+    required bool isDark,
+  }) {
+    // Current zoom scale from matrix
+    final currentScale = _transformationController.value.getMaxScaleOnAxis();
+    final clusterDistanceThreshold = 40.0 / math.max(1.0, currentScale * 0.7);
+
+    // Data structure for pin position
+    final items = facilities.map((f) {
+      final loc = AttractionLocation.fromId(f.id, _centerLat, _centerLng);
+      final offset = getOffset(loc.latitude, loc.longitude);
+      return _PinItem(facility: f, offset: offset);
+    }).toList();
+
+    // Distance-based simple clustering
+    final clusters = <List<_PinItem>>[];
+    final visited = <bool>[...List.filled(items.length, false)];
+
+    for (var i = 0; i < items.length; i++) {
+      if (visited[i]) continue;
+      visited[i] = true;
+      final cluster = [_PinItem(facility: items[i].facility, offset: items[i].offset)];
+
+      for (var j = i + 1; j < items.length; j++) {
+        if (visited[j]) continue;
+        final dist = (items[i].offset - items[j].offset).distance;
+        if (dist < clusterDistanceThreshold) {
+          visited[j] = true;
+          cluster.add(items[j]);
+        }
+      }
+      clusters.add(cluster);
+    }
+
+    final widgets = <Widget>[];
+
+    for (final cluster in clusters) {
+      if (cluster.length == 1) {
+        final f = cluster.first.facility;
+        final offset = cluster.first.offset;
+        final matchedWait = widget.waitTimes.where((w) => w.rideId == f.id);
+        final wait = matchedWait.isEmpty ? null : matchedWait.first;
+
+        final isClosed = wait == null || wait.status != 'Open';
+        final waitMinutes = wait?.waitMinutes ?? 0;
+
+        Color pinColor = Colors.green.shade700;
+        if (isClosed) {
+          pinColor = Colors.grey.shade700;
+        } else if (waitMinutes > 50) {
+          pinColor = Colors.red.shade700;
+        } else if (waitMinutes > 20) {
+          pinColor = Colors.orange.shade800;
+        }
+
+        final isSelected = widget.selectedFacilityId == f.id;
+
+        widgets.add(
+          Positioned(
+            left: offset.dx - 22,
+            top: offset.dy - 22,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => widget.onFacilityTapped(f),
+              child: Container(
+                width: 44,
+                height: 44,
+                alignment: Alignment.center,
+                child: Tooltip(
+                  message: '${f.name} - ${isClosed ? 'Closed' : '$waitMinutes min'}',
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    width: isSelected ? 40 : 34,
+                    height: isSelected ? 40 : 34,
+                    decoration: BoxDecoration(
+                      color: pinColor,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: isSelected ? Colors.white : (isDark ? Colors.black : Colors.white),
+                        width: isSelected ? 3 : 2,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.4),
+                          blurRadius: 6,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    alignment: Alignment.center,
+                    child: isClosed
+                        ? const Icon(Icons.block, size: 14, color: Colors.white)
+                        : Text(
+                            '$waitMinutes',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w900,
+                              shadows: [Shadow(color: Colors.black45, blurRadius: 2)],
+                            ),
+                          ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      } else {
+        // Multi-facility cluster pin
+        final avgX = cluster.map((c) => c.offset.dx).reduce((a, b) => a + b) / cluster.length;
+        final avgY = cluster.map((c) => c.offset.dy).reduce((a, b) => a + b) / cluster.length;
+        final centerOffset = Offset(avgX, avgY);
+        final containsSelected = cluster.any((c) => c.facility.id == widget.selectedFacilityId);
+
+        widgets.add(
+          Positioned(
+            left: centerOffset.dx - 22,
+            top: centerOffset.dy - 22,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                // If cluster tapped, zoom in or select first facility in cluster
+                widget.onFacilityTapped(cluster.first.facility);
+                _animateToFacility(cluster.first.facility, mapSize);
+              },
+              child: Container(
+                width: 44,
+                height: 44,
+                alignment: Alignment.center,
+                child: Tooltip(
+                  message: '${cluster.length} attractions near here',
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    width: containsSelected ? 42 : 38,
+                    height: containsSelected ? 42 : 38,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primary,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: containsSelected ? Colors.amber : Colors.white,
+                        width: 2.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.5),
+                          blurRadius: 6,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    alignment: Alignment.center,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.place, size: 12, color: Colors.white),
+                        Text(
+                          '${cluster.length}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+    }
+
+    return widgets;
   }
 }
 
@@ -556,3 +677,13 @@ class _MapBackgroundPainter extends CustomPainter {
         oldDelegate.centerOffset != centerOffset;
   }
 }
+
+class _PinItem {
+  _PinItem({
+    required this.facility,
+    required this.offset,
+  });
+  final Facility facility;
+  final Offset offset;
+}
+
