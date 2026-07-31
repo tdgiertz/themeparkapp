@@ -1,6 +1,6 @@
 import 'package:battery_plus/battery_plus.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 
 /// Represents broad device classes used for adaptive UI.
@@ -37,7 +37,7 @@ final batteryLevelProvider = FutureProvider<int>((ref) async {
 /// permissions and handle errors appropriately.
 final locationStreamProvider = StreamProvider<Position>((ref) {
   return Geolocator.getPositionStream(
-    locationSettings: const LocationSettings(accuracy: LocationAccuracy.best),
+    locationSettings: const LocationSettings(),
   );
 });
 

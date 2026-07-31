@@ -27,7 +27,7 @@ class _PulseDotState extends State<PulseDot> with SingleTickerProviderStateMixin
       duration: const Duration(milliseconds: 1500),
     )..repeat(reverse: true);
     
-    _opacityAnimation = Tween<double>(begin: 0.25, end: 1.0).animate(
+    _opacityAnimation = Tween<double>(begin: 0.25, end: 1).animate(
       CurvedAnimation(
         parent: _controller,
         curve: Curves.easeInOut,
@@ -56,8 +56,8 @@ class _PulseDotState extends State<PulseDot> with SingleTickerProviderStateMixin
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: widget.color.withOpacity(0.8),
-                  blurRadius: 4.0,
+                  color: widget.color.withValues(alpha: 0.8),
+                  blurRadius: 4,
                   spreadRadius: 1.5,
                 ),
               ],

@@ -8,8 +8,6 @@ import 'package:themeparkapp/models/wait_time.dart';
 /// Mapping of known coordinates for facilities.
 class AttractionLocation {
   const AttractionLocation(this.latitude, this.longitude);
-  final double latitude;
-  final double longitude;
 
   factory AttractionLocation.fromId(String id, double centerLat, double centerLng) {
     final known = {
@@ -56,6 +54,8 @@ class AttractionLocation {
     final lngOffset = (((h >> 2) % 100) - 50) / 15000.0;
     return AttractionLocation(centerLat + latOffset, centerLng + lngOffset);
   }
+  final double latitude;
+  final double longitude;
 }
 
 /// Interactive Vector Map of the Park.
@@ -129,7 +129,7 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
       curve: Curves.easeInOutCubic,
     ));
     _mapPanController.addListener(_onMapPanAnimate);
-    _mapPanController.forward(from: 0.0);
+    _mapPanController.forward(from: 0);
   }
 
   void _animateToFacility(Facility facility, Size mapSize) {
@@ -201,7 +201,7 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
       final isIndoor = f.name.toLowerCase().contains(RegExp('hall|theater|meet|princess|grotto|grizzly|buzz|space|small world|haunted|mansion|cafe|flight|bluey|zootopia|bear|show'));
       final isDining = f.name.toLowerCase().contains(RegExp('cafe|restaurant|grill|dining|eats|table|bakery|kitchen|tavern|food|pub'));
 
-      bool matches = false;
+      var matches = false;
       if (activeFilters.contains('thrill') && isThrill) matches = true;
       if (activeFilters.contains('toddler') && isToddler) matches = true;
       if (activeFilters.contains('indoor') && isIndoor) matches = true;
@@ -277,8 +277,7 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
 
         return InteractiveViewer(
           transformationController: _transformationController,
-          maxScale: 4.0,
-          minScale: 0.8,
+          maxScale: 4,
           boundaryMargin: const EdgeInsets.all(100),
           child: Center(
             child: SizedBox(
@@ -294,6 +293,7 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
                       return CustomPaint(
                         size: mapSize,
                         painter: _MapBackgroundPainter(
+                          theme: theme,
                           isDark: isDark,
                           parkId: widget.parkId,
                           userOffset: userOffset,
@@ -374,7 +374,7 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
         final isClosed = wait == null || wait.status != 'Open';
         final waitMinutes = wait?.waitMinutes ?? 0;
 
-        Color pinColor = Colors.green.shade700;
+        var pinColor = Colors.green.shade700;
         if (isClosed) {
           pinColor = Colors.grey.shade700;
         } else if (waitMinutes > 50) {
@@ -411,7 +411,7 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.4),
+                          color: Colors.black.withValues(alpha: 0.4),
                           blurRadius: 6,
                           offset: const Offset(0, 3),
                         ),
@@ -472,7 +472,7 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.5),
+                          color: Colors.black.withValues(alpha: 0.5),
                           blurRadius: 6,
                           offset: const Offset(0, 3),
                         ),
@@ -518,7 +518,9 @@ class _HeatPoint {
 }
 
 class _MapBackgroundPainter extends CustomPainter {
+  final ThemeData theme;
   _MapBackgroundPainter({
+    required this.theme,
     required this.isDark,
     required this.parkId,
     required this.userOffset,
@@ -542,7 +544,7 @@ class _MapBackgroundPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     // A. Draw green grass background
     final bgPaint = Paint()
-      ..color = isDark ? const Color(0xFF1E281F) : const Color(0xFFE8F0E8);
+      ..color = theme.colorScheme.surface;
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), bgPaint);
 
     // B. Draw park regions / lands
@@ -550,38 +552,38 @@ class _MapBackgroundPainter extends CustomPainter {
     
     if (parkId == 'p1') {
       // Pandora - Translucent Purple
-      regionPaint.color = Colors.purple.withOpacity(isDark ? 0.12 : 0.08);
+      regionPaint.color = Colors.purple.withValues(alpha: isDark ? 0.12 : 0.08);
       canvas.drawCircle(Offset(size.width * 0.25, size.height * 0.65), size.width * 0.2, regionPaint);
 
       // Asia - Translucent Orange/Yellow
-      regionPaint.color = Colors.orange.withOpacity(isDark ? 0.12 : 0.08);
+      regionPaint.color = Colors.orange.withValues(alpha: isDark ? 0.12 : 0.08);
       canvas.drawCircle(Offset(size.width * 0.75, size.height * 0.5), size.width * 0.22, regionPaint);
 
       // Africa - Translucent Yellow/Gold
-      regionPaint.color = Colors.yellow.withOpacity(isDark ? 0.12 : 0.08);
+      regionPaint.color = Colors.yellow.withValues(alpha: isDark ? 0.12 : 0.08);
       canvas.drawCircle(Offset(size.width * 0.45, size.height * 0.25), size.width * 0.24, regionPaint);
 
       // Discovery Island - Translucent Green
-      regionPaint.color = Colors.green.withOpacity(isDark ? 0.15 : 0.1);
+      regionPaint.color = Colors.green.withValues(alpha: isDark ? 0.15 : 0.1);
       canvas.drawCircle(Offset(size.width * 0.5, size.height * 0.55), size.width * 0.15, regionPaint);
     } else {
       // Magic Kingdom Lands
       // Fantasyland
-      regionPaint.color = Colors.blue.withOpacity(isDark ? 0.12 : 0.08);
+      regionPaint.color = Colors.blue.withValues(alpha: isDark ? 0.12 : 0.08);
       canvas.drawCircle(Offset(size.width * 0.5, size.height * 0.3), size.width * 0.25, regionPaint);
       
       // Tomorrowland
-      regionPaint.color = Colors.indigo.withOpacity(isDark ? 0.12 : 0.08);
+      regionPaint.color = Colors.indigo.withValues(alpha: isDark ? 0.12 : 0.08);
       canvas.drawCircle(Offset(size.width * 0.75, size.height * 0.6), size.width * 0.2, regionPaint);
 
       // Adventureland / Frontierland
-      regionPaint.color = Colors.brown.withOpacity(isDark ? 0.12 : 0.08);
+      regionPaint.color = Colors.brown.withValues(alpha: isDark ? 0.12 : 0.08);
       canvas.drawCircle(Offset(size.width * 0.25, size.height * 0.55), size.width * 0.22, regionPaint);
     }
 
     // C. Draw serpentine blue water canal/river in the park
     final waterPaint = Paint()
-      ..color = isDark ? const Color(0xFF1E3F5A) : const Color(0xFFB9D8F2)
+      ..color = theme.colorScheme.surfaceContainerHighest
       ..strokeWidth = 14
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
@@ -618,8 +620,8 @@ class _MapBackgroundPainter extends CustomPainter {
       final heatPaint = Paint()
         ..shader = RadialGradient(
           colors: [
-            hp.color.withOpacity(0.45),
-            hp.color.withOpacity(0.2),
+            hp.color.withValues(alpha: 0.45),
+            hp.color.withValues(alpha: 0.2),
             Colors.transparent,
           ],
         ).createShader(Rect.fromCircle(center: hp.offset, radius: radius))
@@ -632,13 +634,13 @@ class _MapBackgroundPainter extends CustomPainter {
     if (showWalkingRadius) {
       // Draw 5-min radius translucent circle
       final walkRadiusPaint = Paint()
-        ..color = Colors.blue.withOpacity(0.08)
+        ..color = Colors.blue.withValues(alpha: 0.08)
         ..style = PaintingStyle.fill;
       canvas.drawCircle(userOffset, walkingRadiusPx, walkRadiusPaint);
 
       // Draw walking radius dotted stroke border
       final walkBorderPaint = Paint()
-        ..color = Colors.blue.withOpacity(0.35)
+        ..color = Colors.blue.withValues(alpha: 0.35)
         ..strokeWidth = 1.5
         ..style = PaintingStyle.stroke;
       canvas.drawCircle(userOffset, walkingRadiusPx, walkBorderPaint);
@@ -646,7 +648,7 @@ class _MapBackgroundPainter extends CustomPainter {
       // Pulse circle
       final pulseRadius = walkingRadiusPx * (0.8 + 0.2 * pulseValue);
       final pulsePaint = Paint()
-        ..color = Colors.blue.withOpacity(0.04 * (1.0 - pulseValue))
+        ..color = Colors.blue.withValues(alpha: 0.04 * (1.0 - pulseValue))
         ..style = PaintingStyle.fill;
       canvas.drawCircle(userOffset, pulseRadius, pulsePaint);
 
@@ -654,11 +656,11 @@ class _MapBackgroundPainter extends CustomPainter {
       final gpsMarkerPaint = Paint()
         ..color = Colors.blue.shade600
         ..style = PaintingStyle.fill;
-      canvas.drawCircle(userOffset, 6.0, gpsMarkerPaint);
+      canvas.drawCircle(userOffset, 6, gpsMarkerPaint);
 
       // Pulse dot border
       final gpsBorderPaint = Paint()
-        ..color = Colors.blue.shade600.withOpacity(0.5 * (1.0 - pulseValue))
+        ..color = Colors.blue.shade600.withValues(alpha: 0.5 * (1.0 - pulseValue))
         ..strokeWidth = 2.0
         ..style = PaintingStyle.stroke;
       canvas.drawCircle(userOffset, 6.0 + 8.0 * pulseValue, gpsBorderPaint);

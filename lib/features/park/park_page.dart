@@ -1,19 +1,19 @@
 import 'dart:async';
 import 'dart:io' show Platform;
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glassmorphism/glassmorphism.dart';
-import 'package:responsive_builder/responsive_builder.dart';
+import 'package:go_router/go_router.dart';
 import 'package:themeparkapp/core/providers.dart';
 import 'package:themeparkapp/features/park/park_explorer_state.dart';
-import 'package:themeparkapp/features/park/widgets/park_map.dart';
-import 'package:themeparkapp/features/park/widgets/sparkline_chart.dart';
-import 'package:themeparkapp/features/park/widgets/pulse_dot.dart';
-import 'package:themeparkapp/features/park/widgets/facility_detail_sheet.dart';
-import 'package:go_router/go_router.dart';
-import 'package:themeparkapp/l10n/app_localizations.dart';
 import 'package:themeparkapp/features/park/widgets/area_chart.dart';
+import 'package:themeparkapp/features/park/widgets/facility_detail_sheet.dart';
+import 'package:themeparkapp/features/park/widgets/park_map.dart';
+import 'package:themeparkapp/features/park/widgets/pulse_dot.dart';
+import 'package:themeparkapp/features/park/widgets/sparkline_chart.dart';
+import 'package:themeparkapp/l10n/app_localizations.dart';
 import 'package:themeparkapp/models/park_detail.dart';
 import 'package:themeparkapp/models/wait_time.dart';
 
@@ -149,7 +149,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
         final isIndoor = f.name.toLowerCase().contains(RegExp('hall|theater|meet|princess|grotto|grizzly|buzz|space|small world|haunted|mansion|cafe|flight|bluey|zootopia|bear|show'));
         final isDining = f.name.toLowerCase().contains(RegExp('cafe|restaurant|grill|dining|eats|table|bakery|kitchen|tavern|food|pub'));
 
-        bool matches = true;
+        var matches = true;
         if (activeFilters.isNotEmpty) {
           matches = false;
           if (activeFilters.contains('thrill') && isThrill) matches = true;
@@ -180,7 +180,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
 
         // 1. Check type filters
         if (_desktopActiveTypes.isNotEmpty) {
-          bool matchesType = false;
+          var matchesType = false;
           if (_desktopActiveTypes.contains('thrill') && isThrill) matchesType = true;
           if (_desktopActiveTypes.contains('toddler') && isToddler) matchesType = true;
           if (_desktopActiveTypes.contains('indoor') && isIndoor) matchesType = true;
@@ -194,7 +194,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
           final isClosed = wait == null || wait.status != 'Open';
           if (isClosed) continue;
 
-          bool matchesWait = false;
+          var matchesWait = false;
           if (_desktopActiveWaitTimes.contains('15') && waitMinutes <= 15) matchesWait = true;
           if (_desktopActiveWaitTimes.contains('30') && waitMinutes <= 30) matchesWait = true;
           if (_desktopActiveWaitTimes.contains('60') && waitMinutes <= 60) matchesWait = true;
@@ -221,7 +221,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF121212) : const Color(0xFFF4F6F4),
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(widget.parkName),
       ),
@@ -274,7 +274,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
             builder: (context, constraints) {
               final totalHeight = constraints.maxHeight;
               
-              double mapHeight = totalHeight * 0.35;
+              var mapHeight = totalHeight * 0.35;
               if (_mobileViewMode == _MobileViewMode.fullMap) {
                 mapHeight = totalHeight;
               } else if (_mobileViewMode == _MobileViewMode.fullList) {
@@ -300,7 +300,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                   // Mode Toggle Handle Bar & List Section
                   if (_mobileViewMode == _MobileViewMode.fullMap)
                     Container(
-                      color: isDark ? const Color(0xFF1B241C) : Colors.white,
+                      color: theme.colorScheme.surface,
                       padding: const EdgeInsets.only(bottom: 8),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -332,14 +332,14 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                     Expanded(
                       child: Container(
                         decoration: BoxDecoration(
-                          color: isDark ? const Color(0xFF1B241C) : Colors.white.withOpacity(0.92),
+                          color: theme.colorScheme.surface.withValues(alpha: 0.92),
                           borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(20),
                             topRight: Radius.circular(20),
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.15),
+                              color: Colors.black.withValues(alpha: 0.15),
                               blurRadius: 10,
                               offset: const Offset(0, -3),
                             ),
@@ -365,7 +365,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                                       width: 36,
                                       height: 4,
                                       decoration: BoxDecoration(
-                                        color: theme.colorScheme.onSurface.withOpacity(0.3),
+                                        color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
                                         borderRadius: BorderRadius.circular(2),
                                       ),
                                     ),
@@ -413,7 +413,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                                         itemCount: items.length,
                                         itemBuilder: (context, idx) {
                                           final item = items[idx];
-                                          final key = _tileKeys.putIfAbsent(item.facility.id, () => GlobalKey());
+                                          final key = _tileKeys.putIfAbsent(item.facility.id, GlobalKey.new);
                                           final isExpanded = _expandedFacilityId == item.facility.id;
 
                                           return InlineAccordionAttractionTile(
@@ -459,7 +459,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: isSelected ? theme.colorScheme.primary : theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
+          color: isSelected ? theme.colorScheme.primary : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
@@ -507,7 +507,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                   children: [
                     _buildStaticBackground(),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: Column(
                         children: [
                           _buildFilterChips(horizontal: true, loc: loc),
@@ -519,7 +519,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                                     itemCount: items.length,
                                     itemBuilder: (context, index) {
                                       final item = items[index];
-                                      final key = _tileKeys.putIfAbsent('tab_${item.facility.id}', () => GlobalKey());
+                                      final key = _tileKeys.putIfAbsent('tab_${item.facility.id}', GlobalKey.new);
                                       final isExpanded = _expandedFacilityId == item.facility.id;
 
                                       return InlineAccordionAttractionTile(
@@ -556,13 +556,13 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                 },
                 child: Container(
                   width: 6,
-                  color: theme.colorScheme.onSurface.withOpacity(isDark ? 0.08 : 0.06),
+                  color: theme.colorScheme.onSurface.withValues(alpha: isDark ? 0.08 : 0.06),
                   alignment: Alignment.center,
                   child: Container(
                     width: 2,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.onSurface.withOpacity(isDark ? 0.30 : 0.38),
+                      color: theme.colorScheme.onSurface.withValues(alpha: isDark ? 0.30 : 0.38),
                       borderRadius: BorderRadius.circular(1),
                     ),
                   ),
@@ -646,7 +646,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
         SizedBox(
           width: 250,
           child: Padding(
-            padding: const EdgeInsets.all(12.0),
+            padding: const EdgeInsets.all(12),
             child: _buildDesktopLeftSidebar(detail),
           ),
         ),
@@ -657,7 +657,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
         Expanded(
           flex: 6,
           child: Padding(
-            padding: const EdgeInsets.all(12.0),
+            padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -741,11 +741,11 @@ class _ParkPageState extends ConsumerState<ParkPage> {
             bgUrl,
             fit: BoxFit.cover,
             errorBuilder: (_, __, ___) => Container(
-              color: isDark ? const Color(0xFF121B13) : const Color(0xFFE3EDE5),
+              color: theme.colorScheme.surface,
             ),
           ),
           Container(
-            color: theme.scaffoldBackgroundColor.withOpacity(0.7),
+            color: theme.scaffoldBackgroundColor.withValues(alpha: 0.7),
           ),
         ],
       ),
@@ -802,9 +802,9 @@ class _ParkPageState extends ConsumerState<ParkPage> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E281F) : Colors.white,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withOpacity(0.3)),
+        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3)),
       ),
       child: SingleChildScrollView(
         child: Column(
@@ -823,26 +823,38 @@ class _ParkPageState extends ConsumerState<ParkPage> {
             const SizedBox(height: 8),
             _buildCheckbox('Thrill Rides', _desktopActiveTypes.contains('thrill'), (val) {
               setState(() {
-                if (val == true) _desktopActiveTypes.add('thrill');
-                else _desktopActiveTypes.remove('thrill');
+                if (val ?? false) {
+                  _desktopActiveTypes.add('thrill');
+                } else {
+                  _desktopActiveTypes.remove('thrill');
+                }
               });
             }),
             _buildCheckbox('Toddler Friendly', _desktopActiveTypes.contains('toddler'), (val) {
               setState(() {
-                if (val == true) _desktopActiveTypes.add('toddler');
-                else _desktopActiveTypes.remove('toddler');
+                if (val ?? false) {
+                  _desktopActiveTypes.add('toddler');
+                } else {
+                  _desktopActiveTypes.remove('toddler');
+                }
               });
             }),
             _buildCheckbox('Indoor Shows/Rides', _desktopActiveTypes.contains('indoor'), (val) {
               setState(() {
-                if (val == true) _desktopActiveTypes.add('indoor');
-                else _desktopActiveTypes.remove('indoor');
+                if (val ?? false) {
+                  _desktopActiveTypes.add('indoor');
+                } else {
+                  _desktopActiveTypes.remove('indoor');
+                }
               });
             }),
             _buildCheckbox('Dining / Restaurants', _desktopActiveTypes.contains('dining'), (val) {
               setState(() {
-                if (val == true) _desktopActiveTypes.add('dining');
-                else _desktopActiveTypes.remove('dining');
+                if (val ?? false) {
+                  _desktopActiveTypes.add('dining');
+                } else {
+                  _desktopActiveTypes.remove('dining');
+                }
               });
             }),
             
@@ -855,20 +867,29 @@ class _ParkPageState extends ConsumerState<ParkPage> {
             const SizedBox(height: 8),
             _buildCheckbox('Under 15 min', _desktopActiveWaitTimes.contains('15'), (val) {
               setState(() {
-                if (val == true) _desktopActiveWaitTimes.add('15');
-                else _desktopActiveWaitTimes.remove('15');
+                if (val ?? false) {
+                  _desktopActiveWaitTimes.add('15');
+                } else {
+                  _desktopActiveWaitTimes.remove('15');
+                }
               });
             }),
             _buildCheckbox('Under 30 min', _desktopActiveWaitTimes.contains('30'), (val) {
               setState(() {
-                if (val == true) _desktopActiveWaitTimes.add('30');
-                else _desktopActiveWaitTimes.remove('30');
+                if (val ?? false) {
+                  _desktopActiveWaitTimes.add('30');
+                } else {
+                  _desktopActiveWaitTimes.remove('30');
+                }
               });
             }),
             _buildCheckbox('Under 60 min', _desktopActiveWaitTimes.contains('60'), (val) {
               setState(() {
-                if (val == true) _desktopActiveWaitTimes.add('60');
-                else _desktopActiveWaitTimes.remove('60');
+                if (val ?? false) {
+                  _desktopActiveWaitTimes.add('60');
+                } else {
+                  _desktopActiveWaitTimes.remove('60');
+                }
               });
             }),
             
@@ -882,8 +903,11 @@ class _ParkPageState extends ConsumerState<ParkPage> {
             ...detail.children.map((land) {
               return _buildCheckbox(land.name, _desktopActiveLands.contains(land.id), (val) {
                 setState(() {
-                  if (val == true) _desktopActiveLands.add(land.id);
-                  else _desktopActiveLands.remove(land.id);
+                  if (val ?? false) {
+                    _desktopActiveLands.add(land.id);
+                  } else {
+                    _desktopActiveLands.remove(land.id);
+                  }
                 });
               });
             }),
@@ -895,7 +919,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
 
   Widget _buildCheckbox(String label, bool value, ValueChanged<bool?> onChanged) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2.0),
+      padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
           SizedBox(
@@ -1102,7 +1126,7 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
     final currentWait = wait?.waitMinutes ?? 0;
     final waitText = isClosed ? 'Closed' : '${currentWait}m';
     
-    Color waitColor = Colors.green.shade700;
+    var waitColor = Colors.green.shade700;
     if (isClosed) {
       waitColor = Colors.grey.shade700;
     } else if (currentWait > 50) {
@@ -1115,12 +1139,12 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
     final trendData = _getWaitTimeTrend(facility.id, currentWait);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5.0),
+      padding: const EdgeInsets.symmetric(vertical: 5),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1E281F) : Colors.white,
+          color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isExpanded
@@ -1130,7 +1154,7 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(isExpanded ? 0.2 : 0.06),
+              color: Colors.black.withValues(alpha: isExpanded ? 0.2 : 0.06),
               blurRadius: isExpanded ? 10 : 4,
               offset: const Offset(0, 3),
             ),
@@ -1143,7 +1167,7 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
               onTap: onTap,
               borderRadius: BorderRadius.circular(16),
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8),
                 child: Row(
                   children: [
                     ClipRRect(
@@ -1177,7 +1201,7 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurface.withOpacity(0.7),
+                              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                               fontSize: 11,
                             ),
                           ),
@@ -1192,7 +1216,7 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
                                         ? Icons.height
                                         : Icons.child_care,
                                     size: 13,
-                                    color: theme.colorScheme.onSurface.withOpacity(0.7),
+                                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                                   ),
                                 ),
                                 const WidgetSpan(child: SizedBox(width: 3)),
@@ -1203,7 +1227,7 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
                                   style: TextStyle(
                                     fontSize: 11,
                                     fontWeight: FontWeight.w600,
-                                    color: theme.colorScheme.onSurface.withOpacity(0.7),
+                                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                                   ),
                                 ),
                               ],
@@ -1218,7 +1242,7 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        PulseDot(color: waitColor, size: 8),
+                        PulseDot(color: waitColor),
                         const SizedBox(width: 6),
                         Text(
                           waitText,
@@ -1251,7 +1275,7 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
             if (isExpanded) ...[
               const Divider(height: 1, indent: 12, endIndent: 12),
               Padding(
-                padding: const EdgeInsets.all(12.0),
+                padding: const EdgeInsets.all(12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -1259,7 +1283,7 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
                     Text(
                       'Experience thrilling excitement in $landName. Enjoy cutting-edge theme park technology, detailed environments, and dynamic attraction queues.',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withOpacity(0.85),
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.85),
                         height: 1.35,
                       ),
                     ),
@@ -1340,7 +1364,7 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
                         Text(
                           'Last 3 Hours',
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurface.withOpacity(0.6),
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                             fontSize: 10,
                           ),
                         ),
@@ -1407,7 +1431,7 @@ class MobileAttractionTile extends StatelessWidget {
     final waitText = isClosed ? 'Closed' : '${wait!.waitMinutes}m';
     final currentWait = wait?.waitMinutes ?? 0;
     
-    Color waitColor = Colors.green.shade600;
+    var waitColor = Colors.green.shade600;
     if (isClosed) {
       waitColor = Colors.grey;
     } else if (currentWait > 50) {
@@ -1419,31 +1443,31 @@ class MobileAttractionTile extends StatelessWidget {
     final imageUrl = _getStaticImageUrl(facility);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: GlassmorphicContainer(
         width: double.infinity,
         height: 96,
         borderRadius: 16,
         blur: 15,
         alignment: Alignment.center,
-        border: 1.0,
+        border: 1,
         linearGradient: LinearGradient(
           colors: [
-            Colors.white.withOpacity(isDark ? 0.06 : 0.5),
-            Colors.white.withOpacity(isDark ? 0.02 : 0.2),
+            Colors.white.withValues(alpha: isDark ? 0.06 : 0.5),
+            Colors.white.withValues(alpha: isDark ? 0.02 : 0.2),
           ],
         ),
         borderGradient: LinearGradient(
           colors: [
-            Colors.white.withOpacity(isDark ? 0.15 : 0.6),
-            Colors.white.withOpacity(isDark ? 0.05 : 0.2),
+            Colors.white.withValues(alpha: isDark ? 0.15 : 0.6),
+            Colors.white.withValues(alpha: isDark ? 0.05 : 0.2),
           ],
         ),
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(16),
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8),
             child: Row(
               children: [
                 ClipRRect(
@@ -1473,7 +1497,7 @@ class MobileAttractionTile extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        '${landName} • Thrill: ${facility.thrillLevel ?? "Low"}',
+                        '$landName • Thrill: ${facility.thrillLevel ?? "Low"}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.bodySmall?.copyWith(
@@ -1493,7 +1517,7 @@ class MobileAttractionTile extends StatelessWidget {
                                     ? Icons.height
                                     : Icons.child_care,
                                 size: 13,
-                                color: theme.colorScheme.onSurface.withOpacity(0.6),
+                                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                               ),
                               const SizedBox(width: 2),
                               Text(
@@ -1502,7 +1526,7 @@ class MobileAttractionTile extends StatelessWidget {
                                     : 'Family',
                                 style: TextStyle(
                                   fontSize: 10,
-                                  color: theme.colorScheme.onSurface.withOpacity(0.6),
+                                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                                 ),
                               ),
                             ],
@@ -1513,14 +1537,14 @@ class MobileAttractionTile extends StatelessWidget {
                               Icon(
                                 Icons.accessible_forward,
                                 size: 13,
-                                color: theme.colorScheme.onSurface.withOpacity(0.38),
+                                color: theme.colorScheme.onSurface.withValues(alpha: 0.38),
                               ),
                               const SizedBox(width: 2),
                               Text(
                                 'Accessible',
                                 style: TextStyle(
                                   fontSize: 10,
-                                  color: theme.colorScheme.onSurface.withOpacity(0.6),
+                                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                                 ),
                               ),
                             ],
@@ -1609,7 +1633,7 @@ class TabletAttractionTile extends StatelessWidget {
     final isClosed = wait == null || wait!.status != 'Open';
     final currentWait = wait?.waitMinutes ?? 0;
     
-    Color waitColor = Colors.green.shade600;
+    var waitColor = Colors.green.shade600;
     if (isClosed) {
       waitColor = Colors.grey;
     } else if (currentWait > 50) {
@@ -1622,7 +1646,7 @@ class TabletAttractionTile extends StatelessWidget {
     final imageUrl = _getStaticImageUrl(facility);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      padding: const EdgeInsets.symmetric(vertical: 4),
       child: GlassmorphicContainer(
         width: double.infinity,
         height: 80,
@@ -1632,25 +1656,21 @@ class TabletAttractionTile extends StatelessWidget {
         border: isSelected ? 2.0 : 1.0,
         linearGradient: LinearGradient(
           colors: [
-            isSelected 
-                ? theme.colorScheme.primary.withOpacity(isDark ? 0.18 : 0.35)
-                : Colors.white.withOpacity(isDark ? 0.06 : 0.5),
-            Colors.white.withOpacity(isDark ? 0.02 : 0.2),
+            if (isSelected) theme.colorScheme.primary.withValues(alpha: isDark ? 0.18 : 0.35) else Colors.white.withValues(alpha: isDark ? 0.06 : 0.5),
+            Colors.white.withValues(alpha: isDark ? 0.02 : 0.2),
           ],
         ),
         borderGradient: LinearGradient(
           colors: [
-            isSelected
-                ? theme.colorScheme.primary.withOpacity(0.8)
-                : Colors.white.withOpacity(isDark ? 0.15 : 0.6),
-            Colors.white.withOpacity(isDark ? 0.05 : 0.2),
+            if (isSelected) theme.colorScheme.primary.withValues(alpha: 0.8) else Colors.white.withValues(alpha: isDark ? 0.15 : 0.6),
+            Colors.white.withValues(alpha: isDark ? 0.05 : 0.2),
           ],
         ),
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(16),
           child: Padding(
-            padding: const EdgeInsets.all(6.0),
+            padding: const EdgeInsets.all(6),
             child: Row(
               children: [
                 ClipRRect(
@@ -1682,7 +1702,7 @@ class TabletAttractionTile extends StatelessWidget {
                       Text(
                         landName,
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurface.withOpacity(0.6),
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                           fontSize: 10,
                         ),
                       ),
@@ -1786,7 +1806,7 @@ class _DesktopAttractionRowState extends State<DesktopAttractionRow> {
     final waitText = isClosed ? 'Closed' : '${widget.wait!.waitMinutes}m';
     final currentWait = widget.wait?.waitMinutes ?? 0;
     
-    Color waitColor = Colors.green.shade600;
+    var waitColor = Colors.green.shade600;
     if (isClosed) {
       waitColor = Colors.grey;
     } else if (currentWait > 50) {
@@ -1810,27 +1830,27 @@ class _DesktopAttractionRowState extends State<DesktopAttractionRow> {
           duration: const Duration(milliseconds: 200),
           transform: Matrix4.identity()..scale(_isHovered ? 1.02 : 1.0),
           transformAlignment: Alignment.center,
-          margin: const EdgeInsets.symmetric(vertical: 4.0),
-          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+          margin: const EdgeInsets.symmetric(vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             color: widget.isSelected
-                ? theme.colorScheme.primary.withOpacity(isDark ? 0.15 : 0.25)
+                ? theme.colorScheme.primary.withValues(alpha: isDark ? 0.15 : 0.25)
                 : (_isHovered
-                    ? (isDark ? Colors.white.withOpacity(0.08) : Colors.white.withOpacity(0.8))
-                    : (isDark ? Colors.white.withOpacity(0.03) : Colors.white.withOpacity(0.45))),
+                    ? (isDark ? Colors.white.withValues(alpha: 0.08) : Colors.white.withValues(alpha: 0.8))
+                    : (isDark ? Colors.white.withValues(alpha: 0.03) : Colors.white.withValues(alpha: 0.45))),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: widget.isSelected
-                  ? theme.colorScheme.primary.withOpacity(0.6)
+                  ? theme.colorScheme.primary.withValues(alpha: 0.6)
                   : (_isHovered
-                      ? (isDark ? Colors.white24 : theme.colorScheme.onSurface.withOpacity(0.12))
+                      ? (isDark ? Colors.white24 : theme.colorScheme.onSurface.withValues(alpha: 0.12))
                       : Colors.transparent),
               width: 1.5,
             ),
             boxShadow: _isHovered
                 ? [
                     BoxShadow(
-                      color: theme.colorScheme.onSurface.withOpacity(isDark ? 0.4 : 0.1),
+                      color: theme.colorScheme.onSurface.withValues(alpha: isDark ? 0.4 : 0.1),
                       blurRadius: 8,
                       spreadRadius: 1,
                       offset: const Offset(0, 4),
@@ -1848,7 +1868,7 @@ class _DesktopAttractionRowState extends State<DesktopAttractionRow> {
                   child: Image.network(
                     _isHovered ? _getGIFUrl(widget.facility) : _getStaticImageUrl(widget.facility),
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
+                    errorBuilder: (_, __, ___) => ColoredBox(
                       color: Colors.grey.shade300,
                       child: const Icon(Icons.image, size: 24),
                     ),

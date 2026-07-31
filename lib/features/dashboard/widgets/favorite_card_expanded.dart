@@ -35,7 +35,7 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
       },
       onHorizontalDragEnd: (details) {
         final dx = details.velocity.pixelsPerSecond.dx;
-        const dragThreshold = 500.0;
+        final dragThreshold = 500.0;
 
         if (dx < -dragThreshold && widget.onSwipeLeft != null) {
           widget.onSwipeLeft!();
@@ -47,10 +47,10 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         clipBehavior: Clip.antiAlias,
         elevation: 4,
-        color: isClosed ? AppTheme.offlineCardSurface : AppTheme.cardSurface,
+        color: isClosed ? AppTheme.offlineCardSurface : Theme.of(context).colorScheme.surface,
         child: Container(
           decoration: BoxDecoration(
-            color: isClosed ? AppTheme.offlineCardSurface : AppTheme.cardSurface,
+            color: isClosed ? AppTheme.offlineCardSurface : Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(16),
           ),
           child: Stack(
@@ -84,7 +84,6 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.max,
                       children: [
                         // Header: Name + Park side-by-side comparison tag
                         Row(
@@ -97,10 +96,10 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
                                 children: [
                                   Text(
                                     widget.favorite.name,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.bold,
-                                      color: AppTheme.primaryText,
+                                      color: Theme.of(context).colorScheme.onSurface,
                                     ),
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
@@ -108,19 +107,19 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
                                   const SizedBox(height: 2),
                                   Row(
                                     children: [
-                                      const Icon(
+                                      Icon(
                                         Icons.location_on,
                                         size: 12,
-                                        color: AppTheme.secondaryText,
+                                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                                       ),
                                       const SizedBox(width: 2),
                                       Expanded(
                                         child: Text(
                                           widget.favorite.parkName,
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             fontSize: 11,
                                             fontWeight: FontWeight.w500,
-                                            color: AppTheme.secondaryText,
+                                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                                           ),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
@@ -142,13 +141,12 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
                                 color: (isClosed
                                         ? AppTheme.statusCritical
                                         : AppTheme.statusOpen)
-                                    .withOpacity(0.2),
+                                    .withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
                                   color: isClosed
                                       ? AppTheme.statusCritical
                                       : AppTheme.statusOpen,
-                                  width: 1,
                                 ),
                               ),
                               child: Text(
@@ -176,29 +174,29 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
                             children: [
                               Text(
                                 '$waitMinutes',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 28,
                                   fontWeight: FontWeight.bold,
-                                  color: AppTheme.primaryText,
+                                  color: Theme.of(context).colorScheme.onSurface,
                                   height: 1,
                                 ),
                               ),
                               const SizedBox(width: 4),
-                              const Text(
+                              Text(
                                 'min wait',
                                 style: TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
-                                  color: AppTheme.secondaryText,
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 ),
                               ),
                               const Spacer(),
                               Flexible(
                                 child: Text(
                                   'Avg: ${(waitMinutes * 1.15).round()} min',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 11,
-                                    color: AppTheme.secondaryText,
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                                   ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -240,27 +238,25 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
                                 padding: const EdgeInsets.all(12),
                                 margin: const EdgeInsets.symmetric(vertical: 4),
                                 decoration: BoxDecoration(
-                                  color: AppTheme.appBackground.withOpacity(0.60),
+                                  color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.60),
                                   borderRadius: BorderRadius.circular(10),
                                   border: Border.all(
-                                    color: AppTheme.statusWarning.withOpacity(0.3),
-                                    width: 1,
+                                    color: AppTheme.statusWarning.withValues(alpha: 0.3),
                                   ),
                                 ),
-                                child: const Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                child: Row(
                                   children: [
-                                    Icon(
+                                    const Icon(
                                       Icons.pause_circle_outline,
                                       color: AppTheme.statusWarning,
                                       size: 22,
                                     ),
-                                    SizedBox(width: 10),
+                                    const SizedBox(width: 10),
                                     Expanded(
                                       child: Text(
                                         'Temporarily closed for maintenance. Check back soon.',
                                         style: TextStyle(
-                                          color: AppTheme.primaryText,
+                                          color: Theme.of(context).colorScheme.onSurface,
                                           fontSize: 12,
                                           fontWeight: FontWeight.w500,
                                         ),
@@ -278,27 +274,25 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
                               padding: const EdgeInsets.all(12),
                               margin: const EdgeInsets.symmetric(vertical: 4),
                               decoration: BoxDecoration(
-                                color: AppTheme.appBackground.withOpacity(0.60),
+                                color: Theme.of(context).scaffoldBackgroundColor.withValues(alpha: 0.60),
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
-                                  color: AppTheme.statusWarning.withOpacity(0.3),
-                                  width: 1,
+                                  color: AppTheme.statusWarning.withValues(alpha: 0.3),
                                 ),
                               ),
-                              child: const Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
+                              child: Row(
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.pause_circle_outline,
                                     color: AppTheme.statusWarning,
                                     size: 22,
                                   ),
-                                  SizedBox(width: 10),
+                                  const SizedBox(width: 10),
                                   Expanded(
                                     child: Text(
                                       'Temporarily closed for maintenance. Check back soon.',
                                       style: TextStyle(
-                                        color: AppTheme.primaryText,
+                                        color: Theme.of(context).colorScheme.onSurface,
                                         fontSize: 12,
                                         fontWeight: FontWeight.w500,
                                       ),
@@ -320,19 +314,19 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
                               Expanded(
                                 child: Row(
                                   children: [
-                                    const Icon(
+                                    Icon(
                                       Icons.arrow_forward_ios,
                                       size: 10,
-                                      color: AppTheme.secondaryText,
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                                     ),
                                     const SizedBox(width: 3),
                                     Expanded(
                                       child: Text(
                                         'Swipe Right: $swipeRightAction',
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 10,
                                           fontWeight: FontWeight.w500,
-                                          color: AppTheme.secondaryText,
+                                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                                         ),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
@@ -342,7 +336,7 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              const Row(
+                              Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(
@@ -350,14 +344,14 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
                                     style: TextStyle(
                                       fontSize: 10,
                                       fontWeight: FontWeight.w500,
-                                      color: AppTheme.secondaryText,
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                                     ),
                                   ),
-                                  SizedBox(width: 3),
+                                  const SizedBox(width: 3),
                                   Icon(
                                     Icons.arrow_back_ios,
                                     size: 10,
-                                    color: AppTheme.secondaryText,
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                                   ),
                                 ],
                               ),
@@ -375,15 +369,15 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
                                   icon: Icon(
                                     isDining ? Icons.restaurant_menu : Icons.queue,
                                     size: 13,
-                                    color: AppTheme.primaryText,
+                                    color: Theme.of(context).colorScheme.onSurface,
                                   ),
                                   label: Text(
                                     swipeRightAction,
-                                    style: const TextStyle(fontSize: 11, color: AppTheme.primaryText),
+                                    style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurface),
                                   ),
                                   style: OutlinedButton.styleFrom(
                                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                    side: const BorderSide(color: AppTheme.secondaryText),
+                                    side: BorderSide(color: Theme.of(context).colorScheme.onSurfaceVariant),
                                     visualDensity: VisualDensity.compact,
                                   ),
                                 ),
@@ -396,7 +390,7 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
                                     style: TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.bold),
                                   ),
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppTheme.primaryAccent,
+                                    backgroundColor: Theme.of(context).colorScheme.primary,
                                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                     visualDensity: VisualDensity.compact,
                                   ),
@@ -425,7 +419,7 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
       painter: _SparklinePainter(
         data: mockData,
         currentValue: currentWait,
-        lineColor: isPiratesCard ? AppTheme.chartAmber : AppTheme.primaryAccent,
+        lineColor: isPiratesCard ? AppTheme.chartAmber : Theme.of(context).colorScheme.primary,
         isPiratesGradient: isPiratesCard,
       ),
       size: Size.infinite,
@@ -441,8 +435,8 @@ class _DiagonalStripensPainter extends CustomPainter {
       ..color = AppTheme.offlineStripeColor
       ..strokeWidth = 3;
 
-    const spacing = 12.0;
-    for (double i = -size.height; i < size.width; i += spacing) {
+    final spacing = 12.0;
+    for (var i = -size.height; i < size.width; i += spacing) {
       canvas.drawLine(
         Offset(i, 0),
         Offset(i + size.height, size.height),
@@ -477,9 +471,9 @@ class _SparklinePainter extends CustomPainter {
     if (maxValue == 0) return;
 
     final pointSpacing = size.width / (data.length - 1);
-    final List<Offset> points = [];
+    final points = <Offset>[];
 
-    for (int i = 0; i < data.length; i++) {
+    for (var i = 0; i < data.length; i++) {
       final x = i * pointSpacing;
       final y = size.height - (data[i] / maxValue) * size.height;
       points.add(Offset(x, y));
@@ -488,7 +482,7 @@ class _SparklinePainter extends CustomPainter {
     // Path for line and fill
     final linePath = Path();
     linePath.moveTo(points.first.dx, points.first.dy);
-    for (int i = 1; i < points.length; i++) {
+    for (var i = 1; i < points.length; i++) {
       linePath.lineTo(points[i].dx, points[i].dy);
     }
 
@@ -503,12 +497,12 @@ class _SparklinePainter extends CustomPainter {
       end: Alignment.bottomCenter,
       colors: isPiratesGradient
           ? [
-              AppTheme.chartAmber.withOpacity(0.3),
-              AppTheme.chartAmber.withOpacity(0.0),
+              AppTheme.chartAmber.withValues(alpha: 0.3),
+              AppTheme.chartAmber.withValues(alpha: 0),
             ]
           : [
-              lineColor.withOpacity(0.3),
-              lineColor.withOpacity(0.0),
+              lineColor.withValues(alpha: 0.3),
+              lineColor.withValues(alpha: 0),
             ],
     ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
 

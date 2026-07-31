@@ -1,17 +1,17 @@
-import 'dart:io';
 import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:themeparkapp/core/permissions.dart';
 import 'package:themeparkapp/core/providers.dart';
 import 'package:themeparkapp/features/park/park_explorer_state.dart';
 import 'package:themeparkapp/features/park/park_page.dart';
 import 'package:themeparkapp/features/park/widgets/park_map.dart';
-import 'package:themeparkapp/features/park/widgets/sparkline_chart.dart';
 import 'package:themeparkapp/features/park/widgets/pulse_dot.dart';
 import 'package:themeparkapp/l10n/app_localizations.dart';
-import 'package:themeparkapp/core/permissions.dart';
-import 'package:geolocator/geolocator.dart';
 
 
 void main() {
@@ -60,7 +60,7 @@ void main() {
           overrides: [
             assetLoaderProvider.overrideWithValue(fileLoader),
             locationPermissionProvider.overrideWith((ref) => MockLocationPermissionNotifier()),
-            userLocationProvider('p1').overrideWith((ref) => MockUserLocationNotifier(ref)),
+            userLocationProvider('p1').overrideWith(MockUserLocationNotifier.new),
           ],
           child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -100,7 +100,7 @@ void main() {
           overrides: [
             assetLoaderProvider.overrideWithValue(fileLoader),
             locationPermissionProvider.overrideWith((ref) => MockLocationPermissionNotifier()),
-            userLocationProvider('p1').overrideWith((ref) => MockUserLocationNotifier(ref)),
+            userLocationProvider('p1').overrideWith(MockUserLocationNotifier.new),
           ],
           child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -139,7 +139,7 @@ void main() {
           overrides: [
             assetLoaderProvider.overrideWithValue(fileLoader),
             locationPermissionProvider.overrideWith((ref) => MockLocationPermissionNotifier()),
-            userLocationProvider('p1').overrideWith((ref) => MockUserLocationNotifier(ref)),
+            userLocationProvider('p1').overrideWith(MockUserLocationNotifier.new),
           ],
           child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,

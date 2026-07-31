@@ -35,7 +35,6 @@ void main() {
         height: 220,
         child: ExpandedFavoriteCard(favorite: favorite),
       ),
-      size: const Size(375, 812),
     ));
 
     expect(find.text('Pirates of the Caribbean'), findsOneWidget);
@@ -59,7 +58,6 @@ void main() {
         height: 220,
         child: ExpandedFavoriteCard(favorite: favorite),
       ),
-      size: const Size(375, 812),
     ));
 
     expect(find.text('Be Our Guest Restaurant'), findsOneWidget);
@@ -102,7 +100,6 @@ void main() {
         height: 220,
         child: ExpandedFavoriteCard(favorite: favorite),
       ),
-      size: const Size(375, 812),
     ));
 
     expect(find.text('OFFLINE'), findsOneWidget);

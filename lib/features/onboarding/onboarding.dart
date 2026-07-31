@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:themeparkapp/core/permissions.dart';
 import 'package:themeparkapp/core/onboarding_state.dart';
+import 'package:themeparkapp/core/permissions.dart';
 import 'package:themeparkapp/l10n/app_localizations.dart';
 
 /// Simple onboarding screen that explains location usage and exposes
@@ -16,7 +16,7 @@ class OnboardingScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(loc?.appTitle ?? 'Welcome')),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

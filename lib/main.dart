@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 // Using built-in ThemeData to avoid external theme package during tests
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:themeparkapp/core/environment_providers.dart';
+import 'package:themeparkapp/core/onboarding_state.dart';
 import 'package:themeparkapp/core/permissions.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:themeparkapp/core/providers.dart';
 import 'package:themeparkapp/core/theme.dart';
 import 'package:themeparkapp/features/dashboard/dashboard.dart';
-import 'package:themeparkapp/features/parks/parks_page.dart';
 import 'package:themeparkapp/features/favorites/favorites_page.dart';
 import 'package:themeparkapp/features/onboarding/onboarding.dart';
-import 'package:themeparkapp/l10n/app_localizations.dart';
-import 'package:themeparkapp/core/onboarding_state.dart';
-import 'package:themeparkapp/widgets/adaptive_image.dart';
 import 'package:themeparkapp/features/park/facility_detail_page.dart';
+import 'package:themeparkapp/features/parks/parks_page.dart';
 import 'package:themeparkapp/features/search/search_page.dart';
+import 'package:themeparkapp/l10n/app_localizations.dart';
+import 'package:themeparkapp/widgets/adaptive_image.dart';
 
 /// Application entrypoint.
 ///
@@ -212,7 +212,7 @@ class _ResponsiveScaffoldShellState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.all(12.0),
+                      padding: const EdgeInsets.all(12),
                       child: Row(
                         children: [
                           if (!_collapsed)
@@ -274,9 +274,9 @@ class _ResponsiveScaffoldShellState
                         child: Divider(color: Theme.of(context).dividerColor.withValues(alpha: 0.5)),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.all(16),
                         child: Container(
-                          padding: const EdgeInsets.all(16.0),
+                          padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: [
@@ -289,7 +289,7 @@ class _ResponsiveScaffoldShellState
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
-                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.25),
+                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.25),
                                 blurRadius: 10,
                                 offset: const Offset(0, 4),
                               ),
@@ -474,9 +474,9 @@ class DetailsPage extends ConsumerWidget {
       body: Column(
         children: [
           if (mediaQuality == MediaQuality.low)
-            MaterialBanner(
+            const MaterialBanner(
               content: Text('Low network or battery — using lighter media'),
-              actions: const [],
+              actions: [],
             ),
           Expanded(
             child: ScreenTypeLayout.builder(

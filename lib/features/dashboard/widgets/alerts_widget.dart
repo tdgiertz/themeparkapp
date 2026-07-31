@@ -92,9 +92,9 @@ class _AlertTile extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 16),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: alert.backgroundColor.withOpacity(0.15),
+          color: alert.backgroundColor.withValues(alpha: 0.15),
           border: Border.all(
-            color: alert.backgroundColor.withOpacity(0.5),
+            color: alert.backgroundColor.withValues(alpha: 0.5),
             width: 1.5,
           ),
           borderRadius: BorderRadius.circular(12),
@@ -109,7 +109,7 @@ class _AlertTile extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: alert.backgroundColor.withOpacity(0.2),
+                    color: alert.backgroundColor.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
@@ -196,7 +196,7 @@ List<DashboardAlert> generateMockAlerts(List<FavoriteRide> favorites) {
           id: 'wait_drop_${ride.rideId}',
           type: 'wait_drop',
           title: '${ride.name} – Wait Time Drop!',
-          message: '${ride.name}\'s wait time just dropped to ${wait}m—the lowest it has been all day!',
+          message: "${ride.name}'s wait time just dropped to ${wait}m—the lowest it has been all day!",
           icon: Icons.trending_down,
           backgroundColor: Colors.green.shade600,
           actionLabel: 'Directions',

@@ -156,7 +156,7 @@ class SearchNotifier extends StateNotifier<SearchState> {
       final raw = await loader('assets/data/attractions.json');
       final decoded = json.decode(raw) as Map<String, dynamic>;
       final parksList = decoded['parks'] as List? ?? [];
-      final List<Facility> facilities = [];
+      final facilities = <Facility>[];
       for (final parkMap in parksList) {
         final lands = parkMap['children'] as List? ?? [];
         for (final landMap in lands) {
@@ -207,8 +207,8 @@ class SearchNotifier extends StateNotifier<SearchState> {
     if (normalizedQuery.contains('pretzel') || normalizedQuery.contains('nearest') || normalizedQuery.contains('food near me') || normalizedQuery.contains('dining near me')) {
       // Get location: default to Magic Kingdom center if geolocator is inactive
       final userPos = ref.read(userLocationProvider('p2')); // read Magic Kingdom position
-      final double lat = userPos.latitude;
-      final double lng = userPos.longitude;
+      final lat = userPos.latitude;
+      final lng = userPos.longitude;
 
       // Define some mock pretzel/snack stands at high fidelity locations
       final mockPretzelStands = [
@@ -239,7 +239,7 @@ class SearchNotifier extends StateNotifier<SearchState> {
       ];
 
       // Add actual dining spots from attractions.json that are in Magic Kingdom
-      final List<Facility> searchPool = [...mockPretzelStands];
+      final searchPool = <Facility>[...mockPretzelStands];
       for (final fac in _allFacilities) {
         final isDining = fac.name.toLowerCase().contains(RegExp('cafe|restaurant|grill|dining|eats|table|bakery|kitchen|tavern|pub|food'));
         if (isDining) {
@@ -262,12 +262,10 @@ class SearchNotifier extends StateNotifier<SearchState> {
         'pretzel_3': [28.4183, -81.5840], // near Jungle Cruise
       };
 
-      final List<MapEntry<Facility, double>> sortedStands = [];
+      final sortedStands = <MapEntry<Facility, double>>[];
       for (final stand in searchPool) {
-        List<double>? coords = pretzelCoords[stand.id];
-        if (coords == null) {
-          coords = knownCoords[stand.id];
-        }
+        var coords = pretzelCoords[stand.id];
+        coords ??= knownCoords[stand.id];
         if (coords == null) {
           // deterministic fallback coordinate
           final hash = stand.id.hashCode;
@@ -308,15 +306,15 @@ class SearchNotifier extends StateNotifier<SearchState> {
       final parkName = isMK ? 'Magic Kingdom' : 'Animal Kingdom';
 
       // Pick rides depending on the park
-      final List<String> rideIds = isMK 
+      final rideIds = isMK 
           ? ['a15', 'a21', 'a17', 'a13', 'a16'] // Big Thunder, Haunted Mansion, Castle, small world, Buzz
           : ['a1', 'a3', 'a6', 'a10', 'a5'];   // Flight, Everest, Safaris, Rainforest Cafe, Kali
 
       // Map time slots
       final times = ['09:00 AM', '11:30 AM', '01:00 PM', '03:30 PM', '06:00 PM'];
 
-      final List<SearchItineraryItem> itineraryItems = [];
-      for (int i = 0; i < rideIds.length; i++) {
+      final itineraryItems = <SearchItineraryItem>[];
+      for (var i = 0; i < rideIds.length; i++) {
         final rideId = rideIds[i];
         // find facility name
         final facility = _allFacilities.firstWhere(
@@ -387,7 +385,7 @@ class SearchNotifier extends StateNotifier<SearchState> {
 
     // Re-assign times sequentially to preserve structured time scheduling
     final times = ['09:00 AM', '11:30 AM', '01:00 PM', '03:30 PM', '06:00 PM'];
-    for (int i = 0; i < updated.length; i++) {
+    for (var i = 0; i < updated.length; i++) {
       updated[i] = updated[i].copyWith(time: times[i]);
     }
 

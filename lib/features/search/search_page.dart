@@ -198,7 +198,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
         // GPS Ping status indicator
         Container(
           width: double.infinity,
-          color: Colors.blue.withOpacity(0.08),
+          color: Colors.blue.withValues(alpha: 0.08),
           padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -218,7 +218,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
-            border: Border(top: BorderSide(color: Theme.of(context).dividerColor.withOpacity(0.5))),
+            border: Border(top: BorderSide(color: Theme.of(context).dividerColor.withValues(alpha: 0.5))),
           ),
           child: SafeArea(
             child: Row(
@@ -282,7 +282,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
             children: [
               // Chat Header
               Padding(
-                padding: const EdgeInsets.all(12.0),
+                padding: const EdgeInsets.all(12),
                 child: Row(
                   children: [
                     const Icon(Icons.chat_bubble_outline, color: Colors.teal),
@@ -349,7 +349,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
         // Pane 2: Active Interactive Widgets
         Expanded(
           flex: 3,
-          child: Container(
+          child: ColoredBox(
             color: Theme.of(context).brightness == Brightness.dark
                 ? Colors.grey.shade900
                 : Colors.grey.shade50,
@@ -377,14 +377,14 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
     final isDark = theme.brightness == Brightness.dark;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: Column(
         crossAxisAlignment: msg.isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
           // GPS Implicit Info Banner
           if (msg.statusInfo != null && isMobile)
             Padding(
-              padding: const EdgeInsets.only(bottom: 4.0),
+              padding: const EdgeInsets.only(bottom: 4),
               child: Row(
                 children: [
                   const Icon(Icons.location_on, size: 10, color: Colors.teal),
@@ -424,7 +424,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                     ),
                       boxShadow: [
                       BoxShadow(
-                        color: theme.colorScheme.onSurface.withOpacity(0.05),
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),
@@ -577,7 +577,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.teal.withOpacity(0.3)),
+        border: Border.all(color: Colors.teal.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -601,7 +601,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
             itemBuilder: (context, index) {
               final item = itinerary[index];
               return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                padding: const EdgeInsets.symmetric(vertical: 4),
                 child: Row(
                   children: [
                     Text(
@@ -655,7 +655,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(f.name, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-                      Text('Dining Location • Magic Kingdom', style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 12)),
+                      Text('Dining Location • Magic Kingdom', style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 12)),
                     ],
                   ),
                 ),
@@ -671,7 +671,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
           
           // Dietary filter options
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -731,7 +731,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text('Generative Daily Itinerary Planner', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-                    Text('Drag and drop items to reorder and calculate path routes.', style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 12)),
+                    Text('Drag and drop items to reorder and calculate path routes.', style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 12)),
                   ],
                 ),
               ],
@@ -756,7 +756,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                     ),
                     title: Text(item.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                     subtitle: Padding(
-                      padding: const EdgeInsets.only(top: 4.0),
+                      padding: const EdgeInsets.only(top: 4),
                       child: Row(
                         children: [
                           const Icon(Icons.access_time, size: 12, color: Colors.teal),
@@ -785,7 +785,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
     // Default: Welcome / Instructions panel
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -858,7 +858,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -872,7 +872,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                         return Container(
                           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                           decoration: BoxDecoration(
-                            color: Colors.teal.withOpacity(0.1),
+                            color: Colors.teal.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(t, style: const TextStyle(fontSize: 8, color: Colors.teal)),
@@ -896,18 +896,18 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
     // Extract points to plot:
     // If itinerary is active, plot itinerary sequence.
     // If pretzel/dining search is active, plot suggested pins.
-    final List<MapPin> mapPins = [];
-    final List<Offset> routeLines = [];
+    final mapPins = <MapPin>[];
+    final routeLines = <Offset>[];
 
     // Let's identify the park center and coordinates boundary.
     // We'll use Magic Kingdom coords as default: Center = 28.4194, -81.5812
-    const double centerLat = 28.4194;
-    const double centerLng = -81.5812;
-    const double paddingDeg = 0.005;
-    const double minLat = centerLat - paddingDeg;
-    const double maxLat = centerLat + paddingDeg;
-    const double minLng = centerLng - paddingDeg;
-    const double maxLng = centerLng + paddingDeg;
+    const centerLat = 28.4194;
+    const centerLng = -81.5812;
+    const paddingDeg = 0.005;
+    const minLat = centerLat - paddingDeg;
+    const maxLat = centerLat + paddingDeg;
+    const minLng = centerLng - paddingDeg;
+    const maxLng = centerLng + paddingDeg;
 
     Offset getCanvasOffset(double lat, double lng, Size mapSize) {
       final x = (lng - minLng) / (maxLng - minLng) * mapSize.width;
@@ -931,7 +931,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
         // Add itinerary pins and compile route path lines
         if (state.currentItineraryItems != null) {
           final items = state.currentItineraryItems!;
-          for (int i = 0; i < items.length; i++) {
+          for (var i = 0; i < items.length; i++) {
             final item = items[i];
             final pinOffset = getCanvasOffset(item.latitude, item.longitude, mapSize);
             mapPins.add(MapPin(
@@ -956,10 +956,8 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
               'pretzel_3': [28.4183, -81.5840],
             };
             for (final f in lastMsg.suggestedFacilities!) {
-              List<double>? coords = pretCoordMap[f.id];
-              if (coords == null) {
-                coords = SearchNotifier.knownCoords[f.id];
-              }
+              var coords = pretCoordMap[f.id];
+              coords ??= SearchNotifier.knownCoords[f.id];
               if (coords != null) {
                 final pinOffset = getCanvasOffset(coords[0], coords[1], mapSize);
                 mapPins.add(MapPin(
@@ -991,8 +989,8 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                       route: routeLines,
                       userOffset: userOffset,
                       isDark: Theme.of(context).brightness == Brightness.dark,
-                      gridColor: Theme.of(context).colorScheme.onSurface.withOpacity(
-                          Theme.of(context).brightness == Brightness.dark ? 0.10 : 0.04),
+                      gridColor: Theme.of(context).colorScheme.onSurface.withValues(
+                          alpha: Theme.of(context).brightness == Brightness.dark ? 0.10 : 0.04),
                     ),
                   ),
                 ),
@@ -1012,8 +1010,8 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                               : (pin.isSnack ? Colors.orange : Colors.teal),
                           shape: BoxShape.circle,
                           border: Border.all(color: Colors.white, width: 2),
-                          boxShadow: [
-                            BoxShadow(color: Colors.black26, blurRadius: 4, offset: const Offset(0, 2)),
+                          boxShadow: const [
+                            BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2)),
                           ],
                         ),
                         child: Center(
@@ -1038,7 +1036,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
   Widget _buildVoiceOverlayWidget() {
     final theme = Theme.of(context);
     return Container(
-      color: theme.colorScheme.onSurface.withOpacity(0.87),
+      color: theme.colorScheme.onSurface.withValues(alpha: 0.87),
       width: double.infinity,
       height: double.infinity,
       child: Center(
@@ -1097,8 +1095,7 @@ class MapPin {
   MapPin({
     required this.offset,
     required this.label,
-    this.name,
-    required this.isUser,
+    required this.isUser, this.name,
     this.isSnack = false,
   });
 
@@ -1132,7 +1129,7 @@ class _AIHelperMapPainter extends CustomPainter {
       ..strokeWidth = 1.0;
 
     // Draw background grid lines
-    const double step = 20.0;
+    const step = 20;
     for (double x = 0; x < size.width; x += step) {
       canvas.drawLine(Offset(x, 0), Offset(x, size.height), gridPaint);
     }
@@ -1142,7 +1139,7 @@ class _AIHelperMapPainter extends CustomPainter {
 
     // Draw coordinate zones (mock park boundaries for styling)
     final zonePaint = Paint()
-      ..color = Colors.teal.withOpacity(isDark ? 0.05 : 0.03)
+      ..color = Colors.teal.withValues(alpha: isDark ? 0.05 : 0.03)
       ..style = PaintingStyle.fill;
     
     canvas.drawCircle(Offset(size.width * 0.45, size.height * 0.45), size.width * 0.35, zonePaint);
@@ -1158,7 +1155,7 @@ class _AIHelperMapPainter extends CustomPainter {
         ..strokeCap = StrokeCap.round;
 
       // Draw dashed connecting path
-      for (int i = 0; i < route.length - 1; i++) {
+      for (var i = 0; i < route.length - 1; i++) {
         final p1 = route[i];
         final p2 = route[i + 1];
         _drawDashedLine(canvas, p1, p2, routePaint);
@@ -1167,21 +1164,21 @@ class _AIHelperMapPainter extends CustomPainter {
   }
 
   void _drawDashedLine(Canvas canvas, Offset p1, Offset p2, Paint paint) {
-    const double dashWidth = 8.0;
-    const double dashSpace = 6.0;
+    const dashWidth = 8;
+    const dashSpace = 6;
 
-    final double distance = (p2 - p1).distance;
-    final int dashCount = (distance / (dashWidth + dashSpace)).floor();
+    final distance = (p2 - p1).distance;
+    final dashCount = (distance / (dashWidth + dashSpace)).floor();
     
-    final Offset direction = (p2 - p1) / distance;
+    final direction = (p2 - p1) / distance;
     
-    for (int i = 0; i < dashCount; i++) {
-      final double startOffset = i * (dashWidth + dashSpace);
-      final double endOffset = startOffset + dashWidth;
+    for (var i = 0; i < dashCount; i++) {
+      final startOffset = i * (dashWidth + dashSpace);
+      final endOffset = startOffset + dashWidth;
       
       canvas.drawLine(
-        p1 + direction * startOffset,
-        p1 + direction * endOffset,
+        p1 + direction * startOffset.toDouble(),
+        p1 + direction * endOffset.toDouble(),
         paint,
       );
     }
@@ -1204,18 +1201,18 @@ class _VoiceWaveformPainter extends CustomPainter {
       ..strokeWidth = 3.0
       ..strokeCap = StrokeCap.round;
 
-    final int barCount = 20;
-    final double spacing = size.width / barCount;
+    const barCount = 20;
+    final spacing = size.width / barCount;
     
-    for (int i = 0; i < barCount; i++) {
+    for (var i = 0; i < barCount; i++) {
       // Calculate random wave heights influenced by animation value and bar position
-      final double phase = (i * 0.5) + (animationValue * 2.0 * math.pi);
-      final double heightScale = (math.sin(phase).abs() * 0.7) + 0.3;
-      final double barHeight = size.height * heightScale;
+      final phase = (i * 0.5) + (animationValue * 2.0 * math.pi);
+      final heightScale = (math.sin(phase).abs() * 0.7) + 0.3;
+      final barHeight = size.height * heightScale;
       
-      final double x = (i * spacing) + (spacing / 2);
-      final double startY = (size.height - barHeight) / 2;
-      final double endY = startY + barHeight;
+      final x = (i * spacing) + (spacing / 2);
+      final startY = (size.height - barHeight) / 2;
+      final endY = startY + barHeight;
       
       canvas.drawLine(Offset(x, startY), Offset(x, endY), wavePaint);
     }

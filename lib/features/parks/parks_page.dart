@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:themeparkapp/core/providers.dart';
 import 'package:themeparkapp/features/park/park_page.dart';
-import 'package:themeparkapp/features/park/widgets/sparkline_chart.dart';
 import 'package:themeparkapp/features/park/widgets/park_map.dart';
+import 'package:themeparkapp/features/park/widgets/sparkline_chart.dart';
 import 'package:themeparkapp/models/park.dart';
 import 'package:themeparkapp/models/park_detail.dart';
 
@@ -25,7 +25,7 @@ final parkWaitTimeTrendProvider = Provider.family<List<int>, String>((ref, parkI
   final waitTimes = waitTimesAsync.valueOrNull?.waitTimes ?? [];
   final openRides = waitTimes.where((w) => w.status == 'Open' && w.waitMinutes != null).toList();
 
-  final int currentAvg = openRides.isEmpty
+  final currentAvg = openRides.isEmpty
       ? (parkId == 'p1' ? 30 : (parkId == 'p2' ? 45 : (parkId == 'p3' ? 25 : (parkId == 'p4' ? 55 : 35))))
       : (openRides.map((w) => w.waitMinutes!).reduce((a, b) => a + b) / openRides.length).round();
 
@@ -92,7 +92,7 @@ class ParksPage extends ConsumerWidget {
                         width: constraints.maxWidth * 0.42,
                         child: GridView.builder(
                           gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent: 300.0,
+                            maxCrossAxisExtent: 300,
                             mainAxisExtent: 220,
                             crossAxisSpacing: 12,
                             mainAxisSpacing: 12,
@@ -175,7 +175,7 @@ class ParkHeroCard extends ConsumerWidget {
     final waitTimesAsync = ref.watch(waitTimesProvider(park.id));
     final waitTimes = waitTimesAsync.valueOrNull?.waitTimes ?? [];
     final openRides = waitTimes.where((w) => w.status == 'Open' && w.waitMinutes != null).toList();
-    final int currentAvg = openRides.isEmpty
+    final currentAvg = openRides.isEmpty
         ? (park.id == 'p1' ? 30 : (park.id == 'p2' ? 45 : (park.id == 'p3' ? 25 : (park.id == 'p4' ? 55 : 35))))
         : (openRides.map((w) => w.waitMinutes!).reduce((a, b) => a + b) / openRides.length).round();
 
@@ -209,8 +209,8 @@ class ParkHeroCard extends ConsumerWidget {
                     begin: Alignment.bottomCenter,
                     end: Alignment.topCenter,
                     colors: [
-                      Colors.black.withOpacity(0.85),
-                      Colors.black.withOpacity(0.3),
+                      Colors.black.withValues(alpha: 0.85),
+                      Colors.black.withValues(alpha: 0.3),
                       Colors.transparent,
                     ],
                     stops: const [0.0, 0.5, 1.0],
@@ -241,7 +241,7 @@ class ParkHeroCard extends ConsumerWidget {
                     ],
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -284,7 +284,7 @@ class ParkHeroCard extends ConsumerWidget {
                         fontWeight: FontWeight.bold,
                         shadows: [
                           Shadow(
-                            color: Colors.black.withOpacity(0.6),
+                            color: Colors.black.withValues(alpha: 0.6),
                             offset: const Offset(0, 2),
                             blurRadius: 4,
                           ),
@@ -295,7 +295,6 @@ class ParkHeroCard extends ConsumerWidget {
                     // Sparkline Trend Visualization
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         const Flexible(
                           child: Text(
@@ -342,7 +341,7 @@ class ParkDetailPane extends ConsumerWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 4,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

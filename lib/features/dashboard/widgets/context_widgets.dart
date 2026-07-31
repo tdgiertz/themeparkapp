@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'dart:math';
+
+import 'package:flutter/material.dart';
 import 'package:themeparkapp/core/theme.dart';
 
 /// Widget displaying global crowd level as a gauge.
@@ -18,10 +19,10 @@ class CrowdIndexGauge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? AppTheme.cardSurface : Colors.blue.shade50,
+        color: isDark ? Theme.of(context).colorScheme.surface : Colors.blue.shade50,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDark ? AppTheme.cardSurface : Colors.blue.shade200,
+          color: isDark ? Theme.of(context).colorScheme.surface : Colors.blue.shade200,
           width: 1.5,
         ),
       ),
@@ -31,12 +32,12 @@ class CrowdIndexGauge extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Resort Busyness',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: AppTheme.primaryText,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               Text(
@@ -57,6 +58,7 @@ class CrowdIndexGauge extends StatelessWidget {
               painter: _GaugePainter(
                 score: busynessScore,
                 primaryColor: _getGaugeColor(busynessScore),
+                needleColor: Theme.of(context).colorScheme.onSurface,
               ),
               size: Size.infinite,
             ),
@@ -66,9 +68,9 @@ class CrowdIndexGauge extends StatelessWidget {
           Center(
             child: Text(
               _getStatusLabel(busynessScore),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12,
-                color: AppTheme.secondaryText,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -95,15 +97,17 @@ class _GaugePainter extends CustomPainter {
   _GaugePainter({
     required this.score,
     required this.primaryColor,
+    required this.needleColor,
   });
 
   final int score;
   final Color primaryColor;
+  final Color needleColor;
 
   @override
   void paint(Canvas canvas, Size size) {
-    const startAngle = -3.14159; // -π (left side)
-    const sweepAngle = 3.14159; // π (semicircle)
+    final startAngle = -3.14159; // -π (left side)
+    final sweepAngle = 3.14159; // π (semicircle)
 
     // Draw background arc
     final backgroundPaint = Paint()
@@ -143,7 +147,7 @@ class _GaugePainter extends CustomPainter {
     );
 
     final needlePaint = Paint()
-      ..color = AppTheme.primaryText
+      ..color = needleColor
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
 
@@ -151,7 +155,7 @@ class _GaugePainter extends CustomPainter {
 
     // Draw center dot
     final dotPaint = Paint()
-      ..color = AppTheme.primaryText
+      ..color = needleColor
       ..style = PaintingStyle.fill;
 
     canvas.drawCircle(Offset(centerX, centerY), 4, dotPaint);
@@ -184,22 +188,22 @@ class WeatherWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? AppTheme.cardSurface : Colors.amber.shade50,
+        color: isDark ? Theme.of(context).colorScheme.surface : Colors.amber.shade50,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDark ? AppTheme.cardSurface : Colors.amber.shade200,
+          color: isDark ? Theme.of(context).colorScheme.surface : Colors.amber.shade200,
           width: 1.5,
         ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Hyper-Local Weather',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
-              color: AppTheme.primaryText,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 12),
@@ -212,25 +216,25 @@ class WeatherWidget extends StatelessWidget {
                 children: [
                   Text(
                     '$tempF°F – $condition',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
-                      color: AppTheme.primaryText,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${precipitationChance}% chance of rain',
-                    style: const TextStyle(
+                    '$precipitationChance% chance of rain',
+                    style: TextStyle(
                       fontSize: 11,
-                      color: AppTheme.secondaryText,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                   Text(
-                    'Wind: ${windMph} mph',
-                    style: const TextStyle(
+                    'Wind: $windMph mph',
+                    style: TextStyle(
                       fontSize: 11,
-                      color: AppTheme.secondaryText,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -243,13 +247,13 @@ class WeatherWidget extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: precipitationChance > 50
-                  ? AppTheme.statusWarning.withOpacity(0.12)
-                  : AppTheme.primaryAccent.withOpacity(0.08),
+                  ? AppTheme.statusWarning.withValues(alpha: 0.12)
+                  : Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
                 color: precipitationChance > 50
-                    ? AppTheme.statusWarning.withOpacity(0.3)
-                    : AppTheme.primaryAccent.withOpacity(0.2),
+                    ? AppTheme.statusWarning.withValues(alpha: 0.3)
+                    : Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
               ),
             ),
             child: Row(
@@ -308,7 +312,7 @@ class WeatherWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
+        color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Icon(icon, color: color, size: 28),

@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:io' show Platform;
 import 'dart:math' as math;
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:responsive_builder/responsive_builder.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:go_router/go_router.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 import 'package:themeparkapp/core/providers.dart';
 import 'package:themeparkapp/models/park_detail.dart';
 import 'package:themeparkapp/models/wait_time.dart';
@@ -204,9 +205,9 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
             Container(
               height: 120,
               decoration: BoxDecoration(
-                color: Colors.teal.withOpacity(0.1),
+                color: Colors.teal.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.teal.withOpacity(0.3)),
+                border: Border.all(color: Colors.teal.withValues(alpha: 0.3)),
               ),
               child: const Center(
                 child: Column(
@@ -242,7 +243,9 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
       if (filter == 'Dairy-Free' && !item.dietaryTags.contains('Dairy-Free')) return false;
       if (filter == 'Vegetarian' &&
           !item.dietaryTags.contains('Vegetarian') &&
-          !item.dietaryTags.contains('Vegan')) return false;
+          !item.dietaryTags.contains('Vegan')) {
+        return false;
+      }
     }
     return true;
   }
@@ -345,7 +348,6 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
           return [
             SliverAppBar(
               expandedHeight: 220,
-              floating: false,
               pinned: true,
               backgroundColor: theme.colorScheme.surface,
               flexibleSpace: FlexibleSpaceBar(
@@ -361,7 +363,7 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                         : [
                             Shadow(
                               blurRadius: 8,
-                              color: theme.colorScheme.onSurface.withOpacity(0.6),
+                              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                               offset: const Offset(0, 2),
                             ),
                           ],
@@ -372,7 +374,6 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                   children: [
                     _buildImage(
                       staticImage,
-                      fit: BoxFit.cover,
                     ),
                     Container(
                           decoration: BoxDecoration(
@@ -380,9 +381,9 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: [
-                            theme.colorScheme.onSurface.withOpacity(0.38),
+                            theme.colorScheme.onSurface.withValues(alpha: 0.38),
                             Colors.transparent,
-                            theme.colorScheme.onSurface.withOpacity(0.54),
+                            theme.colorScheme.onSurface.withValues(alpha: 0.54),
                           ],
                         ),
                       ),
@@ -414,7 +415,7 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                 Card(
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   child: Padding(
-                    padding: const EdgeInsets.all(12.0),
+                    padding: const EdgeInsets.all(12),
                     child: Column(
                       children: [
                         SizedBox(
@@ -486,10 +487,10 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                     height: 300,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: theme.colorScheme.outlineVariant.withOpacity(0.5)),
+                      border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5)),
                       boxShadow: [
                         BoxShadow(
-                          color: theme.colorScheme.onSurface.withOpacity(0.1),
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
@@ -512,16 +513,15 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                           Positioned.fill(
                             child: FractionallySizedBox(
                               widthFactor: 2.5,
-                              alignment: Alignment((_panOffset * 2.0) - 1.0, 0.0),
+                              alignment: Alignment((_panOffset * 2.0) - 1.0, 0),
                               child: _buildImage(
                                 panoramaImage,
-                                fit: BoxFit.cover,
                               ),
                             ),
                           ),
                           // Dark Overlay for text legibility
                           Container(
-                            color: theme.colorScheme.onSurface.withOpacity(0.15),
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.15),
                           ),
                           // Compass UI Overlay
                           Positioned(
@@ -536,14 +536,14 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                               border: 1,
                               linearGradient: LinearGradient(
                                 colors: [
-                                  Colors.white.withOpacity(0.2),
-                                  Colors.white.withOpacity(0.05),
+                                  Colors.white.withValues(alpha: 0.2),
+                                  Colors.white.withValues(alpha: 0.05),
                                 ],
                               ),
                               borderGradient: LinearGradient(
                                 colors: [
-                                  Colors.white.withOpacity(0.4),
-                                  Colors.white.withOpacity(0.1),
+                                  Colors.white.withValues(alpha: 0.4),
+                                  Colors.white.withValues(alpha: 0.1),
                                 ],
                               ),
                               child: Transform.rotate(
@@ -563,7 +563,7 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                             child: Card(
                               color: theme.cardColor,
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                 child: Row(
                                   children: [
                                     Icon(
@@ -596,10 +596,10 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
-                        side: BorderSide(color: theme.colorScheme.outlineVariant.withOpacity(0.5)),
+                        side: BorderSide(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5)),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.all(20.0),
+                        padding: const EdgeInsets.all(20),
                         child: Column(
                           children: [
                             SizedBox(
@@ -629,14 +629,14 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
           Expanded(
             flex: 3,
             child: Padding(
-              padding: const EdgeInsets.all(24.0),
+              padding: const EdgeInsets.all(24),
               child: Column(
                 children: [
                   Card(
                     elevation: 4,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     child: Padding(
-                      padding: const EdgeInsets.all(20.0),
+                      padding: const EdgeInsets.all(20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -674,7 +674,7 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
         color: theme.colorScheme.surface,
         border: Border(
           top: BorderSide(
-            color: theme.colorScheme.outlineVariant.withOpacity(0.5),
+            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
           ),
         ),
       ),
@@ -684,9 +684,9 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
           children: [
             if (_joinedQueue)
               Card(
-                color: Colors.teal.withOpacity(0.15),
+                color: Colors.teal.withValues(alpha: 0.15),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -749,8 +749,8 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                       foregroundColor: theme.colorScheme.onSecondary,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    child: const Icon(Icons.navigation),
                     onPressed: _simulateNavigation,
+                    child: const Icon(Icons.navigation),
                   ),
               ],
             ),
@@ -773,7 +773,7 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.teal.withOpacity(0.15),
+              color: Colors.teal.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -920,9 +920,9 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: waitColor.withOpacity(0.15),
+            color: waitColor.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: waitColor.withOpacity(0.5), width: 1.5),
+            border: Border.all(color: waitColor.withValues(alpha: 0.5), width: 1.5),
           ),
           child: Column(
             children: [
@@ -938,7 +938,7 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                 'Wait Time',
                 style: TextStyle(
                   fontSize: 10,
-                  color: waitColor.withOpacity(0.8),
+                  color: waitColor.withValues(alpha: 0.8),
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -974,7 +974,7 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
             return FilterChip(
               label: Text(filter),
               selected: active,
-              selectedColor: Colors.teal.withOpacity(0.2),
+              selectedColor: Colors.teal.withValues(alpha: 0.2),
               checkmarkColor: Colors.teal,
               onSelected: (_) => _toggleDietaryFilter(filter),
             );
@@ -997,7 +997,7 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12.0),
+              padding: const EdgeInsets.symmetric(vertical: 12),
               child: Text(
                 cat,
                 style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -1028,11 +1028,10 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                                item.imageUrl,
                                height: 100,
                                width: double.infinity,
-                               fit: BoxFit.cover,
                              ),
                             Expanded(
                               child: Padding(
-                                padding: const EdgeInsets.all(8.0),
+                                padding: const EdgeInsets.all(8),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -1084,8 +1083,8 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
       spacing: 16,
       runSpacing: 8,
       children: [
-        _legendItem('Today\'s Wait', Colors.teal, isDotted: false),
-        _legendItem('Historical Avg', Colors.blueGrey.withOpacity(0.5), isDotted: true),
+        _legendItem("Today's Wait", Colors.teal, isDotted: false),
+        _legendItem('Historical Avg', Colors.blueGrey.withValues(alpha: 0.5), isDotted: true),
         _legendItem('Predictive Wait', Colors.orange, isDotted: true),
       ],
     );
@@ -1191,8 +1190,8 @@ class _InteractiveWaitTimeChartState extends State<InteractiveWaitTimeChart> {
     final index = _hoveredIndex!;
     final xPos = margin + (index * (chartWidth / 12));
 
-    final String hour = hoursLabels[index];
-    final int historical = historicalWaits[index];
+    final hour = hoursLabels[index];
+    final historical = historicalWaits[index];
     
     int? currentActual;
     int? currentPredicted;
@@ -1214,18 +1213,18 @@ class _InteractiveWaitTimeChartState extends State<InteractiveWaitTimeChart> {
         border: 1,
         linearGradient: LinearGradient(
           colors: [
-            Theme.of(context).colorScheme.onSurface.withOpacity(0.75),
-            Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+            Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.75),
+            Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
           ],
         ),
         borderGradient: LinearGradient(
           colors: [
-            Colors.white.withOpacity(0.3),
-            Colors.white.withOpacity(0.1),
+            Colors.white.withValues(alpha: 0.3),
+            Colors.white.withValues(alpha: 0.1),
           ],
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -1285,7 +1284,7 @@ class _WaitTimePainter extends CustomPainter {
 
     // 1. Draw Grid Lines and Labels
     final gridPaint = Paint()
-      ..color = Colors.grey.withOpacity(0.15)
+      ..color = Colors.grey.withValues(alpha: 0.15)
       ..strokeWidth = 1.0;
     
     final textStyle = TextStyle(color: Colors.grey.shade500, fontSize: 9);
@@ -1321,7 +1320,7 @@ class _WaitTimePainter extends CustomPainter {
 
     // 2. Draw Historical Average Line (Dashed, Faded Blue-Grey)
     final histPaint = Paint()
-      ..color = Colors.blueGrey.withOpacity(0.4)
+      ..color = Colors.blueGrey.withValues(alpha: 0.4)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
 
@@ -1354,8 +1353,8 @@ class _WaitTimePainter extends CustomPainter {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            Colors.teal.withOpacity(0.35),
-            Colors.teal.withOpacity(0.0),
+            Colors.teal.withValues(alpha: 0.35),
+            Colors.teal.withValues(alpha: 0),
           ],
         ).createShader(Rect.fromLTRB(margin, getY(120), size.width - margin, size.height - 20))
         ..style = PaintingStyle.fill;
@@ -1395,7 +1394,7 @@ class _WaitTimePainter extends CustomPainter {
       
       // Draw vertical indicator line
       final hoverLinePaint = Paint()
-        ..color = Colors.tealAccent.withOpacity(0.5)
+        ..color = Colors.tealAccent.withValues(alpha: 0.5)
         ..strokeWidth = 1.5;
       canvas.drawLine(Offset(x, 10), Offset(x, size.height - 20), hoverLinePaint);
 

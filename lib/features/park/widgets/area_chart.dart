@@ -56,7 +56,7 @@ class _AreaChartPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final isDark = theme.brightness == Brightness.dark;
-    final textColor = theme.textTheme.bodySmall?.color ?? theme.colorScheme.onSurface.withOpacity(isDark ? 0.7 : 0.7);
+    final textColor = theme.textTheme.bodySmall?.color ?? theme.colorScheme.onSurface.withValues(alpha: isDark ? 0.7 : 0.7);
     final textStyle = TextStyle(
       color: textColor,
       fontSize: 9,
@@ -65,11 +65,11 @@ class _AreaChartPainter extends CustomPainter {
 
     // Determine the Y scale
     final dataMax = data.reduce(math.max);
-    final maxVal = math.max(60.0, (((dataMax + 19) ~/ 20) * 20).toDouble());
+    final maxVal = math.max(60, (((dataMax + 19) ~/ 20) * 20).toDouble());
 
     // Draw horizontal grid lines and Y-axis labels
     final gridPaint = Paint()
-      ..color = theme.colorScheme.onSurface.withOpacity(isDark ? 0.08 : 0.06)
+      ..color = theme.colorScheme.onSurface.withValues(alpha: isDark ? 0.08 : 0.06)
       ..strokeWidth = 1.0;
 
     const gridLinesCount = 3;
@@ -121,8 +121,8 @@ class _AreaChartPainter extends CustomPainter {
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          lineColor.withOpacity(0.3),
-          lineColor.withOpacity(0.0),
+          lineColor.withValues(alpha: 0.3),
+          lineColor.withValues(alpha: 0),
         ],
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
       ..style = PaintingStyle.fill;
@@ -154,17 +154,17 @@ class _AreaChartPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
     
     final dotBorderPaint = Paint()
-      ..color = isDark ? const Color(0xFF1E281F) : Colors.white
+      ..color = theme.colorScheme.surface
       ..strokeWidth = 1.5
       ..style = PaintingStyle.stroke;
 
     for (var i = 0; i < points.length; i++) {
-      canvas.drawCircle(points[i], 4.0, dotPaint);
-      canvas.drawCircle(points[i], 4.0, dotBorderPaint);
+      canvas.drawCircle(points[i], 4, dotPaint);
+      canvas.drawCircle(points[i], 4, dotBorderPaint);
 
       // X-axis labels
       if (i == 0 || i == (points.length - 1) ~/ 2 || i == points.length - 1) {
-        String label = '';
+        var label = '';
         if (i == 0) {
           label = '3h ago';
         } else if (i == points.length - 1) {
@@ -178,7 +178,7 @@ class _AreaChartPainter extends CustomPainter {
           textDirection: TextDirection.ltr,
         )..layout();
         
-        double xOffset = points[i].dx - xTextPainter.width / 2;
+        var xOffset = points[i].dx - xTextPainter.width / 2;
         if (i == 0) xOffset = 0;
         if (i == points.length - 1) xOffset = size.width - xTextPainter.width;
 

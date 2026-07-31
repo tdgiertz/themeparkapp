@@ -107,11 +107,11 @@ void main() {
 
       // Grizzly Giant Burger is non-compliant (has Gluten, Dairy, not Vegan) -> opacity should be 0.12
       // Wilderness Salad is compliant (Vegan) -> opacity should be 1.0
-      bool foundBurgerOpacity = false;
-      bool foundSaladOpacity = false;
+      var foundBurgerOpacity = false;
+      var foundSaladOpacity = false;
       for (final op in animatedOpacities) {
         if (op.child is Container) {
-          final containerChild = op.child as Container;
+          final containerChild = op.child! as Container;
           if (containerChild.child is Card) {
             // Let's inspect the hierarchy to find the name text
             // Or just check if the opacity corresponds to the item.

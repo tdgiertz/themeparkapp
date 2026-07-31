@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:glassmorphism/glassmorphism.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:themeparkapp/core/providers.dart';
-import 'package:themeparkapp/features/park/park_page.dart';
+import 'package:themeparkapp/core/theme.dart';
 import 'package:themeparkapp/features/dashboard/widgets/alerts_widget.dart';
 import 'package:themeparkapp/features/dashboard/widgets/context_widgets.dart';
 import 'package:themeparkapp/features/dashboard/widgets/favorite_card_expanded.dart';
+import 'package:themeparkapp/features/park/park_page.dart';
 import 'package:themeparkapp/models/favorite.dart';
 import 'package:themeparkapp/models/park.dart';
-import 'package:glassmorphism/glassmorphism.dart';
-import 'package:themeparkapp/core/theme.dart';
 // models are parsed via providers; specific model imports not required here.
 
 Color _crowdColor(String? crowd) {
@@ -27,9 +27,9 @@ Color _crowdColor(String? crowd) {
 
 
 class LinearBinding {
-  static LinearGradient timeOfDayGradient() {
+  static LinearGradient timeOfDayGradient(BuildContext context) {
     final hour = DateTime.now().hour;
-    if (hour < 6) return const LinearGradient(colors: [Colors.indigo, AppTheme.appBackground]); // Night
+    if (hour < 6) return LinearGradient(colors: [Colors.indigo, Theme.of(context).scaffoldBackgroundColor]); // Night
     if (hour < 12) return const LinearGradient(colors: [Colors.orange, Colors.blue]); // Morning
     if (hour < 18) return const LinearGradient(colors: [Colors.blue, Colors.lightBlueAccent]); // Day
     return const LinearGradient(colors: [Colors.deepPurple, Colors.orangeAccent]); // Evening

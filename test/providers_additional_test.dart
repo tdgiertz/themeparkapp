@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:themeparkapp/core/providers.dart';
 import 'package:themeparkapp/core/environment_providers.dart';
+import 'package:themeparkapp/core/providers.dart';
 
 void main() {
   test('favoritesProvider loads favorites', () async {
@@ -18,7 +18,7 @@ void main() {
     final resp = container.read(favoritesProvider) as AsyncData;
     expect(resp.value, isNotNull);
     // basic structural check
-    expect((resp.value).favoriteRides, isA<List<dynamic>>());
+    expect(resp.value.favoriteRides, isA<List<dynamic>>());
   });
 
   test('mediaQualityProvider prefers high on wifi and good battery', () async {

@@ -224,8 +224,8 @@ class WaitTimesNotifier extends StateNotifier<AsyncValue<WaitTimesResponse>> {
                 as Map<String, dynamic>,
           );
 
-      final mergedMap = {for (var w in baseResponse.waitTimes) w.rideId: w};
-      for (var update in updateResponse.waitTimes) {
+      final mergedMap = {for (final w in baseResponse.waitTimes) w.rideId: w};
+      for (final update in updateResponse.waitTimes) {
         mergedMap[update.rideId] = update;
       }
 

@@ -1,10 +1,11 @@
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:themeparkapp/models/park_detail.dart';
-import 'package:themeparkapp/models/wait_time.dart';
 import 'package:themeparkapp/features/park/widgets/area_chart.dart';
 import 'package:themeparkapp/features/park/widgets/pulse_dot.dart';
+import 'package:themeparkapp/models/park_detail.dart';
+import 'package:themeparkapp/models/wait_time.dart';
 
 // Reusing MenuItem class structure from facility_detail_page.dart
 class LocalMenuItem {
@@ -160,7 +161,7 @@ class _FacilityDetailSheetContentState extends ConsumerState<FacilityDetailSheet
         });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Successfully joined Virtual Queue for ${_queueGroup}!'),
+            content: Text('Successfully joined Virtual Queue for $_queueGroup!'),
             backgroundColor: Colors.teal,
           ),
         );
@@ -176,7 +177,9 @@ class _FacilityDetailSheetContentState extends ConsumerState<FacilityDetailSheet
       if (filter == 'Dairy-Free' && !item.dietaryTags.contains('Dairy-Free')) return false;
       if (filter == 'Vegetarian' &&
           !item.dietaryTags.contains('Vegetarian') &&
-          !item.dietaryTags.contains('Vegan')) return false;
+          !item.dietaryTags.contains('Vegan')) {
+        return false;
+      }
     }
     return true;
   }
@@ -200,7 +203,7 @@ class _FacilityDetailSheetContentState extends ConsumerState<FacilityDetailSheet
     final currentWait = widget.wait?.waitMinutes ?? 0;
     final waitText = isClosed ? 'Closed' : '${currentWait}m';
     
-    Color waitColor = Colors.green.shade600;
+    var waitColor = Colors.green.shade600;
     if (isClosed) {
       waitColor = Colors.grey;
     } else if (currentWait > 50) {
@@ -217,7 +220,7 @@ class _FacilityDetailSheetContentState extends ConsumerState<FacilityDetailSheet
 
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E281F) : const Color(0xFFF4F7F4),
+        color: theme.colorScheme.surface,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(24),
           topRight: Radius.circular(24),
@@ -351,7 +354,7 @@ class _FacilityDetailSheetContentState extends ConsumerState<FacilityDetailSheet
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          padding: const EdgeInsets.symmetric(vertical: 8),
                           child: Text(
                             cat,
                             style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
@@ -366,13 +369,13 @@ class _FacilityDetailSheetContentState extends ConsumerState<FacilityDetailSheet
                             final item = items[idx];
                             return Card(
                               elevation: 0,
-                              color: isDark ? Colors.white.withOpacity(0.04) : Colors.white,
+                              color: isDark ? Colors.white.withValues(alpha: 0.04) : Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                side: BorderSide(color: theme.colorScheme.outlineVariant.withOpacity(0.3)),
+                                side: BorderSide(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3)),
                               ),
                               child: Padding(
-                                padding: const EdgeInsets.all(8.0),
+                                padding: const EdgeInsets.all(8),
                                 child: Row(
                                   children: [
                                     ClipRRect(
@@ -426,14 +429,14 @@ class _FacilityDetailSheetContentState extends ConsumerState<FacilityDetailSheet
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: waitColor.withOpacity(0.15),
+                          color: waitColor.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: waitColor.withOpacity(0.5)),
+                          border: Border.all(color: waitColor.withValues(alpha: 0.5)),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            PulseDot(color: waitColor, size: 8),
+                            PulseDot(color: waitColor),
                             const SizedBox(width: 8),
                             Text(
                               isClosed ? 'Closed' : 'Wait Time: $waitText',
@@ -452,13 +455,13 @@ class _FacilityDetailSheetContentState extends ConsumerState<FacilityDetailSheet
                   // Virtual Queue Card
                   Card(
                     elevation: 0,
-                    color: isDark ? Colors.white.withOpacity(0.04) : Colors.white,
+                    color: isDark ? Colors.white.withValues(alpha: 0.04) : Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
-                      side: BorderSide(color: theme.colorScheme.outlineVariant.withOpacity(0.3)),
+                      side: BorderSide(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3)),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.all(16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -502,9 +505,9 @@ class _FacilityDetailSheetContentState extends ConsumerState<FacilityDetailSheet
                             Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: Colors.teal.withOpacity(0.15),
+                                color: Colors.teal.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: Colors.teal.withOpacity(0.4)),
+                                border: Border.all(color: Colors.teal.withValues(alpha: 0.4)),
                               ),
                               child: Row(
                                 children: [
@@ -551,13 +554,13 @@ class _FacilityDetailSheetContentState extends ConsumerState<FacilityDetailSheet
                   
                   Card(
                     elevation: 0,
-                    color: isDark ? Colors.white.withOpacity(0.04) : Colors.white,
+                    color: isDark ? Colors.white.withValues(alpha: 0.04) : Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
-                      side: BorderSide(color: theme.colorScheme.outlineVariant.withOpacity(0.3)),
+                      side: BorderSide(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3)),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                       child: AreaChartWidget(
                         data: _getWaitTimeTrend(widget.facility.id, currentWait),
                         lineColor: waitColor,
@@ -579,7 +582,7 @@ class _FacilityDetailSheetContentState extends ConsumerState<FacilityDetailSheet
                 icon: Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.onSurface.withOpacity(isDark ? 0.38 : 0.54),
+                    color: theme.colorScheme.onSurface.withValues(alpha: isDark ? 0.38 : 0.54),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(Icons.close, size: 20),
