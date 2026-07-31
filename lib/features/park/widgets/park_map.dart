@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:themeparkapp/features/park/park_explorer_state.dart';
@@ -88,6 +89,7 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
   Animation<Matrix4>? _mapPanAnimation;
   String? _lastSelectedFacilityId;
   final double _paddingDeg = 0.005; // ~550m radius around center
+  List<String>? _lastAnimatedFacilityIds;
 
   @override
   void initState() {
@@ -95,7 +97,7 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
     _transformationController = TransformationController();
     _mapPanController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 300),
     );
     _pulseController = AnimationController(
       vsync: this,
@@ -119,14 +121,15 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
     }
   }
 
-  void _animateToMatrix(Matrix4 endMatrix) {
+  void _animateToMatrix(Matrix4 endMatrix, {Duration duration = const Duration(milliseconds: 300)}) {
+    _mapPanController.duration = duration;
     _mapPanAnimation?.removeListener(_onMapPanAnimate);
     _mapPanAnimation = Matrix4Tween(
       begin: _transformationController.value,
       end: endMatrix,
     ).animate(CurvedAnimation(
       parent: _mapPanController,
-      curve: Curves.easeInOutCubic,
+      curve: Curves.easeInOut,
     ));
     _mapPanController.addListener(_onMapPanAnimate);
     _mapPanController.forward(from: 0);
@@ -147,7 +150,60 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
       )
       ..scale(zoom);
 
-    _animateToMatrix(endMatrix);
+    _animateToMatrix(endMatrix, duration: const Duration(milliseconds: 300));
+  }
+
+  void _animateToBounds(List<Facility> facilities, Size mapSize, Size viewportSize) {
+    if (facilities.isEmpty) {
+      _animateToMatrix(Matrix4.identity(), duration: const Duration(milliseconds: 300));
+      return;
+    }
+
+    double minLat = double.infinity;
+    double maxLat = -double.infinity;
+    double minLng = double.infinity;
+    double maxLng = -double.infinity;
+
+    for (final f in facilities) {
+      final loc = AttractionLocation.fromId(f.id, _centerLat, _centerLng);
+      if (loc.latitude < minLat) minLat = loc.latitude;
+      if (loc.latitude > maxLat) maxLat = loc.latitude;
+      if (loc.longitude < minLng) minLng = loc.longitude;
+      if (loc.longitude > maxLng) maxLng = loc.longitude;
+    }
+
+    // Convert to canvas positions
+    final xMin = (minLng - _minLng) / (_maxLng - _minLng) * mapSize.width;
+    final xMax = (maxLng - _minLng) / (_maxLng - _minLng) * mapSize.width;
+    final yMin = (_maxLat - maxLat) / (_maxLat - _minLat) * mapSize.height;
+    final yMax = (_maxLat - minLat) / (_maxLat - _minLat) * mapSize.height;
+
+    final w = xMax - xMin;
+    final h = yMax - yMin;
+
+    const padding = 50.0;
+    final availW = viewportSize.width - 2 * padding;
+    final availH = viewportSize.height - 2 * padding;
+
+    double scale = 1.0;
+    if (w > 0 && h > 0) {
+      scale = math.min(availW / w, availH / h);
+    } else {
+      scale = 2.2;
+    }
+    scale = scale.clamp(1.0, 4.0);
+
+    final center = Offset((xMin + xMax) / 2, (yMin + yMax) / 2);
+    final viewportCenter = Offset(viewportSize.width / 2, viewportSize.height / 2);
+
+    final endMatrix = Matrix4.identity()
+      ..translate(
+        viewportCenter.dx - center.dx * scale,
+        viewportCenter.dy - center.dy * scale,
+      )
+      ..scale(scale);
+
+    _animateToMatrix(endMatrix, duration: const Duration(milliseconds: 300));
   }
 
   double get _centerLat => widget.parkId == 'p2' ? 28.4194 : 28.3575;
@@ -180,35 +236,14 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    // Filter facilities based on active filters
-    final activeFilters = ref.watch(selectedFiltersProvider(widget.parkId));
-    
-    // Filter logic
-    final filteredFacilities = widget.facilities.where((f) {
-      if (activeFilters.isEmpty) return true;
-      
-      final matchedWait = widget.waitTimes.where((w) => w.rideId == f.id);
-      final wait = matchedWait.isEmpty ? null : matchedWait.first;
-      final isClosed = wait == null || wait.status != 'Open';
-
-      // Mobile Map automatically filters out closed attractions
-      if (widget.isMobile && isClosed) {
-        return false;
-      }
-
-      final isThrill = f.thrillLevel == 'High' || f.thrillLevel == 'Moderate';
-      final isToddler = f.thrillLevel == 'Low' || (f.heightRequirementInches ?? 0) == 0;
-      final isIndoor = f.name.toLowerCase().contains(RegExp('hall|theater|meet|princess|grotto|grizzly|buzz|space|small world|haunted|mansion|cafe|flight|bluey|zootopia|bear|show'));
-      final isDining = f.name.toLowerCase().contains(RegExp('cafe|restaurant|grill|dining|eats|table|bakery|kitchen|tavern|food|pub'));
-
-      var matches = false;
-      if (activeFilters.contains('thrill') && isThrill) matches = true;
-      if (activeFilters.contains('toddler') && isToddler) matches = true;
-      if (activeFilters.contains('indoor') && isIndoor) matches = true;
-      if (activeFilters.contains('dining') && isDining) matches = true;
-
-      return matches;
-    }).toList();
+    // Filter closed facilities out for mobile map markers
+    final mapFacilities = widget.isMobile
+        ? widget.facilities.where((f) {
+            final matchedWait = widget.waitTimes.where((w) => w.rideId == f.id);
+            final wait = matchedWait.isEmpty ? null : matchedWait.first;
+            return wait != null && wait.status == 'Open';
+          }).toList()
+        : widget.facilities;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -225,7 +260,7 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
         // Calculate heatmap values for each facility
         final heatmapData = <_HeatPoint>[];
         if (heatmapEnabled && !widget.isMobile) {
-          for (final f in filteredFacilities) {
+          for (final f in mapFacilities) {
             final matchedWait = widget.waitTimes.where((w) => w.rideId == f.id);
             if (matchedWait.isNotEmpty) {
               final w = matchedWait.first;
@@ -271,10 +306,22 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
               );
               _animateToFacility(target, mapSize);
             } else if (oldSelected != null) {
-              _animateToMatrix(Matrix4.identity());
+              _animateToMatrix(Matrix4.identity(), duration: const Duration(milliseconds: 300));
             }
           });
         }
+
+        // Animate camera to bounds when the list of filtered facilities changes
+        final currentIds = mapFacilities.map((f) => f.id).toList();
+        if (_lastAnimatedFacilityIds == null || !listEquals(_lastAnimatedFacilityIds, currentIds)) {
+          _lastAnimatedFacilityIds = currentIds;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              _animateToBounds(mapFacilities, mapSize, constraints.biggest);
+            }
+          });
+        }
+
 
         return InteractiveViewer(
           transformationController: _transformationController,
@@ -310,7 +357,7 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
 
                   // 2. Interactive clustered pins with minimum 44x44 touch targets and high outdoor contrast
                   ..._buildClusteredPins(
-                    facilities: filteredFacilities,
+                    facilities: mapFacilities,
                     mapSize: mapSize,
                     getOffset: getOffset,
                     theme: theme,

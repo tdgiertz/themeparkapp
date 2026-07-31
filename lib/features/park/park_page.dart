@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io' show Platform;
+import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -61,6 +62,21 @@ class _ParkPageState extends ConsumerState<ParkPage> {
   final Set<String> _desktopActiveTypes = {};
   final Set<String> _desktopActiveWaitTimes = {}; // '15', '30', '60'
   final Set<String> _desktopActiveLands = {};
+
+  // Sorting States
+  String _mobileSort = 'proximity'; // 'proximity', 'waitTime', 'recency'
+  String _desktopSort = 'alphabetical'; // 'alphabetical', 'historicalAverage', 'rating'
+
+  double get _centerLat => widget.parkId == 'p2' ? 28.4194 : 28.3575;
+  double get _centerLng => widget.parkId == 'p2' ? -81.5812 : -81.5907;
+
+  double _calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+    const p = 0.017453292519943295; // Pi/180
+    final a = 0.5 - math.cos((lat2 - lat1) * p)/2 + 
+          math.cos(lat1 * p) * math.cos(lat2 * p) * 
+          (1 - math.cos((lon2 - lon1) * p))/2;
+    return 12742 * math.asin(math.sqrt(a)); // 2 * R; R = 6371 km
+  }
 
   @override
   void initState() {
@@ -164,6 +180,39 @@ class _ParkPageState extends ConsumerState<ParkPage> {
         }
       }
     }
+
+    final userPos = ref.read(userLocationProvider(widget.parkId));
+    if (_mobileSort == 'proximity') {
+      items.sort((a, b) {
+        final locA = AttractionLocation.fromId(a.facility.id, _centerLat, _centerLng);
+        final locB = AttractionLocation.fromId(b.facility.id, _centerLat, _centerLng);
+        final distA = _calculateDistance(userPos.latitude, userPos.longitude, locA.latitude, locA.longitude);
+        final distB = _calculateDistance(userPos.latitude, userPos.longitude, locB.latitude, locB.longitude);
+        return distA.compareTo(distB);
+      });
+    } else if (_mobileSort == 'waitTime') {
+      items.sort((a, b) {
+        final isClosedA = a.wait == null || a.wait!.status != 'Open';
+        final isClosedB = b.wait == null || b.wait!.status != 'Open';
+        final waitA = isClosedA ? 9999 : (a.wait!.waitMinutes ?? 0);
+        final waitB = isClosedB ? 9999 : (b.wait!.waitMinutes ?? 0);
+        if (waitA == waitB) {
+          final locA = AttractionLocation.fromId(a.facility.id, _centerLat, _centerLng);
+          final locB = AttractionLocation.fromId(b.facility.id, _centerLat, _centerLng);
+          final distA = _calculateDistance(userPos.latitude, userPos.longitude, locA.latitude, locA.longitude);
+          final distB = _calculateDistance(userPos.latitude, userPos.longitude, locB.latitude, locB.longitude);
+          return distA.compareTo(distB);
+        }
+        return waitA.compareTo(waitB);
+      });
+    } else if (_mobileSort == 'recency') {
+      items.sort((a, b) {
+        final timeA = DateTime.tryParse(a.wait?.updatedAt ?? '') ?? DateTime.fromMillisecondsSinceEpoch(0);
+        final timeB = DateTime.tryParse(b.wait?.updatedAt ?? '') ?? DateTime.fromMillisecondsSinceEpoch(0);
+        return timeB.compareTo(timeA); // descending
+      });
+    }
+
     return items;
   }
 
@@ -210,6 +259,23 @@ class _ParkPageState extends ConsumerState<ParkPage> {
         items.add(_ListFacilityItem(facility: f, wait: wait, landName: land.name));
       }
     }
+
+    if (_desktopSort == 'alphabetical') {
+      items.sort((a, b) => a.facility.name.compareTo(b.facility.name));
+    } else if (_desktopSort == 'historicalAverage') {
+      items.sort((a, b) {
+        final histA = (a.facility.id.hashCode % 45) + 15;
+        final histB = (b.facility.id.hashCode % 45) + 15;
+        return histA.compareTo(histB);
+      });
+    } else if (_desktopSort == 'rating') {
+      items.sort((a, b) {
+        final ratingA = 4.0 + ((a.facility.id.hashCode % 10) / 10.0) * 0.9;
+        final ratingB = 4.0 + ((b.facility.id.hashCode % 10) / 10.0) * 0.9;
+        return ratingB.compareTo(ratingA); // descending
+      });
+    }
+
     return items;
   }
 
@@ -262,13 +328,12 @@ class _ParkPageState extends ConsumerState<ParkPage> {
     AppLocalizations? loc,
   ) {
     final items = _getFilteredItems(detail, waits);
+    final filteredFacilities = items.map((e) => e.facility).toList();
     final theme = Theme.of(context);
 
     return Scaffold(
       body: Stack(
         children: [
-          _buildStaticBackground(),
-          
           LayoutBuilder(
             builder: (context, constraints) {
               final totalHeight = constraints.maxHeight;
@@ -282,18 +347,21 @@ class _ParkPageState extends ConsumerState<ParkPage> {
 
               return Column(
                 children: [
-                  _buildFilterChips(horizontal: true, loc: loc),
-                  
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: _buildFilterChips(horizontal: true, loc: loc, height: 40),
+                  ),
+
                   // Top Map Section
                   if (_mobileViewMode == _MobileViewMode.fullMap)
                     Expanded(
-                      child: _buildMapSection(detail, waits, isMobile: true),
+                      child: _buildMapSection(filteredFacilities, waits, isMobile: true),
                     )
                   else if (mapHeight > 0)
                     SizedBox(
                       height: mapHeight,
                       width: double.infinity,
-                      child: _buildMapSection(detail, waits, isMobile: true),
+                      child: _buildMapSection(filteredFacilities, waits, isMobile: true),
                     ),
 
                   // Mode Toggle Handle Bar & List Section
@@ -301,28 +369,37 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                     Container(
                       color: theme.colorScheme.surface,
                       padding: const EdgeInsets.only(bottom: 8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      child: Stack(
+                        alignment: Alignment.center,
                         children: [
-                          _buildModeSegmentButton(
-                            label: 'Full Map',
-                            icon: Icons.map,
-                            isSelected: true,
-                            onTap: () => setState(() => _mobileViewMode = _MobileViewMode.fullMap),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              _buildModeSegmentButton(
+                                label: 'Full Map',
+                                icon: Icons.map,
+                                isSelected: true,
+                                onTap: () => setState(() => _mobileViewMode = _MobileViewMode.fullMap),
+                              ),
+                              const SizedBox(width: 8),
+                              _buildModeSegmentButton(
+                                label: 'Split',
+                                icon: Icons.vertical_split,
+                                isSelected: false,
+                                onTap: () => setState(() => _mobileViewMode = _MobileViewMode.split),
+                              ),
+                              const SizedBox(width: 8),
+                              _buildModeSegmentButton(
+                                label: 'Full List',
+                                icon: Icons.view_list,
+                                isSelected: false,
+                                onTap: () => setState(() => _mobileViewMode = _MobileViewMode.fullList),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 8),
-                          _buildModeSegmentButton(
-                            label: 'Split',
-                            icon: Icons.vertical_split,
-                            isSelected: false,
-                            onTap: () => setState(() => _mobileViewMode = _MobileViewMode.split),
-                          ),
-                          const SizedBox(width: 8),
-                          _buildModeSegmentButton(
-                            label: 'Full List',
-                            icon: Icons.view_list,
-                            isSelected: false,
-                            onTap: () => setState(() => _mobileViewMode = _MobileViewMode.fullList),
+                          Positioned(
+                            right: 12,
+                            child: _buildMobileSortIconButton(),
                           ),
                         ],
                       ),
@@ -381,28 +458,37 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                                       ),
                                     ),
                                     const SizedBox(height: 6),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                    Stack(
+                                      alignment: Alignment.center,
                                       children: [
-                                        _buildModeSegmentButton(
-                                          label: 'Full Map',
-                                          icon: Icons.map,
-                                          isSelected: _mobileViewMode == _MobileViewMode.fullMap,
-                                          onTap: () => setState(() => _mobileViewMode = _MobileViewMode.fullMap),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            _buildModeSegmentButton(
+                                              label: 'Full Map',
+                                              icon: Icons.map,
+                                              isSelected: _mobileViewMode == _MobileViewMode.fullMap,
+                                              onTap: () => setState(() => _mobileViewMode = _MobileViewMode.fullMap),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            _buildModeSegmentButton(
+                                              label: 'Split',
+                                              icon: Icons.vertical_split,
+                                              isSelected: _mobileViewMode == _MobileViewMode.split,
+                                              onTap: () => setState(() => _mobileViewMode = _MobileViewMode.split),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            _buildModeSegmentButton(
+                                              label: 'Full List',
+                                              icon: Icons.view_list,
+                                              isSelected: _mobileViewMode == _MobileViewMode.fullList,
+                                              onTap: () => setState(() => _mobileViewMode = _MobileViewMode.fullList),
+                                            ),
+                                          ],
                                         ),
-                                        const SizedBox(width: 8),
-                                        _buildModeSegmentButton(
-                                          label: 'Split',
-                                          icon: Icons.vertical_split,
-                                          isSelected: _mobileViewMode == _MobileViewMode.split,
-                                          onTap: () => setState(() => _mobileViewMode = _MobileViewMode.split),
-                                        ),
-                                        const SizedBox(width: 8),
-                                        _buildModeSegmentButton(
-                                          label: 'Full List',
-                                          icon: Icons.view_list,
-                                          isSelected: _mobileViewMode == _MobileViewMode.fullList,
-                                          onTap: () => setState(() => _mobileViewMode = _MobileViewMode.fullList),
+                                        Positioned(
+                                          right: 12,
+                                          child: _buildMobileSortIconButton(),
                                         ),
                                       ],
                                     ),
@@ -470,7 +556,8 @@ class _ParkPageState extends ConsumerState<ParkPage> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: isSelected ? theme.colorScheme.primary : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+          color: isSelected ? theme.colorScheme.primary : Colors.transparent,
+          border: isSelected ? null : Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.3)),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
@@ -499,6 +586,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
     AppLocalizations? loc,
   ) {
     final items = _getFilteredItems(detail, waits);
+    final filteredFacilities = items.map((e) => e.facility).toList();
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -522,6 +610,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                       child: Column(
                         children: [
                           _buildFilterChips(horizontal: true, loc: loc),
+                          _buildMobileSortRow(),
                           Expanded(
                             child: items.isEmpty
                                 ? const Center(child: Text('No matching items.'))
@@ -570,7 +659,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                   color: theme.colorScheme.onSurface.withValues(alpha: isDark ? 0.08 : 0.06),
                   alignment: Alignment.center,
                   child: Container(
-                    width: 2,
+                     width: 2,
                     height: 40,
                     decoration: BoxDecoration(
                       color: theme.colorScheme.onSurface.withValues(alpha: isDark ? 0.30 : 0.38),
@@ -585,7 +674,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
               child: Stack(
                 children: [
                   Positioned.fill(
-                    child: _buildMapSection(detail, waits, isMobile: false),
+                    child: _buildMapSection(filteredFacilities, waits, isMobile: false),
                   ),
                   
                   // Collapsible Side-Panel Button (Top-Left of Map Pane)
@@ -648,6 +737,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
     AppLocalizations? loc,
   ) {
     final items = _getDesktopFilteredItems(detail, waits);
+    final filteredFacilities = items.map((e) => e.facility).toList();
     final theme = Theme.of(context);
 
     return Row(
@@ -672,9 +762,44 @@ class _ParkPageState extends ConsumerState<ParkPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Attractions Directory',
-                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Attractions Directory',
+                        style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    SizedBox(
+                      width: 140,
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: _desktopSort,
+                          isExpanded: true,
+                          icon: const Icon(Icons.arrow_drop_down, size: 20),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: theme.colorScheme.primary,
+                          ),
+                          onChanged: (String? newValue) {
+                            if (newValue != null) {
+                              setState(() {
+                                _desktopSort = newValue;
+                              });
+                            }
+                          },
+                          items: const [
+                            DropdownMenuItem(value: 'alphabetical', child: Text('Alphabetical')),
+                            DropdownMenuItem(value: 'historicalAverage', child: Text('Hist. Average')),
+                            DropdownMenuItem(value: 'rating', child: Text('User Rating')),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 12),
                 Expanded(
@@ -713,7 +838,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
             children: [
               Expanded(
                 flex: 5,
-                child: _buildMapSection(detail, waits, isMobile: false),
+                child: _buildMapSection(filteredFacilities, waits, isMobile: false),
               ),
               const Divider(height: 1, thickness: 1),
               Expanded(
@@ -762,7 +887,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
     );
   }
 
-  Widget _buildFilterChips({required bool horizontal, required AppLocalizations? loc}) {
+  Widget _buildFilterChips({required bool horizontal, required AppLocalizations? loc, double height = 44}) {
     final activeFilters = ref.watch(selectedFiltersProvider(widget.parkId));
 
     final filters = [
@@ -782,19 +907,20 @@ class _ParkPageState extends ConsumerState<ParkPage> {
     }
 
     return Container(
-      height: 60,
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+      height: height,
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: filters.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        separatorBuilder: (_, __) => const SizedBox(width: 6),
         itemBuilder: (context, index) {
           final opt = filters[index];
           final selected = activeFilters.contains(opt.key);
           return FilterChip(
-            materialTapTargetSize: MaterialTapTargetSize.padded,
-            avatar: Icon(opt.icon, size: 16, color: selected ? Theme.of(context).colorScheme.onPrimary : null),
-            label: Text(opt.label, style: TextStyle(color: selected ? Theme.of(context).colorScheme.onPrimary : null)),
+            visualDensity: VisualDensity.compact,
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            avatar: Icon(opt.icon, size: 14, color: selected ? Theme.of(context).colorScheme.onPrimary : null),
+            label: Text(opt.label, style: TextStyle(fontSize: 12, color: selected ? Theme.of(context).colorScheme.onPrimary : null)),
             selected: selected,
             selectedColor: Theme.of(context).colorScheme.primary,
             checkmarkColor: Theme.of(context).colorScheme.onPrimary,
@@ -1022,18 +1148,13 @@ class _ParkPageState extends ConsumerState<ParkPage> {
   }
 
   Widget _buildMapSection(
-    ParkDetail detail,
+    List<Facility> facilities,
     WaitTimesResponse waits, {
     required bool isMobile,
   }) {
-    final allFacilities = <Facility>[];
-    for (final land in detail.children) {
-      allFacilities.addAll(land.children);
-    }
-
     return ParkMapWidget(
       parkId: widget.parkId,
-      facilities: allFacilities,
+      facilities: facilities,
       waitTimes: waits.waitTimes,
       isMobile: isMobile,
       selectedFacilityId: _selectedFacilityId,
@@ -1045,6 +1166,113 @@ class _ParkPageState extends ConsumerState<ParkPage> {
           context.push('/home/details?facilityId=${facility.id}&parkId=${widget.parkId}');
         }
       },
+    );
+  }
+
+  Widget _buildMobileSortRow() {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Text(
+            'Sort by: ',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
+            ),
+          ),
+          SizedBox(
+            width: 130,
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: _mobileSort,
+                isExpanded: true,
+                icon: const Icon(Icons.arrow_drop_down, size: 20),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.primary,
+                ),
+                onChanged: (String? newValue) {
+                  if (newValue != null) {
+                    setState(() {
+                      _mobileSort = newValue;
+                    });
+                  }
+                },
+                items: const [
+                  DropdownMenuItem(value: 'proximity', child: Text('Nearest to Me')),
+                  DropdownMenuItem(value: 'waitTime', child: Text('Lowest Wait')),
+                  DropdownMenuItem(value: 'recency', child: Text('Data Recency')),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMobileSortIconButton() {
+    final theme = Theme.of(context);
+    return PopupMenuButton<String>(
+      icon: Icon(Icons.sort, color: theme.colorScheme.primary),
+      tooltip: 'Sort options',
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints(),
+      onSelected: (String newValue) {
+        setState(() {
+          _mobileSort = newValue;
+        });
+      },
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+        PopupMenuItem<String>(
+          value: 'proximity',
+          child: Row(
+            children: [
+              Icon(Icons.near_me, size: 18, color: _mobileSort == 'proximity' ? theme.colorScheme.primary : null),
+              const SizedBox(width: 8),
+              const Text('Nearest to Me'),
+            ],
+          ),
+        ),
+        PopupMenuItem<String>(
+          value: 'waitTime',
+          child: Row(
+            children: [
+              Icon(Icons.hourglass_empty, size: 18, color: _mobileSort == 'waitTime' ? theme.colorScheme.primary : null),
+              const SizedBox(width: 8),
+              const Text('Lowest Wait'),
+            ],
+          ),
+        ),
+        PopupMenuItem<String>(
+          value: 'recency',
+          child: Row(
+            children: [
+              Icon(Icons.update, size: 18, color: _mobileSort == 'recency' ? theme.colorScheme.primary : null),
+              const SizedBox(width: 8),
+              const Text('Data Recency'),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTopFilterAndSortRow(AppLocalizations? loc) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      child: Row(
+        children: [
+          Expanded(
+            child: _buildFilterChips(horizontal: true, loc: loc, height: 40),
+          ),
+          const SizedBox(width: 8),
+          _buildMobileSortIconButton(),
+        ],
+      ),
     );
   }
 }
