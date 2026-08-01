@@ -25,20 +25,25 @@ class MockShowtimesRepository implements ShowtimesRepository {
   Future<List<ShowSchedule>> fetchShowtimes() async => [];
 }
 
+class MockSelectedDashboardPark extends SelectedDashboardPark {
+  @override
+  String build() => 'all';
+}
+
 void main() {
   group('Phase 3 Golden Tests', () {
     // We can define a helper to build widgets inside a proper Material App and ProviderScope
     Widget buildTestWidget(
       Widget child, {
       ThemeData? theme,
-      List<Override> overrides = const [],
+      List<dynamic> overrides = const [],
     }) {
       return ProviderScope(
         overrides: [
           assetLoaderProvider.overrideWithValue(
             (_) async => '{"waitTimes": []}',
           ),
-          ...overrides,
+          ...overrides.cast(),
         ],
         child: MaterialApp(
           theme: theme ?? AppTheme.lightTheme(),
@@ -257,7 +262,9 @@ void main() {
         buildTestWidget(
           const SizedBox(width: 400, height: 200, child: UpcomingShowsWidget()),
           overrides: [
-            selectedDashboardParkProvider.overrideWith((ref) => 'all'),
+            selectedDashboardParkProvider.overrideWith(
+              () => MockSelectedDashboardPark(),
+            ),
             upcomingShowsProvider.overrideWith((ref) async => sampleShows),
           ],
         ),

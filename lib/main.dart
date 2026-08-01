@@ -143,7 +143,7 @@ class MyApp extends ConsumerWidget {
     final loc = AppLocalizations.of(context);
     // If location permission is denied and onboarding not completed, show onboarding to request it.
     final perm = ref.watch(locationPermissionProvider);
-    final onboardingDone = ref.watch(onboardingCompletedProvider);
+    final onboardingDone = ref.watch(onboardingProvider);
 
     if ((perm == LocationPermission.denied ||
             perm == LocationPermission.deniedForever) &&

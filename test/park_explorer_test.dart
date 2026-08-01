@@ -69,7 +69,7 @@ void main() {
             ),
             userLocationProvider(
               'p1',
-            ).overrideWith(() => MockUserLocationNotifier()),
+            ).overrideWith(MockUserLocationNotifier.new),
           ],
           child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -115,7 +115,7 @@ void main() {
               ),
               userLocationProvider(
                 'p1',
-              ).overrideWith(() => MockUserLocationNotifier()),
+              ).overrideWith(MockUserLocationNotifier.new),
             ],
             child: const MaterialApp(
               localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -161,7 +161,7 @@ void main() {
               ),
               userLocationProvider(
                 'p1',
-              ).overrideWith(() => MockUserLocationNotifier()),
+              ).overrideWith(MockUserLocationNotifier.new),
             ],
             child: const MaterialApp(
               localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -210,7 +210,7 @@ void main() {
             ),
             userLocationProvider(
               'p1',
-            ).overrideWith(() => MockUserLocationNotifier()),
+            ).overrideWith(MockUserLocationNotifier.new),
           ],
           child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -254,7 +254,7 @@ void main() {
               ),
               userLocationProvider(
                 'p1',
-              ).overrideWith(() => MockUserLocationNotifier()),
+              ).overrideWith(MockUserLocationNotifier.new),
             ],
             child: const MaterialApp(
               localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -402,6 +402,9 @@ class MockLocationPermissionNotifier extends LocationPermissionNotifier {
   }
 }
 
-class MockUserLocationNotifier extends UserLocationNotifier {
-  MockUserLocationNotifier(Ref ref) : super(ref, 'p1');
+class MockUserLocationNotifier extends UserLocation {
+  MockUserLocationNotifier() : super();
+
+  @override
+  ParkCoordinate build(String parkId) => const ParkCoordinate(28.3575, -81.5906);
 }

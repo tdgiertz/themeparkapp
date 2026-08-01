@@ -11,8 +11,12 @@ import 'package:themeparkapp/features/parks/providers/park_providers.dart';
 import 'package:themeparkapp/main.dart' as app;
 
 class FakeLocationPermissionNotifier extends LocationPermissionNotifier {
-  FakeLocationPermissionNotifier(LocationPermission? initial) {
-    state = initial;
+  final LocationPermission? initialPermission;
+  FakeLocationPermissionNotifier(this.initialPermission);
+
+  @override
+  LocationPermission? build() {
+    return initialPermission ?? LocationPermission.always;
   }
 
   @override
@@ -21,9 +25,13 @@ class FakeLocationPermissionNotifier extends LocationPermissionNotifier {
   }
 }
 
-class FakeOnboardingNotifier extends OnboardingNotifier {
-  FakeOnboardingNotifier({required bool initial}) {
-    state = initial;
+class FakeOnboardingNotifier extends Onboarding {
+  final bool initial;
+  FakeOnboardingNotifier({required this.initial});
+
+  @override
+  bool build() {
+    return initial;
   }
 }
 
@@ -81,11 +89,10 @@ void main() {
             overrides: [
               ...commonOverrides,
               locationPermissionProvider.overrideWith(
-                (ref) =>
-                    FakeLocationPermissionNotifier(LocationPermission.denied),
+                () => FakeLocationPermissionNotifier(LocationPermission.denied),
               ),
-              onboardingCompletedProvider.overrideWith(
-                (ref) => FakeOnboardingNotifier(initial: false),
+              onboardingProvider.overrideWith(
+                () => FakeOnboardingNotifier(initial: false),
               ),
             ],
             child: const app.MyApp(),
@@ -110,11 +117,10 @@ void main() {
             overrides: [
               ...commonOverrides,
               locationPermissionProvider.overrideWith(
-                (ref) =>
-                    FakeLocationPermissionNotifier(LocationPermission.always),
+                () => FakeLocationPermissionNotifier(LocationPermission.always),
               ),
-              onboardingCompletedProvider.overrideWith(
-                (ref) => FakeOnboardingNotifier(initial: true),
+              onboardingProvider.overrideWith(
+                () => FakeOnboardingNotifier(initial: true),
               ),
             ],
             child: const app.MyApp(),
@@ -141,11 +147,10 @@ void main() {
           overrides: [
             ...commonOverrides,
             locationPermissionProvider.overrideWith(
-              (ref) =>
-                  FakeLocationPermissionNotifier(LocationPermission.always),
+              () => FakeLocationPermissionNotifier(LocationPermission.always),
             ),
-            onboardingCompletedProvider.overrideWith(
-              (ref) => FakeOnboardingNotifier(initial: true),
+            onboardingProvider.overrideWith(
+              () => FakeOnboardingNotifier(initial: true),
             ),
           ],
           child: const app.MyApp(),
@@ -193,14 +198,13 @@ void main() {
             ...commonOverrides,
             themeModeProvider.overrideWith(() => ThemeModeNotifier()..setThemeMode(ThemeMode.dark)),
             themeSeedColorProvider.overrideWith(
-              (ref) => ThemeSeedColor()..setColor(Colors.purple),
+              () => ThemeSeedColor()..setColor(Colors.purple),
             ),
             locationPermissionProvider.overrideWith(
-              (ref) =>
-                  FakeLocationPermissionNotifier(LocationPermission.always),
+              () => FakeLocationPermissionNotifier(LocationPermission.always),
             ),
-            onboardingCompletedProvider.overrideWith(
-              (ref) => FakeOnboardingNotifier(initial: true),
+            onboardingProvider.overrideWith(
+              () => FakeOnboardingNotifier(initial: true),
             ),
           ],
           child: const app.MyApp(),
