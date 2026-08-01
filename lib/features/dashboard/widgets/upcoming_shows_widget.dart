@@ -53,7 +53,7 @@ DateTime? parseShowTime(String timeStr, DateTime currentDate) {
       hour,
       minute,
     );
-  } catch (_) {
+  } on Object catch (_) {
     return null;
   }
 }

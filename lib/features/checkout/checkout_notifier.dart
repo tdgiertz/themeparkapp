@@ -56,7 +56,7 @@ class CheckoutNotifier extends AsyncNotifier<CheckoutState> {
     try {
       await Future<void>.delayed(const Duration(milliseconds: 350));
       state = const AsyncValue.data(CheckoutState.success('Order placed'));
-    } catch (e) {
+    } on Object catch (e) {
       state = AsyncValue.data(CheckoutState.failure(e.toString()));
     }
   }

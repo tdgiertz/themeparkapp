@@ -28,7 +28,7 @@ final batteryLevelProvider = FutureProvider<int>((ref) async {
   try {
     final level = await _battery.batteryLevel;
     return level;
-  } catch (_) {
+  } on Object catch (_) {
     return 100; // optimistic default
   }
 });
