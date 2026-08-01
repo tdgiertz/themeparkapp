@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:themeparkapp/core/logging/logger.dart';
 import 'package:themeparkapp/core/models/favorite.dart';
 import 'package:themeparkapp/core/models/park.dart';
@@ -59,7 +59,8 @@ class IsParkSelectionManual extends _$IsParkSelectionManual {
   @override
   bool build() => false;
 
-  void setManual(bool value) {
+  // ignore: use_setters_to_change_properties
+  void updateManual({required bool value}) {
     state = value;
   }
 }
@@ -79,7 +80,7 @@ class Dashboard extends ConsumerWidget {
     if (!isManual && detectedParkId != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (ref.read(selectedDashboardParkProvider) != detectedParkId) {
-          ref.read(selectedDashboardParkProvider.notifier).setPark(detectedParkId);
+          ref.read(selectedDashboardParkProvider.notifier).updatePark(detectedParkId);
         }
       });
     }
@@ -119,8 +120,8 @@ class Dashboard extends ConsumerWidget {
               selected: selectedParkId == 'all',
               onSelected: (val) {
                 if (val) {
-                  ref.read(isParkSelectionManualProvider.notifier).setManual(true);
-                  ref.read(selectedDashboardParkProvider.notifier).setPark('all');
+                  ref.read(isParkSelectionManualProvider.notifier).updateManual(value: true);
+                  ref.read(selectedDashboardParkProvider.notifier).updatePark('all');
                 }
               },
             ),
@@ -146,8 +147,8 @@ class Dashboard extends ConsumerWidget {
                   selected: isSelected,
                   onSelected: (val) {
                     if (val) {
-                      ref.read(isParkSelectionManualProvider.notifier).setManual(true);
-                      ref.read(selectedDashboardParkProvider.notifier).setPark(p.id);
+                      ref.read(isParkSelectionManualProvider.notifier).updateManual(value: true);
+                      ref.read(selectedDashboardParkProvider.notifier).updatePark(p.id);
                     }
                   },
                 ),
@@ -233,19 +234,17 @@ class Dashboard extends ConsumerWidget {
                                           ),
                                           onPressed: () {
                                             ref
-                                                    .read(
-                                                      isParkSelectionManualProvider
-                                                          .notifier,
-                                                    )
-                                                    .state =
-                                                true;
+                                                .read(
+                                                  isParkSelectionManualProvider
+                                                      .notifier,
+                                                )
+                                                .updateManual(value: true);
                                             ref
-                                                    .read(
-                                                      selectedDashboardParkProvider
-                                                          .notifier,
-                                                    )
-                                                    .state =
-                                                'all';
+                                                .read(
+                                                  selectedDashboardParkProvider
+                                                      .notifier,
+                                                )
+                                                .updatePark('all');
                                           },
                                         ),
                                       ],
@@ -404,19 +403,17 @@ class Dashboard extends ConsumerWidget {
                                       OutlinedButton.icon(
                                         onPressed: () {
                                           ref
-                                                  .read(
-                                                    isParkSelectionManualProvider
-                                                        .notifier,
-                                                  )
-                                                  .state =
-                                              true;
+                                              .read(
+                                                isParkSelectionManualProvider
+                                                    .notifier,
+                                              )
+                                              .updateManual(value: true);
                                           ref
-                                                  .read(
-                                                    selectedDashboardParkProvider
-                                                        .notifier,
-                                                  )
-                                                  .state =
-                                              'all';
+                                              .read(
+                                                selectedDashboardParkProvider
+                                                    .notifier,
+                                              )
+                                              .updatePark('all');
                                         },
                                         icon: const Icon(
                                           Icons.compare_arrows,

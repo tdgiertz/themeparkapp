@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:math' as math;
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:themeparkapp/core/models/park_detail.dart';
@@ -447,4 +446,3 @@ class SearchNotifier extends _$SearchNotifier {
     state = state.copyWith(currentItineraryItems: updated);
   }
 }
-

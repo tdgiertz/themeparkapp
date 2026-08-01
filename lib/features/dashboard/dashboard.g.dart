@@ -45,7 +45,7 @@ final class IsParkSelectionManualProvider
 }
 
 String _$isParkSelectionManualHash() =>
-    r'6f7ec6c18f6ce099c811281f361aee2bf2264909';
+    r'58f6c4a6e0ee6d4a680ff8777d56917fa090877e';
 
 /// Track whether user has manually modified the dashboard park selection
 

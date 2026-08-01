@@ -7,12 +7,16 @@ import 'package:themeparkapp/core/permissions.dart';
 import 'package:themeparkapp/features/onboarding/onboarding.dart';
 
 class MockLocationPermissionNotifier extends LocationPermissionNotifier {
+  MockLocationPermissionNotifier([LocationPermission? initial])
+      : _initial = initial;
+  final LocationPermission? _initial;
+
   @override
-  LocationPermission? build() => state;
+  LocationPermission? build() => _initial;
 
   @override
   Future<LocationPermission> check() async =>
-      state ?? LocationPermission.denied;
+      _initial ?? LocationPermission.denied;
 }
 
 void main() {
@@ -25,7 +29,7 @@ void main() {
         ProviderScope(
           overrides: [
             locationPermissionProvider.overrideWith(
-              MockLocationPermissionNotifier.new,
+              () => MockLocationPermissionNotifier(LocationPermission.denied),
             ),
           ],
           child: const MaterialApp(home: OnboardingScreen()),

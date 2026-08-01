@@ -10,9 +10,19 @@ import 'package:themeparkapp/features/onboarding/onboarding.dart';
 import 'package:themeparkapp/features/parks/providers/park_providers.dart';
 import 'package:themeparkapp/main.dart' as app;
 
+class FakeOnboardingNotifier extends Onboarding {
+  FakeOnboardingNotifier({required this.initial});
+  final bool initial;
+
+  @override
+  bool build() {
+    return initial;
+  }
+}
+
 class FakeLocationPermissionNotifier extends LocationPermissionNotifier {
-  final LocationPermission? initialPermission;
   FakeLocationPermissionNotifier(this.initialPermission);
+  final LocationPermission? initialPermission;
 
   @override
   LocationPermission? build() {
@@ -25,14 +35,20 @@ class FakeLocationPermissionNotifier extends LocationPermissionNotifier {
   }
 }
 
-class FakeOnboardingNotifier extends Onboarding {
-  final bool initial;
-  FakeOnboardingNotifier({required this.initial});
+class FakeThemeModeNotifier extends ThemeModeNotifier {
+  FakeThemeModeNotifier(this.initial);
+  final ThemeMode initial;
 
   @override
-  bool build() {
-    return initial;
-  }
+  ThemeMode build() => initial;
+}
+
+class FakeThemeSeedColorNotifier extends ThemeSeedColor {
+  FakeThemeSeedColorNotifier(this.initial);
+  final Color initial;
+
+  @override
+  Color? build() => initial;
 }
 
 void main() {
@@ -196,9 +212,9 @@ void main() {
         ProviderScope(
           overrides: [
             ...commonOverrides,
-            themeModeProvider.overrideWith(() => ThemeModeNotifier()..setThemeMode(ThemeMode.dark)),
+            themeModeProvider.overrideWith(() => FakeThemeModeNotifier(ThemeMode.dark)),
             themeSeedColorProvider.overrideWith(
-              () => ThemeSeedColor()..setColor(Colors.purple),
+              () => FakeThemeSeedColorNotifier(Colors.purple),
             ),
             locationPermissionProvider.overrideWith(
               () => FakeLocationPermissionNotifier(LocationPermission.always),

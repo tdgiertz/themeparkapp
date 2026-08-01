@@ -33,8 +33,9 @@ class SettingsPage extends ConsumerWidget {
                     selected: themeMode == ThemeMode.system,
                     onSelected: (selected) {
                       if (selected) {
-                        ref.read(themeModeProvider.notifier).state =
-                            ThemeMode.system;
+                        ref
+                            .read(themeModeProvider.notifier)
+                            .updateThemeMode(ThemeMode.system);
                       }
                     },
                   ),
@@ -43,8 +44,9 @@ class SettingsPage extends ConsumerWidget {
                     selected: themeMode == ThemeMode.light,
                     onSelected: (selected) {
                       if (selected) {
-                        ref.read(themeModeProvider.notifier).state =
-                            ThemeMode.light;
+                        ref
+                            .read(themeModeProvider.notifier)
+                            .updateThemeMode(ThemeMode.light);
                       }
                     },
                   ),
@@ -53,8 +55,9 @@ class SettingsPage extends ConsumerWidget {
                     selected: themeMode == ThemeMode.dark,
                     onSelected: (selected) {
                       if (selected) {
-                        ref.read(themeModeProvider.notifier).state =
-                            ThemeMode.dark;
+                        ref
+                            .read(themeModeProvider.notifier)
+                            .updateThemeMode(ThemeMode.dark);
                       }
                     },
                   ),
@@ -94,8 +97,9 @@ class SettingsPage extends ConsumerWidget {
                                 selected: themeMode == ThemeMode.system,
                                 onSelected: (selected) {
                                   if (selected) {
-                                    ref.read(themeModeProvider.notifier).state =
-                                        ThemeMode.system;
+                                    ref
+                                        .read(themeModeProvider.notifier)
+                                        .updateThemeMode(ThemeMode.system);
                                   }
                                 },
                               ),
@@ -104,8 +108,9 @@ class SettingsPage extends ConsumerWidget {
                                 selected: themeMode == ThemeMode.light,
                                 onSelected: (selected) {
                                   if (selected) {
-                                    ref.read(themeModeProvider.notifier).state =
-                                        ThemeMode.light;
+                                    ref
+                                        .read(themeModeProvider.notifier)
+                                        .updateThemeMode(ThemeMode.light);
                                   }
                                 },
                               ),
@@ -114,8 +119,9 @@ class SettingsPage extends ConsumerWidget {
                                 selected: themeMode == ThemeMode.dark,
                                 onSelected: (selected) {
                                   if (selected) {
-                                    ref.read(themeModeProvider.notifier).state =
-                                        ThemeMode.dark;
+                                    ref
+                                        .read(themeModeProvider.notifier)
+                                        .updateThemeMode(ThemeMode.dark);
                                   }
                                 },
                               ),
@@ -191,8 +197,9 @@ class SettingsPage extends ConsumerWidget {
                                 selected: themeMode == ThemeMode.system,
                                 onSelected: (selected) {
                                   if (selected) {
-                                    ref.read(themeModeProvider.notifier).state =
-                                        ThemeMode.system;
+                                    ref
+                                        .read(themeModeProvider.notifier)
+                                        .updateThemeMode(ThemeMode.system);
                                   }
                                 },
                               ),
@@ -201,8 +208,9 @@ class SettingsPage extends ConsumerWidget {
                                 selected: themeMode == ThemeMode.light,
                                 onSelected: (selected) {
                                   if (selected) {
-                                    ref.read(themeModeProvider.notifier).state =
-                                        ThemeMode.light;
+                                    ref
+                                        .read(themeModeProvider.notifier)
+                                        .updateThemeMode(ThemeMode.light);
                                   }
                                 },
                               ),
@@ -211,8 +219,9 @@ class SettingsPage extends ConsumerWidget {
                                 selected: themeMode == ThemeMode.dark,
                                 onSelected: (selected) {
                                   if (selected) {
-                                    ref.read(themeModeProvider.notifier).state =
-                                        ThemeMode.dark;
+                                    ref
+                                        .read(themeModeProvider.notifier)
+                                        .updateThemeMode(ThemeMode.dark);
                                   }
                                 },
                               ),

@@ -27,7 +27,8 @@ class SelectedFilters extends _$SelectedFilters {
     }
   }
 
-  void update(Set<String> newState) {
+  // ignore: use_setters_to_change_properties
+  void updateFilters(Set<String> newState) {
     state = newState;
   }
 }
@@ -42,7 +43,8 @@ class HeatmapEnabled extends _$HeatmapEnabled {
     state = !state;
   }
 
-  void update(bool enabled) {
+  // ignore: use_setters_to_change_properties
+  void updateEnabled({required bool enabled}) {
     state = enabled;
   }
 }
@@ -53,7 +55,8 @@ class HistoryHourOffset extends _$HistoryHourOffset {
   @override
   int build(String parkId) => 0;
 
-  void update(int offset) {
+  // ignore: use_setters_to_change_properties
+  void updateOffset(int offset) {
     state = offset;
   }
 }
@@ -65,9 +68,7 @@ class UserLocation extends _$UserLocation {
 
   @override
   ParkCoordinate build(String parkId) {
-    ref.onDispose(() {
-      _stopListening();
-    });
+    ref.onDispose(_stopListening);
 
     final perm = ref.watch(locationPermissionProvider);
     if (perm == LocationPermission.always ||
@@ -95,9 +96,7 @@ class UserLocation extends _$UserLocation {
         distanceFilter: 5,
       ),
     ).listen(
-      (pos) {
-        state = ParkCoordinate(pos.latitude, pos.longitude);
-      },
+      (pos) => state = ParkCoordinate(pos.latitude, pos.longitude),
       onError: (_) {},
     );
   }

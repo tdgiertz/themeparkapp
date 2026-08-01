@@ -48,11 +48,13 @@ void main() {
   test(
     'Onboarding re-instantiation after complete() reads back true from prefs',
     () async {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('onboarding_completed', true);
+      SharedPreferences.setMockInitialValues({'onboarding_completed': true});
 
       final container2 = ProviderContainer();
       addTearDown(container2.dispose);
+
+      // Listen to onboardingProvider to ensure state listener updates
+      container2.listen(onboardingProvider, (_, __) {});
       
       // Allow async _load to finish
       await Future<void>.delayed(Duration.zero);

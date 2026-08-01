@@ -35,7 +35,7 @@ class _ResponsiveScaffoldShellState
     // Publish current width so providers can derive device type.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (context.mounted) {
-        ref.read(screenWidthProvider.notifier).setWidth(width);
+        ref.read(screenWidthProvider.notifier).updateWidth(width);
       }
     });
 

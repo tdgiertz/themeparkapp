@@ -15,7 +15,8 @@ class ScreenWidth extends _$ScreenWidth {
   @override
   double build() => 0;
 
-  void setWidth(double width) => state = width;
+  // ignore: use_setters_to_change_properties
+  void updateWidth(double width) => state = width;
 }
 
 /// Device type derived from `screenWidthProvider`.
@@ -59,10 +60,14 @@ final mediaQualityProvider = Provider<MediaQuality>((ref) {
   final conn = ref.watch(connectivityStreamProvider).asData?.value;
   final battery = ref.watch(batteryLevelProvider).asData?.value ?? 100;
 
-  if (conn == ConnectivityResult.none) return MediaQuality.low;
+  if (conn != null && conn.contains(ConnectivityResult.none)) {
+    return MediaQuality.low;
+  }
   if (battery < 20) return MediaQuality.low;
   // For cell connections we conservatively prefer low when unknown.
-  if (conn == ConnectivityResult.ethernet || conn == ConnectivityResult.wifi) {
+  if (conn != null &&
+      (conn.contains(ConnectivityResult.ethernet) ||
+          conn.contains(ConnectivityResult.wifi))) {
     return MediaQuality.high;
   }
   return MediaQuality.low;

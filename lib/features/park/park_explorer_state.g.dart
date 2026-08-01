@@ -374,7 +374,7 @@ final class UserLocationProvider
   }
 }
 
-String _$userLocationHash() => r'15c846fd6bfdd41d95f13e30928a65492bfd584f';
+String _$userLocationHash() => r'296076432c236039b899a596074df12abd097a22';
 
 /// Manage the user's location, streaming real GPS if allowed, falling back to park center.
 

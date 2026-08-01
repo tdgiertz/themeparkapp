@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:themeparkapp/core/models/favorite.dart';
@@ -32,7 +31,8 @@ class ThemeModeNotifier extends _$ThemeModeNotifier {
   @override
   ThemeMode build() => ThemeMode.system;
 
-  void setThemeMode(ThemeMode mode) => state = mode;
+  // ignore: use_setters_to_change_properties
+  void updateThemeMode(ThemeMode mode) => state = mode;
 }
 
 /// Theme seed color state notifier with SharedPreferences persistence.

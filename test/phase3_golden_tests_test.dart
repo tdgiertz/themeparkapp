@@ -263,9 +263,9 @@ void main() {
           const SizedBox(width: 400, height: 200, child: UpcomingShowsWidget()),
           overrides: [
             selectedDashboardParkProvider.overrideWith(
-              () => MockSelectedDashboardPark(),
+              MockSelectedDashboardPark.new,
             ),
-            upcomingShowsProvider.overrideWith((ref) async => sampleShows),
+            upcomingShowsProvider.overrideWith((ref) => Future.value(sampleShows)),
           ],
         ),
       );

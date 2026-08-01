@@ -11,7 +11,8 @@ class SelectedDashboardPark extends _$SelectedDashboardPark {
   @override
   String build() => 'all';
 
-  void setPark(String parkId) {
+  // ignore: use_setters_to_change_properties
+  void updatePark(String parkId) {
     state = parkId;
   }
 }

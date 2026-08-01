@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:themeparkapp/core/models/park.dart';
 import 'package:themeparkapp/core/models/park_detail.dart';
 import 'package:themeparkapp/core/models/wait_time.dart';
@@ -8,7 +9,6 @@ import 'package:themeparkapp/features/park/facility_detail_page.dart';
 import 'package:themeparkapp/features/park/park_page.dart';
 import 'package:themeparkapp/features/park/widgets/park_map.dart';
 import 'package:themeparkapp/features/park/widgets/sparkline_chart.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'parks_page.g.dart';
 
@@ -68,7 +68,8 @@ class SelectedParkId extends _$SelectedParkId {
   @override
   String? build() => null;
 
-  set state(String? value) => super.state = value;
+  // ignore: use_setters_to_change_properties
+  void updateSelectedParkId(String? value) => state = value;
 }
 
 /// Represents global filter selections for the park page.
@@ -91,7 +92,8 @@ class GlobalParkFilter extends _$GlobalParkFilter {
   @override
   ParkFilters build() => ParkFilters();
 
-  set state(ParkFilters value) => super.state = value;
+  // ignore: use_setters_to_change_properties
+  void updateFilter(ParkFilters value) => state = value;
 }
 
 @riverpod
@@ -99,7 +101,8 @@ class ParkWaitTimeSort extends _$ParkWaitTimeSort {
   @override
   String build() => 'Name (A-Z)';
 
-  set state(String value) => super.state = value;
+  // ignore: use_setters_to_change_properties
+  void updateSort(String value) => state = value;
 }
 
 @riverpod
@@ -107,11 +110,12 @@ class ParkFilterDrawerOpen extends _$ParkFilterDrawerOpen {
   @override
   bool build() => false;
 
-  void update(bool Function(bool) callback) {
-    state = callback(state);
+  void toggle() {
+    state = !state;
   }
 
-  set state(bool value) => super.state = value;
+  // ignore: use_setters_to_change_properties
+  void updateOpen({required bool open}) => state = open;
 }
 
 // Upgraded Parks Page supporting Master-Detail layout for desktop/tablet views.
@@ -146,8 +150,9 @@ class ParksPage extends ConsumerWidget {
                   // Safe initialization of selected park
                   if (selectedParkId == null) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
-                      ref.read(selectedParkIdProvider.notifier).state =
-                          activeParkId;
+                      ref.read(selectedParkIdProvider.notifier).updateSelectedParkId(
+                            activeParkId,
+                          );
                     });
                   }
 
@@ -163,7 +168,7 @@ class ParksPage extends ConsumerWidget {
                         parks: parksResp.parks,
                         selectedParkId: activeParkId,
                         onParkSelected: (id) {
-                          ref.read(selectedParkIdProvider.notifier).state = id;
+                          ref.read(selectedParkIdProvider.notifier).updateSelectedParkId(id);
                         },
                       ),
                       const SizedBox(height: 12),
@@ -396,7 +401,7 @@ class ParkNavigationRibbon extends ConsumerWidget {
             onTap: () {
               ref
                   .read(parkFilterDrawerOpenProvider.notifier)
-                  .update((state) => !state);
+                  .toggle();
             },
             borderRadius: BorderRadius.circular(12),
             child: Container(
@@ -1123,11 +1128,10 @@ class DesktopParkDashboard extends ConsumerWidget {
                               onChanged: (String? newValue) {
                                 if (newValue != null) {
                                   ref
-                                          .read(
-                                            parkWaitTimeSortProvider.notifier,
-                                          )
-                                          .state =
-                                      newValue;
+                                      .read(
+                                        parkWaitTimeSortProvider.notifier,
+                                      )
+                                      .updateSort(newValue);
                                   FocusManager.instance.primaryFocus?.unfocus();
                                 }
                               },
@@ -1435,12 +1439,14 @@ class _DesktopFilterDrawerState extends ConsumerState<DesktopFilterDrawer> {
   }
 
   void _applyFilters() {
-    ref.read(globalParkFilterProvider.notifier).state = ParkFilters(
-      ageGroups: Set.from(_localAgeGroups),
-      types: Set.from(_localTypes),
-      statuses: Set.from(_localStatuses),
-    );
-    ref.read(parkFilterDrawerOpenProvider.notifier).state = false;
+    ref.read(globalParkFilterProvider.notifier).updateFilter(
+          ParkFilters(
+            ageGroups: Set.from(_localAgeGroups),
+            types: Set.from(_localTypes),
+            statuses: Set.from(_localStatuses),
+          ),
+        );
+    ref.read(parkFilterDrawerOpenProvider.notifier).updateOpen(open: false);
   }
 
   void _clearAll() {
@@ -1449,8 +1455,8 @@ class _DesktopFilterDrawerState extends ConsumerState<DesktopFilterDrawer> {
       _localTypes.clear();
       _localStatuses.clear();
     });
-    ref.read(globalParkFilterProvider.notifier).state = ParkFilters();
-    ref.read(parkFilterDrawerOpenProvider.notifier).state = false;
+    ref.read(globalParkFilterProvider.notifier).updateFilter(ParkFilters());
+    ref.read(parkFilterDrawerOpenProvider.notifier).updateOpen(open: false);
   }
 
   Widget _buildSectionTitle(String title) {
@@ -1521,8 +1527,9 @@ class _DesktopFilterDrawerState extends ConsumerState<DesktopFilterDrawer> {
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                       onPressed: () {
-                        ref.read(parkFilterDrawerOpenProvider.notifier).state =
-                            false;
+                        ref
+                            .read(parkFilterDrawerOpenProvider.notifier)
+                            .updateOpen(open: false);
                       },
                     ),
                   ],

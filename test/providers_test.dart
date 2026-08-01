@@ -113,22 +113,22 @@ void main() {
       final notifier = container.read(waitTimesProvider('p1').notifier);
       await notifier.refresh();
 
-      final updatedResponse = container.read(waitTimesProvider('p1')).value;
+      final updatedResponse = container.read(waitTimesProvider('p1')).value!;
       // Verify ride a1 is updated to 75 mins
-      final updatedA1 = updatedResponse!.waitTimes.firstWhere(
+      final updatedA1 = updatedResponse.waitTimes.firstWhere(
         (e) => e.rideId == 'a1',
       );
       expect(updatedA1.waitMinutes, equals(75));
 
       // Verify ride a3 is closed (waitMinutes is null)
-      final updatedA3 = updatedResponse!.waitTimes.firstWhere(
+      final updatedA3 = updatedResponse.waitTimes.firstWhere(
         (e) => e.rideId == 'a3',
       );
       expect(updatedA3.status, equals('Closed'));
       expect(updatedA3.waitMinutes, isNull);
 
       // Verify ride a2 (which wasn't in partial update) is still 15 mins
-      final updatedA2 = updatedResponse!.waitTimes.firstWhere(
+      final updatedA2 = updatedResponse.waitTimes.firstWhere(
         (e) => e.rideId == 'a2',
       );
       expect(updatedA2.waitMinutes, equals(15));
