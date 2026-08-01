@@ -23,20 +23,26 @@ void main() {
         SharedPreferences.setMockInitialValues({});
       });
 
-      test('Default state is AppTheme.primaryAccent when no prefs entry exists', () {
-        final notifier = ThemeSeedColorNotifier();
-        expect(notifier.state, AppTheme.primaryAccent);
-      });
+      test(
+        'Default state is AppTheme.primaryAccent when no prefs entry exists',
+        () {
+          final notifier = ThemeSeedColorNotifier();
+          expect(notifier.state, AppTheme.primaryAccent);
+        },
+      );
 
-      test('setColor() persists the correct int value to SharedPreferences', () async {
-        final notifier = ThemeSeedColorNotifier();
-        const testColor = Color(0xFF9C27B0);
-        await notifier.setColor(testColor);
-        expect(notifier.state, testColor);
+      test(
+        'setColor() persists the correct int value to SharedPreferences',
+        () async {
+          final notifier = ThemeSeedColorNotifier();
+          const testColor = Color(0xFF9C27B0);
+          await notifier.setColor(testColor);
+          expect(notifier.state, testColor);
 
-        final prefs = await SharedPreferences.getInstance();
-        expect(prefs.getInt('theme_seed_color'), testColor.toARGB32());
-      });
+          final prefs = await SharedPreferences.getInstance();
+          expect(prefs.getInt('theme_seed_color'), testColor.toARGB32());
+        },
+      );
 
       test('A second instantiation reads back the saved color', () async {
         const testColor = Color(0xFF009688);
@@ -50,62 +56,76 @@ void main() {
     });
 
     group('C. Notifier staleness logic', () {
-      test('ParksNotifier.isStale is true when lastLoaded is null and markStale makes isStale true again', () async {
-        final container = ProviderContainer(
-          overrides: [
-            assetLoaderProvider.overrideWithValue((_) async => '{"data":{"parks":[]}}'),
-          ],
-        );
-        addTearDown(container.dispose);
+      test(
+        'ParksNotifier.isStale is true when lastLoaded is null and markStale makes isStale true again',
+        () async {
+          final container = ProviderContainer(
+            overrides: [
+              assetLoaderProvider.overrideWithValue(
+                (_) async => '{"data":{"parks":[]}}',
+              ),
+            ],
+          );
+          addTearDown(container.dispose);
 
-        final notifier = container.read(parksProvider.notifier);
-        expect(notifier.isStale, isTrue);
+          final notifier = container.read(parksProvider.notifier);
+          expect(notifier.isStale, isTrue);
 
-        await notifier.refresh();
-        expect(notifier.isStale, isFalse);
+          await notifier.refresh();
+          expect(notifier.isStale, isFalse);
 
-        notifier.markStale();
-        expect(notifier.isStale, isTrue);
-      });
+          notifier.markStale();
+          expect(notifier.isStale, isTrue);
+        },
+      );
 
+      test(
+        'ParkDetailNotifier.isStale is true when lastLoaded is null and markStale makes isStale true again',
+        () async {
+          final container = ProviderContainer(
+            overrides: [
+              assetLoaderProvider.overrideWithValue(
+                (_) async => '{"parks":[]}',
+              ),
+            ],
+          );
+          addTearDown(container.dispose);
 
-      test('ParkDetailNotifier.isStale is true when lastLoaded is null and markStale makes isStale true again', () async {
-        final container = ProviderContainer(
-          overrides: [
-            assetLoaderProvider.overrideWithValue((_) async => '{"parks":[]}'),
-          ],
-        );
-        addTearDown(container.dispose);
+          final notifier = container.read(parkDetailProvider('p1').notifier);
+          expect(notifier.isStale, isTrue);
 
-        final notifier = container.read(parkDetailProvider('p1').notifier);
-        expect(notifier.isStale, isTrue);
+          await notifier.refresh();
+          expect(notifier.isStale, isFalse);
 
-        await notifier.refresh();
-        expect(notifier.isStale, isFalse);
-
-        notifier.markStale();
-        expect(notifier.isStale, isTrue);
-      });
+          notifier.markStale();
+          expect(notifier.isStale, isTrue);
+        },
+      );
     });
 
     group('D. SearchNotifier edge cases', () {
-      test("submitQuery('') and submitQuery('   ') - empty guard, no messages added", () async {
-        final container = ProviderContainer(
-          overrides: [
-            assetLoaderProvider.overrideWithValue((_) async => '{"parks":[]}'),
-          ],
-        );
-        addTearDown(container.dispose);
+      test(
+        "submitQuery('') and submitQuery('   ') - empty guard, no messages added",
+        () async {
+          final container = ProviderContainer(
+            overrides: [
+              assetLoaderProvider.overrideWithValue(
+                (_) async => '{"parks":[]}',
+              ),
+            ],
+          );
+          addTearDown(container.dispose);
 
-        final notifier = container.read(searchProvider.notifier);
-        final initialLength = container.read(searchProvider).messages.length;
+          final notifier = container.read(searchProvider.notifier);
+          final initialLength = container.read(searchProvider).messages.length;
 
-        await notifier.submitQuery('');
-        expect(container.read(searchProvider).messages.length, initialLength);
+          await notifier.submitQuery('');
+          expect(container.read(searchProvider).messages.length, initialLength);
 
-        await notifier.submitQuery('   ');
-        expect(container.read(searchProvider).messages.length, initialLength);
-      });
+          await notifier.submitQuery('   ');
+          expect(container.read(searchProvider).messages.length, initialLength);
+        },
+      );
 
       test('setListening(true/false) toggles isListening', () {
         final container = ProviderContainer(
@@ -125,30 +145,44 @@ void main() {
         expect(container.read(searchProvider).isListening, isFalse);
       });
 
-      test('selectFacility(facility) / selectFacility(null) sets and clears selectedFacilityDetails', () {
-        final container = ProviderContainer(
-          overrides: [
-            assetLoaderProvider.overrideWithValue((_) async => '{"parks":[]}'),
-          ],
-        );
-        addTearDown(container.dispose);
+      test(
+        'selectFacility(facility) / selectFacility(null) sets and clears selectedFacilityDetails',
+        () {
+          final container = ProviderContainer(
+            overrides: [
+              assetLoaderProvider.overrideWithValue(
+                (_) async => '{"parks":[]}',
+              ),
+            ],
+          );
+          addTearDown(container.dispose);
 
-        final notifier = container.read(searchProvider.notifier);
-        final facility = Facility(
-          id: 'f1',
-          type: 'ride',
-          category: 'Attraction',
-          name: 'Test Ride',
-        );
+          final notifier = container.read(searchProvider.notifier);
+          final facility = Facility(
+            id: 'f1',
+            type: 'ride',
+            category: 'Attraction',
+            name: 'Test Ride',
+          );
 
-        expect(container.read(searchProvider).selectedFacilityDetails, isNull);
+          expect(
+            container.read(searchProvider).selectedFacilityDetails,
+            isNull,
+          );
 
-        notifier.selectFacility(facility);
-        expect(container.read(searchProvider).selectedFacilityDetails, facility);
+          notifier.selectFacility(facility);
+          expect(
+            container.read(searchProvider).selectedFacilityDetails,
+            facility,
+          );
 
-        notifier.selectFacility(null);
-        expect(container.read(searchProvider).selectedFacilityDetails, isNull);
-      });
+          notifier.selectFacility(null);
+          expect(
+            container.read(searchProvider).selectedFacilityDetails,
+            isNull,
+          );
+        },
+      );
 
       test('"dining near me" query returns suggestedFacilities', () async {
         const attractionsJson = '''
@@ -187,48 +221,60 @@ void main() {
 
         final state = container.read(searchProvider);
         final lastMessage = state.messages.last;
-        expect(lastMessage.text, contains('I found the nearest pretzel/dining spots'));
+        expect(
+          lastMessage.text,
+          contains('I found the nearest pretzel/dining spots'),
+        );
         expect(lastMessage.suggestedFacilities, isNotEmpty);
       });
     });
 
     group('E. Model edge cases', () {
-      test('WaitTime.fromJson with null waitMinutes, missing singleRider/fastLane defaulting to false', () {
-        final json = {
-          'rideId': 'r1',
-          'updatedAt': '2026-07-31T12:00:00Z',
-          'status': 'Open',
-        };
-        final waitTime = WaitTime.fromJson(json);
+      test(
+        'WaitTime.fromJson with null waitMinutes, missing singleRider/fastLane defaulting to false',
+        () {
+          final json = {
+            'rideId': 'r1',
+            'updatedAt': '2026-07-31T12:00:00Z',
+            'status': 'Open',
+          };
+          final waitTime = WaitTime.fromJson(json);
 
-        expect(waitTime.rideId, 'r1');
-        expect(waitTime.waitMinutes, isNull);
-        expect(waitTime.singleRider, isFalse);
-        expect(waitTime.fastLane, isFalse);
-      });
+          expect(waitTime.rideId, 'r1');
+          expect(waitTime.waitMinutes, isNull);
+          expect(waitTime.singleRider, isFalse);
+          expect(waitTime.fastLane, isFalse);
+        },
+      );
 
-      test('Facility.fromJson with null thrillLevel and null heightRequirementInches', () {
-        final json = {
-          'id': 'f1',
-          'type': 'attraction',
-          'category': 'Ride',
-          'name': 'Ferris Wheel',
-        };
-        final facility = Facility.fromJson(json);
+      test(
+        'Facility.fromJson with null thrillLevel and null heightRequirementInches',
+        () {
+          final json = {
+            'id': 'f1',
+            'type': 'attraction',
+            'category': 'Ride',
+            'name': 'Ferris Wheel',
+          };
+          final facility = Facility.fromJson(json);
 
-        expect(facility.id, 'f1');
-        expect(facility.thrillLevel, isNull);
-        expect(facility.heightRequirementInches, isNull);
-      });
+          expect(facility.id, 'f1');
+          expect(facility.thrillLevel, isNull);
+          expect(facility.heightRequirementInches, isNull);
+        },
+      );
 
-      test('ParkDetail.fromJson with missing park key returns an empty ParkDetail', () {
-        final detail = ParkDetail.fromJson({});
+      test(
+        'ParkDetail.fromJson with missing park key returns an empty ParkDetail',
+        () {
+          final detail = ParkDetail.fromJson({});
 
-        expect(detail.id, '');
-        expect(detail.type, '');
-        expect(detail.name, '');
-        expect(detail.children, isEmpty);
-      });
+          expect(detail.id, '');
+          expect(detail.type, '');
+          expect(detail.name, '');
+          expect(detail.children, isEmpty);
+        },
+      );
 
       test('FavoritesResponse.fromJson with empty favoriteRides list', () {
         final json = {
@@ -277,7 +323,11 @@ void main() {
             geofence.latitude,
             geofence.longitude,
           );
-          expect(detected, isNotNull, reason: 'Failed for ${geofence.parkName}');
+          expect(
+            detected,
+            isNotNull,
+            reason: 'Failed for ${geofence.parkName}',
+          );
           // Note: Due to list iteration order in detectParkFromCoordinates, overlapping geofences
           // (e.g. Epcot/Hollywood Studios or Universal Studios/Islands of Adventure) match the first defined entry.
           if (geofence.parkId == 'p4') {
@@ -291,15 +341,22 @@ void main() {
       });
 
       test('Coordinates just inside / just outside the 3000m radius', () {
-        final targetPark = parkGeofences.first; // Magic Kingdom (p2): 28.4186, -81.5812
-        
+        final targetPark =
+            parkGeofences.first; // Magic Kingdom (p2): 28.4186, -81.5812
+
         // ~0.02 degrees latitude offset is roughly 2220m (inside 3000m)
         final insideLat = targetPark.latitude + 0.02;
-        expect(detectParkFromCoordinates(insideLat, targetPark.longitude), targetPark.parkId);
+        expect(
+          detectParkFromCoordinates(insideLat, targetPark.longitude),
+          targetPark.parkId,
+        );
 
         // ~0.035 degrees latitude offset is roughly 3885m (outside 3000m)
         final outsideLat = targetPark.latitude + 0.035;
-        expect(detectParkFromCoordinates(outsideLat, targetPark.longitude), isNot(targetPark.parkId));
+        expect(
+          detectParkFromCoordinates(outsideLat, targetPark.longitude),
+          isNot(targetPark.parkId),
+        );
       });
     });
 
@@ -314,91 +371,129 @@ void main() {
         expect(locA13.longitude, -81.5824);
       });
 
-      test('Unknown ID produces deterministic coordinates (same input -> same hash offset)', () {
-        const centerLat = 28.0;
-        const centerLng = -81.0;
+      test(
+        'Unknown ID produces deterministic coordinates (same input -> same hash offset)',
+        () {
+          const centerLat = 28.0;
+          const centerLng = -81.0;
 
-        final loc1 = AttractionLocation.fromId('unknown_id_xyz', centerLat, centerLng);
-        final loc2 = AttractionLocation.fromId('unknown_id_xyz', centerLat, centerLng);
+          final loc1 = AttractionLocation.fromId(
+            'unknown_id_xyz',
+            centerLat,
+            centerLng,
+          );
+          final loc2 = AttractionLocation.fromId(
+            'unknown_id_xyz',
+            centerLat,
+            centerLng,
+          );
 
-        expect(loc1.latitude, loc2.latitude);
-        expect(loc1.longitude, loc2.longitude);
-        expect(loc1.latitude, isNot(centerLat));
-        expect(loc1.longitude, isNot(centerLng));
-      });
+          expect(loc1.latitude, loc2.latitude);
+          expect(loc1.longitude, loc2.longitude);
+          expect(loc1.latitude, isNot(centerLat));
+          expect(loc1.longitude, isNot(centerLng));
+        },
+      );
     });
 
     group('I. deviceTypeProvider', () {
-      test('boundary values: <=600 -> mobile, 601-1024 -> tablet, >=1025 -> desktop', () {
-        final container = ProviderContainer();
-        addTearDown(container.dispose);
+      test(
+        'boundary values: <=600 -> mobile, 601-1024 -> tablet, >=1025 -> desktop',
+        () {
+          final container = ProviderContainer();
+          addTearDown(container.dispose);
 
-        // 600 -> mobile
-        container.read(screenWidthProvider.notifier).state = 600;
-        expect(container.read(deviceTypeProvider), DeviceType.mobile);
+          // 600 -> mobile
+          container.read(screenWidthProvider.notifier).state = 600;
+          expect(container.read(deviceTypeProvider), DeviceType.mobile);
 
-        // 601 -> tablet
-        container.read(screenWidthProvider.notifier).state = 601;
-        expect(container.read(deviceTypeProvider), DeviceType.tablet);
+          // 601 -> tablet
+          container.read(screenWidthProvider.notifier).state = 601;
+          expect(container.read(deviceTypeProvider), DeviceType.tablet);
 
-        // 1024 -> tablet
-        container.read(screenWidthProvider.notifier).state = 1024;
-        expect(container.read(deviceTypeProvider), DeviceType.tablet);
+          // 1024 -> tablet
+          container.read(screenWidthProvider.notifier).state = 1024;
+          expect(container.read(deviceTypeProvider), DeviceType.tablet);
 
-        // 1025 -> desktop
-        container.read(screenWidthProvider.notifier).state = 1025;
-        expect(container.read(deviceTypeProvider), DeviceType.desktop);
-      });
+          // 1025 -> desktop
+          container.read(screenWidthProvider.notifier).state = 1025;
+          expect(container.read(deviceTypeProvider), DeviceType.desktop);
+        },
+      );
     });
 
     group('J. crowdColor() utility', () {
-      testWidgets('maps low/moderate/high/unknown correctly to ColorScheme roles', (WidgetTester tester) async {
-        late BuildContext capturedContext;
+      testWidgets(
+        'maps low/moderate/high/unknown correctly to ColorScheme roles',
+        (WidgetTester tester) async {
+          late BuildContext capturedContext;
 
-        await tester.pumpWidget(
-          MaterialApp(
-            home: Builder(
-              builder: (context) {
-                capturedContext = context;
-                return const SizedBox();
-              },
+          await tester.pumpWidget(
+            MaterialApp(
+              home: Builder(
+                builder: (context) {
+                  capturedContext = context;
+                  return const SizedBox();
+                },
+              ),
             ),
-          ),
-        );
+          );
 
-        final colorScheme = Theme.of(capturedContext).colorScheme;
+          final colorScheme = Theme.of(capturedContext).colorScheme;
 
-        expect(crowdColor(capturedContext, 'low'), colorScheme.primaryContainer);
-        expect(crowdColor(capturedContext, 'LOW'), colorScheme.primaryContainer);
-        expect(crowdColor(capturedContext, 'moderate'), colorScheme.tertiaryContainer);
-        expect(crowdColor(capturedContext, 'high'), colorScheme.errorContainer);
-        expect(crowdColor(capturedContext, null), colorScheme.surfaceContainerHigh);
-        expect(crowdColor(capturedContext, 'unknown'), colorScheme.surfaceContainerHigh);
-      });
+          expect(
+            crowdColor(capturedContext, 'low'),
+            colorScheme.primaryContainer,
+          );
+          expect(
+            crowdColor(capturedContext, 'LOW'),
+            colorScheme.primaryContainer,
+          );
+          expect(
+            crowdColor(capturedContext, 'moderate'),
+            colorScheme.tertiaryContainer,
+          );
+          expect(
+            crowdColor(capturedContext, 'high'),
+            colorScheme.errorContainer,
+          );
+          expect(
+            crowdColor(capturedContext, null),
+            colorScheme.surfaceContainerHigh,
+          );
+          expect(
+            crowdColor(capturedContext, 'unknown'),
+            colorScheme.surfaceContainerHigh,
+          );
+        },
+      );
     });
 
     group('K. CheckoutState named constructors', () {
-      test('CheckoutState.initial(), .loading(), .success(), .failure() verify fields', () {
-        const initial = CheckoutState.initial();
-        expect(initial.processing, isFalse);
-        expect(initial.success, isFalse);
-        expect(initial.message, isNull);
+      test(
+        'CheckoutState.initial(), .loading(), .success(), .failure() verify fields',
+        () {
+          const initial = CheckoutState.initial();
+          expect(initial.processing, isFalse);
+          expect(initial.success, isFalse);
+          expect(initial.message, isNull);
 
-        const loading = CheckoutState.loading();
-        expect(loading.processing, isTrue);
-        expect(loading.success, isFalse);
-        expect(loading.message, isNull);
+          const loading = CheckoutState.loading();
+          expect(loading.processing, isTrue);
+          expect(loading.success, isFalse);
+          expect(loading.message, isNull);
 
-        const success = CheckoutState.success('Order completed');
-        expect(success.processing, isFalse);
-        expect(success.success, isTrue);
-        expect(success.message, 'Order completed');
+          const success = CheckoutState.success('Order completed');
+          expect(success.processing, isFalse);
+          expect(success.success, isTrue);
+          expect(success.message, 'Order completed');
 
-        const failure = CheckoutState.failure('Payment error');
-        expect(failure.processing, isFalse);
-        expect(failure.success, isFalse);
-        expect(failure.message, 'Payment error');
-      });
+          const failure = CheckoutState.failure('Payment error');
+          expect(failure.processing, isFalse);
+          expect(failure.success, isFalse);
+          expect(failure.message, 'Payment error');
+        },
+      );
     });
   });
 }

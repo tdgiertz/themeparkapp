@@ -1,3 +1,4 @@
+// ignore_for_file: prefer_int_literals
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
@@ -11,7 +12,11 @@ import 'package:themeparkapp/features/park/park_explorer_state.dart';
 class AttractionLocation {
   const AttractionLocation(this.latitude, this.longitude);
 
-  factory AttractionLocation.fromId(String id, double centerLat, double centerLng) {
+  factory AttractionLocation.fromId(
+    String id,
+    double centerLat,
+    double centerLng,
+  ) {
     final known = {
       // Animal Kingdom (p1)
       'a1': const AttractionLocation(28.3575, -81.5930), // Pandora
@@ -26,7 +31,6 @@ class AttractionLocation {
       'a10': const AttractionLocation(28.3555, -81.5903), // Rainforest Cafe
       'a11': const AttractionLocation(28.3595, -81.5898), // Wildlife Express
       'a12': const AttractionLocation(28.3585, -81.5890), // Zootopia
-
       // Magic Kingdom (p2)
       'a13': const AttractionLocation(28.4208, -81.5824), // small world
       'a14': const AttractionLocation(28.4190, -81.5794), // Astro Orbiter
@@ -42,14 +46,17 @@ class AttractionLocation {
       'a24': const AttractionLocation(28.4206, -81.5804), // Ariel Grotto
       'a25': const AttractionLocation(28.4198, -81.5810), // Princess Fairytale
       'a26': const AttractionLocation(28.4202, -81.5798), // Pete's Side Show
-      'a27': const AttractionLocation(28.4202, -81.5798), // Pete's Side Show Duplicate
+      'a27': const AttractionLocation(
+        28.4202,
+        -81.5798,
+      ), // Pete's Side Show Duplicate
       'a28': const AttractionLocation(28.4178, -81.5814), // Mickey Town Square
     };
 
     if (known.containsKey(id)) {
       return known[id]!;
     }
-    
+
     // Deterministic fallback based on hashcode
     final h = id.hashCode;
     final latOffset = ((h % 100) - 50) / 15000.0;
@@ -83,7 +90,8 @@ class ParkMapWidget extends ConsumerStatefulWidget {
   ConsumerState<ParkMapWidget> createState() => _ParkMapWidgetState();
 }
 
-class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProviderStateMixin {
+class _ParkMapWidgetState extends ConsumerState<ParkMapWidget>
+    with TickerProviderStateMixin {
   late AnimationController _pulseController;
   late TransformationController _transformationController;
   late AnimationController _mapPanController;
@@ -122,18 +130,22 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
     }
   }
 
-  void _animateToMatrix(Matrix4 endMatrix, {Duration duration = const Duration(milliseconds: 300)}) {
+  void _animateToMatrix(
+    Matrix4 endMatrix, {
+    Duration duration = const Duration(milliseconds: 300),
+  }) {
     _mapPanController.duration = duration;
     _mapPanAnimation?.removeListener(_onMapPanAnimate);
-    _mapPanAnimation = Matrix4Tween(
-      begin: _transformationController.value,
-      end: endMatrix,
-    ).animate(CurvedAnimation(
-      parent: _mapPanController,
-      curve: Curves.easeInOut,
-    ));
-    _mapPanController.addListener(_onMapPanAnimate);
-    _mapPanController.forward(from: 0);
+    _mapPanAnimation =
+        Matrix4Tween(
+          begin: _transformationController.value,
+          end: endMatrix,
+        ).animate(
+          CurvedAnimation(parent: _mapPanController, curve: Curves.easeInOut),
+        );
+    _mapPanController
+      ..addListener(_onMapPanAnimate)
+      ..forward(from: 0);
   }
 
   void _animateToFacility(Facility facility, Size mapSize) {
@@ -145,16 +157,22 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
     const zoom = 2.2;
     final viewportCenter = Offset(mapSize.width / 2, mapSize.height / 2);
     final endMatrix = Matrix4.identity()
-      ..translate(
+      ..translateByDouble(
         viewportCenter.dx - targetOffset.dx * zoom,
         viewportCenter.dy - targetOffset.dy * zoom,
+        0.0,
+        1.0,
       )
-      ..scale(zoom);
+      ..scaleByDouble(zoom, zoom, 1.0, 1.0);
 
     _animateToMatrix(endMatrix);
   }
 
-  void _animateToBounds(List<Facility> facilities, Size mapSize, Size viewportSize) {
+  void _animateToBounds(
+    List<Facility> facilities,
+    Size mapSize,
+    Size viewportSize,
+  ) {
     if (facilities.isEmpty) {
       _animateToMatrix(Matrix4.identity());
       return;
@@ -186,7 +204,7 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
     final availW = viewportSize.width - 2 * padding;
     final availH = viewportSize.height - 2 * padding;
 
-    double scale = 1.0;
+    double scale;
     if (w > 0 && h > 0) {
       scale = math.min(availW / w, availH / h);
     } else {
@@ -195,14 +213,19 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
     scale = scale.clamp(1.0, 4.0);
 
     final center = Offset((xMin + xMax) / 2, (yMin + yMax) / 2);
-    final viewportCenter = Offset(viewportSize.width / 2, viewportSize.height / 2);
+    final viewportCenter = Offset(
+      viewportSize.width / 2,
+      viewportSize.height / 2,
+    );
 
     final endMatrix = Matrix4.identity()
-      ..translate(
+      ..translateByDouble(
         viewportCenter.dx - center.dx * scale,
         viewportCenter.dy - center.dy * scale,
+        0.0,
+        1.0,
       )
-      ..scale(scale);
+      ..scaleByDouble(scale, scale, 1.0, 1.0);
 
     _animateToMatrix(endMatrix);
   }
@@ -268,10 +291,14 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
               final currentWait = w.waitMinutes ?? 0;
               final trends = _getWaitTimeTrend(f.id, currentWait);
               final historicalWait = trends[(6 - hourOffset).clamp(0, 6)];
-              
-              final loc = AttractionLocation.fromId(f.id, _centerLat, _centerLng);
+
+              final loc = AttractionLocation.fromId(
+                f.id,
+                _centerLat,
+                _centerLng,
+              );
               final offset = getOffset(loc.latitude, loc.longitude);
-              
+
               final cs = Theme.of(context).colorScheme;
               var heatColor = cs.primary;
               if (historicalWait > 50) {
@@ -280,25 +307,27 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
                 heatColor = cs.tertiary;
               }
 
-              heatmapData.add(_HeatPoint(
-                offset: offset,
-                color: heatColor,
-                intensity: historicalWait.toDouble(),
-              ));
+              heatmapData.add(
+                _HeatPoint(
+                  offset: offset,
+                  color: heatColor,
+                  intensity: historicalWait.toDouble(),
+                ),
+              );
             }
           }
         }
 
         final userOffset = getOffset(userPos.latitude, userPos.longitude);
         // Calculate 5-minute walking radius (approx. 400m in degrees)
-        const radiusDeg = 0.0036; 
+        const radiusDeg = 0.0036;
         final radiusPx = (radiusDeg / (_maxLng - _minLng)) * mapSize.width;
 
         // Check if selected facility changed and trigger animation
         if (widget.selectedFacilityId != _lastSelectedFacilityId) {
           final oldSelected = _lastSelectedFacilityId;
           _lastSelectedFacilityId = widget.selectedFacilityId;
-          
+
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (widget.selectedFacilityId != null) {
               final target = widget.facilities.firstWhere(
@@ -314,7 +343,8 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
 
         // Animate camera to bounds when the list of filtered facilities changes
         final currentIds = mapFacilities.map((f) => f.id).toList();
-        if (_lastAnimatedFacilityIds == null || !listEquals(_lastAnimatedFacilityIds, currentIds)) {
+        if (_lastAnimatedFacilityIds == null ||
+            !listEquals(_lastAnimatedFacilityIds, currentIds)) {
           _lastAnimatedFacilityIds = currentIds;
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
@@ -322,7 +352,6 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
             }
           });
         }
-
 
         return InteractiveViewer(
           transformationController: _transformationController,
@@ -398,7 +427,9 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
     for (var i = 0; i < items.length; i++) {
       if (visited[i]) continue;
       visited[i] = true;
-      final cluster = [_PinItem(facility: items[i].facility, offset: items[i].offset)];
+      final cluster = [
+        _PinItem(facility: items[i].facility, offset: items[i].offset),
+      ];
 
       for (var j = i + 1; j < items.length; j++) {
         if (visited[j]) continue;
@@ -451,7 +482,8 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
                 height: 44,
                 alignment: Alignment.center,
                 child: Tooltip(
-                  message: '${f.name} - ${isClosed ? 'Closed' : '$waitMinutes min'}',
+                  message:
+                      '${f.name} - ${isClosed ? 'Closed' : '$waitMinutes min'}',
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     width: isSelected ? 40 : 34,
@@ -491,10 +523,16 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
       } else {
         // Multi-facility cluster pin
         final cs = theme.colorScheme;
-        final avgX = cluster.map((c) => c.offset.dx).reduce((a, b) => a + b) / cluster.length;
-        final avgY = cluster.map((c) => c.offset.dy).reduce((a, b) => a + b) / cluster.length;
+        final avgX =
+            cluster.map((c) => c.offset.dx).reduce((a, b) => a + b) /
+            cluster.length;
+        final avgY =
+            cluster.map((c) => c.offset.dy).reduce((a, b) => a + b) /
+            cluster.length;
         final centerOffset = Offset(avgX, avgY);
-        final containsSelected = cluster.any((c) => c.facility.id == widget.selectedFacilityId);
+        final containsSelected = cluster.any(
+          (c) => c.facility.id == widget.selectedFacilityId,
+        );
 
         widgets.add(
           Positioned(
@@ -597,42 +635,69 @@ class _MapBackgroundPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     // A. Draw green grass background
-    final bgPaint = Paint()
-      ..color = theme.colorScheme.surface;
+    final bgPaint = Paint()..color = theme.colorScheme.surface;
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), bgPaint);
 
     // B. Draw park regions / lands
     final regionPaint = Paint()..style = PaintingStyle.fill;
-    
+
     if (parkId == 'p1') {
       // Pandora - Translucent Purple
       regionPaint.color = Colors.purple.withValues(alpha: isDark ? 0.12 : 0.08);
-      canvas.drawCircle(Offset(size.width * 0.25, size.height * 0.65), size.width * 0.2, regionPaint);
+      canvas.drawCircle(
+        Offset(size.width * 0.25, size.height * 0.65),
+        size.width * 0.2,
+        regionPaint,
+      );
 
       // Asia - Translucent Orange/Yellow
       regionPaint.color = Colors.orange.withValues(alpha: isDark ? 0.12 : 0.08);
-      canvas.drawCircle(Offset(size.width * 0.75, size.height * 0.5), size.width * 0.22, regionPaint);
+      canvas.drawCircle(
+        Offset(size.width * 0.75, size.height * 0.5),
+        size.width * 0.22,
+        regionPaint,
+      );
 
       // Africa - Translucent Yellow/Gold
       regionPaint.color = Colors.yellow.withValues(alpha: isDark ? 0.12 : 0.08);
-      canvas.drawCircle(Offset(size.width * 0.45, size.height * 0.25), size.width * 0.24, regionPaint);
+      canvas.drawCircle(
+        Offset(size.width * 0.45, size.height * 0.25),
+        size.width * 0.24,
+        regionPaint,
+      );
 
       // Discovery Island - Translucent Green
       regionPaint.color = Colors.green.withValues(alpha: isDark ? 0.15 : 0.1);
-      canvas.drawCircle(Offset(size.width * 0.5, size.height * 0.55), size.width * 0.15, regionPaint);
+      canvas.drawCircle(
+        Offset(size.width * 0.5, size.height * 0.55),
+        size.width * 0.15,
+        regionPaint,
+      );
     } else {
       // Magic Kingdom Lands
       // Fantasyland
       regionPaint.color = Colors.blue.withValues(alpha: isDark ? 0.12 : 0.08);
-      canvas.drawCircle(Offset(size.width * 0.5, size.height * 0.3), size.width * 0.25, regionPaint);
-      
+      canvas.drawCircle(
+        Offset(size.width * 0.5, size.height * 0.3),
+        size.width * 0.25,
+        regionPaint,
+      );
+
       // Tomorrowland
       regionPaint.color = Colors.indigo.withValues(alpha: isDark ? 0.12 : 0.08);
-      canvas.drawCircle(Offset(size.width * 0.75, size.height * 0.6), size.width * 0.2, regionPaint);
+      canvas.drawCircle(
+        Offset(size.width * 0.75, size.height * 0.6),
+        size.width * 0.2,
+        regionPaint,
+      );
 
       // Adventureland / Frontierland
       regionPaint.color = Colors.brown.withValues(alpha: isDark ? 0.12 : 0.08);
-      canvas.drawCircle(Offset(size.width * 0.25, size.height * 0.55), size.width * 0.22, regionPaint);
+      canvas.drawCircle(
+        Offset(size.width * 0.25, size.height * 0.55),
+        size.width * 0.22,
+        regionPaint,
+      );
     }
 
     // C. Draw serpentine blue water canal/river in the park
@@ -644,11 +709,25 @@ class _MapBackgroundPainter extends CustomPainter {
 
     final waterPath = parkId == 'p1'
         ? (Path()
-          ..moveTo(0, size.height * 0.5)
-          ..quadraticBezierTo(size.width * 0.3, size.height * 0.4, size.width * 0.5, size.height * 0.55)
-          ..quadraticBezierTo(size.width * 0.7, size.height * 0.7, size.width, size.height * 0.6))
-        : (Path()
-          ..addOval(Rect.fromCircle(center: Offset(size.width * 0.5, size.height * 0.55), radius: size.width * 0.12)));
+            ..moveTo(0, size.height * 0.5)
+            ..quadraticBezierTo(
+              size.width * 0.3,
+              size.height * 0.4,
+              size.width * 0.5,
+              size.height * 0.55,
+            )
+            ..quadraticBezierTo(
+              size.width * 0.7,
+              size.height * 0.7,
+              size.width,
+              size.height * 0.6,
+            ))
+        : (Path()..addOval(
+            Rect.fromCircle(
+              center: Offset(size.width * 0.5, size.height * 0.55),
+              radius: size.width * 0.12,
+            ),
+          ));
     canvas.drawPath(waterPath, waterPaint);
 
     // D. Draw walkways/paths
@@ -659,7 +738,12 @@ class _MapBackgroundPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     final walkPath = Path()
-      ..addOval(Rect.fromCircle(center: Offset(size.width * 0.5, size.height * 0.55), radius: size.width * 0.18))
+      ..addOval(
+        Rect.fromCircle(
+          center: Offset(size.width * 0.5, size.height * 0.55),
+          radius: size.width * 0.18,
+        ),
+      )
       ..moveTo(size.width * 0.5, size.height * 0.37)
       ..lineTo(size.width * 0.5, size.height * 0.1)
       ..moveTo(size.width * 0.32, size.height * 0.55)
@@ -736,11 +820,7 @@ class _MapBackgroundPainter extends CustomPainter {
 }
 
 class _PinItem {
-  _PinItem({
-    required this.facility,
-    required this.offset,
-  });
+  _PinItem({required this.facility, required this.offset});
   final Facility facility;
   final Offset offset;
 }
-

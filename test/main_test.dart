@@ -22,7 +22,7 @@ class FakeLocationPermissionNotifier extends LocationPermissionNotifier {
 }
 
 class FakeOnboardingNotifier extends OnboardingNotifier {
-  FakeOnboardingNotifier(bool initial) {
+  FakeOnboardingNotifier({required bool initial}) {
     state = initial;
   }
 }
@@ -57,6 +57,9 @@ void main() {
 
   final commonOverrides = [
     derivedFavoritesProvider.overrideWith((ref) => Future.value([])),
+    upcomingShowsProvider.overrideWith((ref) => Future.value([])),
+    allWaitTimesProvider.overrideWith((ref) => Future.value([])),
+    allShowtimesProvider.overrideWith((ref) => Future.value([])),
     assetLoaderProvider.overrideWithValue((path) async {
       if (path.contains('favorites')) return mockFavJson;
       if (path.contains('parks')) return mockParksJson;
@@ -66,7 +69,69 @@ void main() {
   ];
 
   group('Main App Entrypoint & Routing Tests', () {
-    testWidgets('MyApp shows OnboardingScreen when location permission denied and onboarding not done', (WidgetTester tester) async {
+    testWidgets(
+      'MyApp shows OnboardingScreen when location permission denied and onboarding not done',
+      (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(400, 800);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              ...commonOverrides,
+              locationPermissionProvider.overrideWith(
+                (ref) =>
+                    FakeLocationPermissionNotifier(LocationPermission.denied),
+              ),
+              onboardingCompletedProvider.overrideWith(
+                (ref) => FakeOnboardingNotifier(initial: false),
+              ),
+            ],
+            child: const app.MyApp(),
+          ),
+        );
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+
+        expect(find.byType(OnboardingScreen), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'MyApp initializes MaterialApp.router and renders Dashboard by default when onboarding completed',
+      (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(400, 800);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              ...commonOverrides,
+              locationPermissionProvider.overrideWith(
+                (ref) =>
+                    FakeLocationPermissionNotifier(LocationPermission.always),
+              ),
+              onboardingCompletedProvider.overrideWith(
+                (ref) => FakeOnboardingNotifier(initial: true),
+              ),
+            ],
+            child: const app.MyApp(),
+          ),
+        );
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+
+        expect(find.byType(MaterialApp), findsOneWidget);
+        expect(find.byType(ResponsiveScaffoldShell), findsOneWidget);
+        expect(find.byKey(const ValueKey('nav_home')), findsOneWidget);
+      },
+    );
+
+    testWidgets('goRouter navigates between shell branches', (
+      WidgetTester tester,
+    ) async {
       tester.view.physicalSize = const Size(400, 800);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
@@ -75,52 +140,13 @@ void main() {
         ProviderScope(
           overrides: [
             ...commonOverrides,
-            locationPermissionProvider.overrideWith((ref) => FakeLocationPermissionNotifier(LocationPermission.denied)),
-            onboardingCompletedProvider.overrideWith((ref) => FakeOnboardingNotifier(false)),
-          ],
-          child: const app.MyApp(),
-        ),
-      );
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 300));
-
-      expect(find.byType(OnboardingScreen), findsOneWidget);
-    });
-
-    testWidgets('MyApp initializes MaterialApp.router and renders Dashboard by default when onboarding completed', (WidgetTester tester) async {
-      tester.view.physicalSize = const Size(400, 800);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.resetPhysicalSize);
-
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            ...commonOverrides,
-            locationPermissionProvider.overrideWith((ref) => FakeLocationPermissionNotifier(LocationPermission.always)),
-            onboardingCompletedProvider.overrideWith((ref) => FakeOnboardingNotifier(true)),
-          ],
-          child: const app.MyApp(),
-        ),
-      );
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 300));
-
-      expect(find.byType(MaterialApp), findsOneWidget);
-      expect(find.byType(ResponsiveScaffoldShell), findsOneWidget);
-      expect(find.byKey(const ValueKey('nav_home')), findsOneWidget);
-    });
-
-    testWidgets('goRouter navigates between shell branches', (WidgetTester tester) async {
-      tester.view.physicalSize = const Size(400, 800);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.resetPhysicalSize);
-
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            ...commonOverrides,
-            locationPermissionProvider.overrideWith((ref) => FakeLocationPermissionNotifier(LocationPermission.always)),
-            onboardingCompletedProvider.overrideWith((ref) => FakeOnboardingNotifier(true)),
+            locationPermissionProvider.overrideWith(
+              (ref) =>
+                  FakeLocationPermissionNotifier(LocationPermission.always),
+            ),
+            onboardingCompletedProvider.overrideWith(
+              (ref) => FakeOnboardingNotifier(initial: true),
+            ),
           ],
           child: const app.MyApp(),
         ),
@@ -154,7 +180,9 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
     });
 
-    testWidgets('MyApp respects custom theme mode and seed color overrides', (WidgetTester tester) async {
+    testWidgets('MyApp respects custom theme mode and seed color overrides', (
+      WidgetTester tester,
+    ) async {
       tester.view.physicalSize = const Size(400, 800);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
@@ -164,9 +192,16 @@ void main() {
           overrides: [
             ...commonOverrides,
             themeModeProvider.overrideWith((ref) => ThemeMode.dark),
-            themeSeedColorProvider.overrideWith((ref) => ThemeSeedColorNotifier()..setColor(Colors.purple)),
-            locationPermissionProvider.overrideWith((ref) => FakeLocationPermissionNotifier(LocationPermission.always)),
-            onboardingCompletedProvider.overrideWith((ref) => FakeOnboardingNotifier(true)),
+            themeSeedColorProvider.overrideWith(
+              (ref) => ThemeSeedColorNotifier()..setColor(Colors.purple),
+            ),
+            locationPermissionProvider.overrideWith(
+              (ref) =>
+                  FakeLocationPermissionNotifier(LocationPermission.always),
+            ),
+            onboardingCompletedProvider.overrideWith(
+              (ref) => FakeOnboardingNotifier(initial: true),
+            ),
           ],
           child: const app.MyApp(),
         ),
@@ -178,16 +213,15 @@ void main() {
       expect(materialApp.themeMode, ThemeMode.dark);
     });
 
-    testWidgets('ProviderScope and MyApp boot correctly', (WidgetTester tester) async {
+    testWidgets('ProviderScope and MyApp boot correctly', (
+      WidgetTester tester,
+    ) async {
       tester.view.physicalSize = const Size(400, 800);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
 
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: commonOverrides,
-          child: const app.MyApp(),
-        ),
+        ProviderScope(overrides: commonOverrides, child: const app.MyApp()),
       );
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));

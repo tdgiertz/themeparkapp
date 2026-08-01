@@ -12,17 +12,26 @@ class ParkCoordinate {
 
 /// Selected filter chips for a park.
 /// Allowed filters are: 'thrill', 'toddler', 'indoor', 'dining'
-final selectedFiltersProvider = StateProvider.family<Set<String>, String>((ref, parkId) {
+final selectedFiltersProvider = StateProvider.family<Set<String>, String>((
+  ref,
+  parkId,
+) {
   return <String>{};
 });
 
 /// Track whether the heatmap overlay is active (Desktop).
-final heatmapEnabledProvider = StateProvider.family<bool, String>((ref, parkId) {
+final heatmapEnabledProvider = StateProvider.family<bool, String>((
+  ref,
+  parkId,
+) {
   return false;
 });
 
 /// Track the hour offset for the historical crowd flow heatmap (0 = current, 3 = 3 hours ago).
-final historyHourOffsetProvider = StateProvider.family<int, String>((ref, parkId) {
+final historyHourOffsetProvider = StateProvider.family<int, String>((
+  ref,
+  parkId,
+) {
   return 0;
 });
 
@@ -44,13 +53,15 @@ class UserLocationNotifier extends StateNotifier<ParkCoordinate> {
 
   void _init() {
     final perm = ref.read(locationPermissionProvider);
-    if (perm == LocationPermission.always || perm == LocationPermission.whileInUse) {
+    if (perm == LocationPermission.always ||
+        perm == LocationPermission.whileInUse) {
       _startListening();
     }
-    
+
     // Listen for permission updates
     ref.listen<LocationPermission?>(locationPermissionProvider, (prev, next) {
-      if (next == LocationPermission.always || next == LocationPermission.whileInUse) {
+      if (next == LocationPermission.always ||
+          next == LocationPermission.whileInUse) {
         _startListening();
       } else {
         _stopListening();
@@ -60,17 +71,15 @@ class UserLocationNotifier extends StateNotifier<ParkCoordinate> {
 
   void _startListening() {
     _sub?.cancel();
-    _sub = Geolocator.getPositionStream(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.high,
-        distanceFilter: 5,
-      ),
-    ).listen(
-      (pos) {
-        state = ParkCoordinate(pos.latitude, pos.longitude);
-      },
-      onError: (_) {},
-    );
+    _sub =
+        Geolocator.getPositionStream(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.high,
+            distanceFilter: 5,
+          ),
+        ).listen((pos) {
+          state = ParkCoordinate(pos.latitude, pos.longitude);
+        }, onError: (_) {});
   }
 
   void _stopListening() {
@@ -91,6 +100,9 @@ class UserLocationNotifier extends StateNotifier<ParkCoordinate> {
 }
 
 final userLocationProvider =
-    StateNotifierProvider.family<UserLocationNotifier, ParkCoordinate, String>((ref, parkId) {
-  return UserLocationNotifier(ref, parkId);
-});
+    StateNotifierProvider.family<UserLocationNotifier, ParkCoordinate, String>((
+      ref,
+      parkId,
+    ) {
+      return UserLocationNotifier(ref, parkId);
+    });

@@ -1,0 +1,14 @@
+﻿Analyzing themeparkapp...                                       
+
+   info - Unnecessary duplication of receiver. Try using a cascade to avoid the duplication - lib\features\dashboard\widgets\favorite_card_expanded.dart:554:5 - cascade_invocations
+   info - Missing a newline at the end of the file. Try adding a newline at the end of the file - lib\features\dashboard\widgets\favorite_card_expanded.dart:602:2 - eol_at_end_of_file
+  error - 4 positional arguments expected by 'scaleByDouble', but 1 found. Try adding the missing arguments - lib\features\park\park_page.dart:2168:79 - not_enough_positional_arguments
+  error - 4 positional arguments expected by 'translateByDouble', but 2 found. Try adding the missing arguments - lib\features\park\widgets\park_map.dart:151:51 - not_enough_positional_arguments
+  error - 4 positional arguments expected by 'scaleByDouble', but 1 found. Try adding the missing arguments - lib\features\park\widgets\park_map.dart:153:27 - not_enough_positional_arguments
+  error - 4 positional arguments expected by 'translateByDouble', but 2 found. Try adding the missing arguments - lib\features\park\widgets\park_map.dart:204:46 - not_enough_positional_arguments
+  error - 4 positional arguments expected by 'scaleByDouble', but 1 found. Try adding the missing arguments - lib\features\park\widgets\park_map.dart:206:28 - not_enough_positional_arguments
+   info - Missing a newline at the end of the file. Try adding a newline at the end of the file - lib\features\park\widgets\park_map.dart:746:2 - eol_at_end_of_file
+   info - Missing a newline at the end of the file. Try adding a newline at the end of the file - lib\features\parks\providers\park_providers.dart:193:2 - eol_at_end_of_file
+   info - 'bool' parameters should be named parameters. Try converting the parameter to a named parameter - lib\features\search\search_state.dart:176:21 - avoid_positional_boolean_parameters
+   info - Missing a newline at the end of the file. Try adding a newline at the end of the file - test\park_explorer_test.dart:326:2 - eol_at_end_of_file
+

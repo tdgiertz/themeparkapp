@@ -28,9 +28,7 @@ class SearchItineraryItem {
   final double longitude;
   final int durationMinutes;
 
-  SearchItineraryItem copyWith({
-    String? time,
-  }) {
+  SearchItineraryItem copyWith({String? time}) {
     return SearchItineraryItem(
       id: id,
       time: time ?? this.time,
@@ -89,8 +87,11 @@ class SearchState {
     return SearchState(
       messages: messages ?? this.messages,
       isListening: isListening ?? this.isListening,
-      currentItineraryItems: currentItineraryItems ?? this.currentItineraryItems,
-      selectedFacilityDetails: clearSelectedFacility ? null : (selectedFacilityDetails ?? this.selectedFacilityDetails),
+      currentItineraryItems:
+          currentItineraryItems ?? this.currentItineraryItems,
+      selectedFacilityDetails: clearSelectedFacility
+          ? null
+          : (selectedFacilityDetails ?? this.selectedFacilityDetails),
     );
   }
 }
@@ -98,19 +99,20 @@ class SearchState {
 /// StateNotifier that handles the assistant's behavior and conversational flow.
 class SearchNotifier extends StateNotifier<SearchState> {
   SearchNotifier(this.ref)
-      : super(
-          SearchState(
-            messages: [
-              ChatMessage(
-                id: 'welcome',
-                text: 'Welcome! I am your AI travel agent assistant. Ask me to:\n• "Find the nearest pretzel"\n• "Plan my day at Magic Kingdom"\n• "Suggest dining near me"',
-                isUser: false,
-                timestamp: DateTime.now(),
-              )
-            ],
-            isListening: false,
-          ),
-        ) {
+    : super(
+        SearchState(
+          messages: [
+            ChatMessage(
+              id: 'welcome',
+              text:
+                  'Welcome! I am your AI travel agent assistant. Ask me to:\n• "Find the nearest pretzel"\n• "Plan my day at Magic Kingdom"\n• "Suggest dining near me"',
+              isUser: false,
+              timestamp: DateTime.now(),
+            ),
+          ],
+          isListening: false,
+        ),
+      ) {
     _loadAllFacilities();
   }
 
@@ -157,14 +159,18 @@ class SearchNotifier extends StateNotifier<SearchState> {
       final raw = await loader('assets/data/parks.json');
       final decoded = json.decode(raw) as Map<String, dynamic>;
       final data = decoded['data'] as Map<String, dynamic>? ?? {};
-      final parksList = data['parks'] as List? ?? decoded['parks'] as List? ?? [];
+      final parksList =
+          (data['parks'] as List? ?? decoded['parks'] as List? ?? [])
+              .cast<Map<String, dynamic>>();
       final facilities = <Facility>[];
       for (final parkMap in parksList) {
-        final lands = parkMap['children'] as List? ?? [];
+        final lands = (parkMap['children'] as List? ?? [])
+            .cast<Map<String, dynamic>>();
         for (final landMap in lands) {
-          final children = landMap['children'] as List? ?? [];
+          final children = (landMap['children'] as List? ?? [])
+              .cast<Map<String, dynamic>>();
           for (final facMap in children) {
-            facilities.add(Facility.fromJson(facMap as Map<String, dynamic>));
+            facilities.add(Facility.fromJson(facMap));
           }
         }
       }
@@ -173,6 +179,7 @@ class SearchNotifier extends StateNotifier<SearchState> {
   }
 
   /// Sets whether the assistant is currently listening to voice input.
+  // ignore: avoid_positional_boolean_parameters
   void setListening(bool listening) {
     state = state.copyWith(isListening: listening);
   }
@@ -207,9 +214,14 @@ class SearchNotifier extends StateNotifier<SearchState> {
     final normalizedQuery = queryText.toLowerCase();
 
     // 1. Nearest pretzel / food (Location Context API)
-    if (normalizedQuery.contains('pretzel') || normalizedQuery.contains('nearest') || normalizedQuery.contains('food near me') || normalizedQuery.contains('dining near me')) {
+    if (normalizedQuery.contains('pretzel') ||
+        normalizedQuery.contains('nearest') ||
+        normalizedQuery.contains('food near me') ||
+        normalizedQuery.contains('dining near me')) {
       // Get location: default to Magic Kingdom center if geolocator is inactive
-      final userPos = ref.read(userLocationProvider('p2')); // read Magic Kingdom position
+      final userPos = ref.read(
+        userLocationProvider('p2'),
+      ); // read Magic Kingdom position
       final lat = userPos.latitude;
       final lng = userPos.longitude;
 
@@ -244,7 +256,11 @@ class SearchNotifier extends StateNotifier<SearchState> {
       // Add actual dining spots from attractions.json that are in Magic Kingdom
       final searchPool = <Facility>[...mockPretzelStands];
       for (final fac in _allFacilities) {
-        final isDining = fac.name.toLowerCase().contains(RegExp('cafe|restaurant|grill|dining|eats|table|bakery|kitchen|tavern|pub|food'));
+        final isDining = fac.name.toLowerCase().contains(
+          RegExp(
+            'cafe|restaurant|grill|dining|eats|table|bakery|kitchen|tavern|pub|food',
+          ),
+        );
         if (isDining) {
           searchPool.add(fac);
         }
@@ -286,10 +302,12 @@ class SearchNotifier extends StateNotifier<SearchState> {
 
       // Build cards for top 3
       final suggested = sortedStands.take(3).map((e) => e.key).toList();
-      final statusMessage = 'Implicitly using GPS ping (${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)})';
+      final statusMessage =
+          'Implicitly using GPS ping (${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)})';
 
       // Distances string mapping for cards
-      final textResponse = 'Based on your location, I found the nearest pretzel/dining spots. The closest is "${suggested.first.name}" which is only ${sortedStands.first.value.toStringAsFixed(0)} yards away!';
+      final textResponse =
+          'Based on your location, I found the nearest pretzel/dining spots. The closest is "${suggested.first.name}" which is only ${sortedStands.first.value.toStringAsFixed(0)} yards away!';
 
       final assistantMsg = ChatMessage(
         id: DateTime.now().toString(),
@@ -303,18 +321,41 @@ class SearchNotifier extends StateNotifier<SearchState> {
       state = state.copyWith(messages: [...state.messages, assistantMsg]);
     }
     // 2. Planning Itinerary Generative UI
-    else if (normalizedQuery.contains('plan') || normalizedQuery.contains('itinerary') || normalizedQuery.contains('day')) {
-      final isMK = normalizedQuery.contains('kingdom') || normalizedQuery.contains('mk') || !normalizedQuery.contains('animal');
+    else if (normalizedQuery.contains('plan') ||
+        normalizedQuery.contains('itinerary') ||
+        normalizedQuery.contains('day')) {
+      final isMK =
+          normalizedQuery.contains('kingdom') ||
+          normalizedQuery.contains('mk') ||
+          !normalizedQuery.contains('animal');
       final parkId = isMK ? 'p2' : 'p1';
       final parkName = isMK ? 'Magic Kingdom' : 'Animal Kingdom';
 
       // Pick rides depending on the park
-      final rideIds = isMK 
-          ? ['a15', 'a21', 'a17', 'a13', 'a16'] // Big Thunder, Haunted Mansion, Castle, small world, Buzz
-          : ['a1', 'a3', 'a6', 'a10', 'a5'];   // Flight, Everest, Safaris, Rainforest Cafe, Kali
+      final rideIds = isMK
+          ? [
+              'a15',
+              'a21',
+              'a17',
+              'a13',
+              'a16',
+            ] // Big Thunder, Haunted Mansion, Castle, small world, Buzz
+          : [
+              'a1',
+              'a3',
+              'a6',
+              'a10',
+              'a5',
+            ]; // Flight, Everest, Safaris, Rainforest Cafe, Kali
 
       // Map time slots
-      final times = ['09:00 AM', '11:30 AM', '01:00 PM', '03:30 PM', '06:00 PM'];
+      final times = [
+        '09:00 AM',
+        '11:30 AM',
+        '01:00 PM',
+        '03:30 PM',
+        '06:00 PM',
+      ];
 
       final itineraryItems = <SearchItineraryItem>[];
       for (var i = 0; i < rideIds.length; i++) {
@@ -326,9 +367,11 @@ class SearchNotifier extends StateNotifier<SearchState> {
             id: rideId,
             type: 'Facility',
             category: 'Ride',
-            name: rideId == 'a15' 
-                ? 'Big Thunder Mountain Railroad' 
-                : (rideId == 'a1' ? 'Avatar Flight of Passage' : 'Park Attraction'),
+            name: rideId == 'a15'
+                ? 'Big Thunder Mountain Railroad'
+                : (rideId == 'a1'
+                      ? 'Avatar Flight of Passage'
+                      : 'Park Attraction'),
           ),
         );
 
@@ -350,7 +393,8 @@ class SearchNotifier extends StateNotifier<SearchState> {
 
       final assistantMsg = ChatMessage(
         id: DateTime.now().toString(),
-        text: 'I have generated a customized itinerary for your day at $parkName! I laid out optimal showtimes and wait patterns. Use the middle panel to drag-and-drop to adjust times, and watch the map recalculate route routes.',
+        text:
+            'I have generated a customized itinerary for your day at $parkName! I laid out optimal showtimes and wait patterns. Use the middle panel to drag-and-drop to adjust times, and watch the map recalculate route routes.',
         isUser: false,
         timestamp: DateTime.now(),
         itinerary: itineraryItems,
@@ -365,7 +409,8 @@ class SearchNotifier extends StateNotifier<SearchState> {
     else {
       final assistantMsg = ChatMessage(
         id: DateTime.now().toString(),
-        text: 'I received your request: "$queryText". As your travel agent, I can help you plan your itinerary or find nearest spots. Try asking me "Find nearest pretzel" or "Help me plan my day at Magic Kingdom".',
+        text:
+            'I received your request: "$queryText". As your travel agent, I can help you plan your itinerary or find nearest spots. Try asking me "Find nearest pretzel" or "Help me plan my day at Magic Kingdom".',
         isUser: false,
         timestamp: DateTime.now(),
       );
@@ -375,16 +420,17 @@ class SearchNotifier extends StateNotifier<SearchState> {
   }
 
   /// Reorder itinerary items when dragged.
-  void reorderItinerary(int oldIndex, int newIndex) {
+  void reorderItinerary(int oldIndex, int newIndex, {bool isAdjusted = false}) {
     final items = state.currentItineraryItems;
     if (items == null) return;
 
     final updated = List<SearchItineraryItem>.from(items);
-    if (oldIndex < newIndex) {
-      newIndex -= 1;
+    var targetIndex = newIndex;
+    if (!isAdjusted && oldIndex < targetIndex) {
+      targetIndex -= 1;
     }
     final item = updated.removeAt(oldIndex);
-    updated.insert(newIndex, item);
+    updated.insert(targetIndex, item);
 
     // Re-assign times sequentially to preserve structured time scheduling
     final times = ['09:00 AM', '11:30 AM', '01:00 PM', '03:30 PM', '06:00 PM'];
@@ -397,6 +443,8 @@ class SearchNotifier extends StateNotifier<SearchState> {
 }
 
 /// Global provider for the search and AI Assistant state.
-final searchProvider = StateNotifierProvider<SearchNotifier, SearchState>((ref) {
+final searchProvider = StateNotifierProvider<SearchNotifier, SearchState>((
+  ref,
+) {
   return SearchNotifier(ref);
 });

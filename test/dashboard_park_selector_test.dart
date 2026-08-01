@@ -17,7 +17,8 @@ class FakeLocationPermissionNotifier extends LocationPermissionNotifier {
   }
 
   @override
-  Future<LocationPermission> check() async => state ?? LocationPermission.whileInUse;
+  Future<LocationPermission> check() async =>
+      state ?? LocationPermission.whileInUse;
 }
 
 void main() {
@@ -35,12 +36,14 @@ void main() {
     expect(nullParkId, isNull);
   });
 
-  testWidgets('Dashboard sticky park selector renders choice chips and filters widgets dynamically', (WidgetTester tester) async {
-    tester.view.physicalSize = const Size(1200, 1600);
-    tester.view.devicePixelRatio = 1.0;
-    addTearDown(tester.view.resetPhysicalSize);
+  testWidgets(
+    'Dashboard sticky park selector renders choice chips and filters widgets dynamically',
+    (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1200, 1600);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
 
-    const mockFavJson = '''
+      const mockFavJson = '''
     {
       "userId": "user-1",
       "favoriteRides": [
@@ -62,7 +65,7 @@ void main() {
     }
     ''';
 
-    const mockParksJson = '''
+      const mockParksJson = '''
     {
       "data": {
         "parks": [
@@ -73,57 +76,87 @@ void main() {
     }
     ''';
 
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          derivedFavoritesProvider.overrideWith((ref) => Future.value([
-            FavoriteRide(rideId: 'a46', name: 'PeopleMover', parkId: 'p2', parkName: 'Magic Kingdom', currentWait: {'status': 'Open', 'waitMinutes': 10, 'trend': 'down'}),
-            FavoriteRide(rideId: 'a88', name: 'Hagrid Motorbike', parkId: 'p5', parkName: 'Universal Studios', currentWait: {'status': 'Closed', 'waitMinutes': 0, 'trend': 'flat'}),
-          ])),
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            derivedFavoritesProvider.overrideWith(
+              (ref) => Future.value([
+                FavoriteRide(
+                  rideId: 'a46',
+                  name: 'PeopleMover',
+                  parkId: 'p2',
+                  parkName: 'Magic Kingdom',
+                  currentWait: {
+                    'status': 'Open',
+                    'waitMinutes': 10,
+                    'trend': 'down',
+                  },
+                ),
+                FavoriteRide(
+                  rideId: 'a88',
+                  name: 'Hagrid Motorbike',
+                  parkId: 'p5',
+                  parkName: 'Universal Studios',
+                  currentWait: {
+                    'status': 'Closed',
+                    'waitMinutes': 0,
+                    'trend': 'flat',
+                  },
+                ),
+              ]),
+            ),
 
-          assetLoaderProvider.overrideWithValue((path) async {
-            if (path.contains('favorites.json')) return mockFavJson;
-            if (path.contains('parks.json')) return mockParksJson;
-            return '{}';
-          }),
-        ],
-        child: const MaterialApp(
-          home: Scaffold(
-            body: Dashboard(),
-          ),
+            assetLoaderProvider.overrideWithValue((path) async {
+              if (path.contains('favorites.json')) return mockFavJson;
+              if (path.contains('parks.json')) return mockParksJson;
+              return '{}';
+            }),
+          ],
+          child: const MaterialApp(home: Scaffold(body: Dashboard())),
         ),
-      ),
-    );
+      );
 
-    await tester.pumpAndSettle();
+      await tester.pumpAndSettle();
 
-    // Verify Sticky Park Selector ribbon choice chips exist
-    expect(find.text('All Parks'), findsOneWidget);
-    expect(find.widgetWithText(ChoiceChip, 'Magic Kingdom'), findsOneWidget);
-    expect(find.widgetWithText(ChoiceChip, 'Universal Studios'), findsOneWidget);
+      // Verify Sticky Park Selector ribbon choice chips exist
+      expect(find.text('All Parks'), findsOneWidget);
+      expect(find.widgetWithText(ChoiceChip, 'Magic Kingdom'), findsOneWidget);
+      expect(
+        find.widgetWithText(ChoiceChip, 'Universal Studios'),
+        findsOneWidget,
+      );
 
-    // Default 'All Parks': shows both Magic Kingdom and Universal items
-    expect(find.text('PeopleMover', skipOffstage: false), findsOneWidget);
-    expect(find.text('Hagrid Motorbike', skipOffstage: false), findsOneWidget);
+      // Default 'All Parks': shows both Magic Kingdom and Universal items
+      expect(find.text('PeopleMover', skipOffstage: false), findsOneWidget);
+      expect(
+        find.text('Hagrid Motorbike', skipOffstage: false),
+        findsOneWidget,
+      );
 
-    // Tap 'Magic Kingdom' chip
-    await tester.tap(find.widgetWithText(ChoiceChip, 'Magic Kingdom'));
-    await tester.pumpAndSettle();
+      // Tap 'Magic Kingdom' chip
+      await tester.tap(find.widgetWithText(ChoiceChip, 'Magic Kingdom'));
+      await tester.pumpAndSettle();
 
-    // Dynamically filtered: Magic Kingdom item shown, Universal item hidden
-    expect(find.text('PeopleMover', skipOffstage: false), findsOneWidget);
-    expect(find.text('Hagrid Motorbike', skipOffstage: false), findsNothing);
+      // Dynamically filtered: Magic Kingdom item shown, Universal item hidden
+      expect(find.text('PeopleMover', skipOffstage: false), findsOneWidget);
+      expect(find.text('Hagrid Motorbike', skipOffstage: false), findsNothing);
 
-    // Tap 'Universal Studios' chip
-    await tester.tap(find.widgetWithText(ChoiceChip, 'Universal Studios'));
-    await tester.pumpAndSettle();
+      // Tap 'Universal Studios' chip
+      await tester.tap(find.widgetWithText(ChoiceChip, 'Universal Studios'));
+      await tester.pumpAndSettle();
 
-    // Dynamically filtered: Universal item shown, Magic Kingdom item hidden
-    expect(find.text('Hagrid Motorbike', skipOffstage: false), findsOneWidget);
-    expect(find.text('PeopleMover', skipOffstage: false), findsNothing);
-  });
+      // Dynamically filtered: Universal item shown, Magic Kingdom item hidden
+      expect(
+        find.text('Hagrid Motorbike', skipOffstage: false),
+        findsOneWidget,
+      );
+      expect(find.text('PeopleMover', skipOffstage: false), findsNothing);
+    },
+  );
 
-  testWidgets('Dashboard location-aware geofencing auto-selects detected park', (WidgetTester tester) async {
+  testWidgets('Dashboard location-aware geofencing auto-selects detected park', (
+    WidgetTester tester,
+  ) async {
     tester.view.physicalSize = const Size(1200, 1600);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
@@ -146,36 +179,39 @@ void main() {
     }
     ''';
 
-    final container = ProviderContainer(
-      overrides: [
-        derivedFavoritesProvider.overrideWith((ref) => Future.value([])),
-        assetLoaderProvider.overrideWithValue((path) async {
-          if (path.contains('favorites.json')) return mockFavJson;
-          if (path.contains('parks.json')) return mockParksJson;
-          return '{}';
-        }),
-        locationPermissionProvider.overrideWith((ref) => FakeLocationPermissionNotifier(LocationPermission.whileInUse)),
-      ],
-    );
-
-    // Set user position to Magic Kingdom center coordinates
-    container.read(userLocationProvider('p2').notifier).setPosition(28.4200, -81.5812);
-
     await tester.pumpWidget(
-      UncontrolledProviderScope(
-        container: container,
-        child: const MaterialApp(
-          home: Scaffold(
-            body: Dashboard(),
+      ProviderScope(
+        overrides: [
+          derivedFavoritesProvider.overrideWith((ref) => Future.value([])),
+        upcomingShowsProvider.overrideWith((ref) => Future.value([])),
+        allWaitTimesProvider.overrideWith((ref) => Future.value([])),
+        allShowtimesProvider.overrideWith((ref) => Future.value([])),
+          assetLoaderProvider.overrideWithValue((path) async {
+            if (path.contains('favorites.json')) return mockFavJson;
+            if (path.contains('parks.json')) return mockParksJson;
+            return '{}';
+          }),
+          locationPermissionProvider.overrideWith(
+            (ref) =>
+                FakeLocationPermissionNotifier(LocationPermission.whileInUse),
           ),
-        ),
+          userLocationProvider('p2').overrideWith(
+            (ref) => UserLocationNotifier(ref, 'p2')..setPosition(28.4200, -81.5812),
+          ),
+        ],
+        child: const MaterialApp(home: Scaffold(body: Dashboard())),
       ),
     );
 
     await tester.pumpAndSettle();
 
     // Geofence should auto-detect Magic Kingdom and select its chip with nearby badge
-    expect(find.widgetWithText(ChoiceChip, 'Magic Kingdom (Nearby)'), findsOneWidget);
+    expect(
+      find.widgetWithText(ChoiceChip, 'Magic Kingdom (Nearby)'),
+      findsOneWidget,
+    );
+    final context = tester.element(find.byType(Dashboard));
+    final container = ProviderScope.containerOf(context);
     expect(container.read(selectedDashboardParkProvider), equals('p2'));
   });
 }

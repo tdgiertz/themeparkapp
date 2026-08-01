@@ -6,6 +6,7 @@
         "11:00",
         "13:00",
         "15:00",
+        "15:30",
         "17:00"
       ]
     },
@@ -16,6 +17,37 @@
         "14:15",
         "16:00"
       ]
+    },
+    {
+      "facilityId": "show_1",
+      "showtimes": [
+        "15:00"
+      ]
+    },
+    {
+      "facilityId": "show_3",
+      "showtimes": [
+        "21:00"
+      ]
+    },
+    {
+      "facilityId": "show_4",
+      "showtimes": [
+        "20:30"
+      ]
+    },
+    {
+      "facilityId": "show_5",
+      "showtimes": [
+        "21:20"
+      ]
+    },
+    {
+      "facilityId": "show_6",
+      "showtimes": [
+        "16:15"
+      ]
     }
   ]
 }
+

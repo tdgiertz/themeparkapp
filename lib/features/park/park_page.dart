@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_int_literals
+
 import 'dart:async';
 import 'dart:io' show Platform;
 import 'dart:math' as math;
@@ -8,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:go_router/go_router.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+import 'package:themeparkapp/core/logging/logger.dart';
 import 'package:themeparkapp/core/models/park_detail.dart';
 import 'package:themeparkapp/core/models/wait_time.dart';
 import 'package:themeparkapp/core/providers.dart';
@@ -20,11 +23,7 @@ import 'package:themeparkapp/features/park/widgets/pulse_dot.dart';
 import 'package:themeparkapp/features/park/widgets/sparkline_chart.dart';
 import 'package:themeparkapp/l10n/app_localizations.dart';
 
-enum _MobileViewMode {
-  split,
-  fullMap,
-  fullList,
-}
+enum _MobileViewMode { split, fullMap, fullList }
 
 /// Park detail explorer page showing lands, facilities, list, and interactive map.
 class ParkPage extends ConsumerStatefulWidget {
@@ -40,7 +39,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
   Timer? _autoRefreshTimer;
   final bool _autoRefreshEnabled = true;
   static const _refreshInterval = Duration(seconds: 30);
-  
+
   // Responsive Layout Mode State
   _MobileViewMode _mobileViewMode = _MobileViewMode.split;
   bool _landscapePanelCollapsed = false;
@@ -66,16 +65,26 @@ class _ParkPageState extends ConsumerState<ParkPage> {
 
   // Sorting States
   String _mobileSort = 'proximity'; // 'proximity', 'waitTime', 'recency'
-  String _desktopSort = 'alphabetical'; // 'alphabetical', 'historicalAverage', 'rating'
+  String _desktopSort =
+      'alphabetical'; // 'alphabetical', 'historicalAverage', 'rating'
 
   double get _centerLat => widget.parkId == 'p2' ? 28.4194 : 28.3575;
   double get _centerLng => widget.parkId == 'p2' ? -81.5812 : -81.5907;
 
-  double _calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+  double _calculateDistance(
+    double lat1,
+    double lon1,
+    double lat2,
+    double lon2,
+  ) {
     const p = 0.017453292519943295; // Pi/180
-    final a = 0.5 - math.cos((lat2 - lat1) * p)/2 + 
-          math.cos(lat1 * p) * math.cos(lat2 * p) * 
-          (1 - math.cos((lon2 - lon1) * p))/2;
+    final a =
+        0.5 -
+        math.cos((lat2 - lat1) * p) / 2 +
+        math.cos(lat1 * p) *
+            math.cos(lat2 * p) *
+            (1 - math.cos((lon2 - lon1) * p)) /
+            2;
     return 12742 * math.asin(math.sqrt(a)); // 2 * R; R = 6371 km
   }
 
@@ -134,7 +143,10 @@ class _ParkPageState extends ConsumerState<ParkPage> {
   }
 
   void _joinVirtualQueue(String facilityId, String facilityName) {
-    if (_joinedVirtualQueues.contains(facilityId) || _joiningVirtualQueues.contains(facilityId)) return;
+    if (_joinedVirtualQueues.contains(facilityId) ||
+        _joiningVirtualQueues.contains(facilityId)) {
+      return;
+    }
     setState(() {
       _joiningVirtualQueues.add(facilityId);
     });
@@ -154,7 +166,10 @@ class _ParkPageState extends ConsumerState<ParkPage> {
     });
   }
 
-  List<_ListFacilityItem> _getFilteredItems(ParkDetail detail, WaitTimesResponse waits) {
+  List<_ListFacilityItem> _getFilteredItems(
+    ParkDetail detail,
+    WaitTimesResponse waits,
+  ) {
     final activeFilters = ref.watch(selectedFiltersProvider(widget.parkId));
     final items = <_ListFacilityItem>[];
     for (final land in detail.children) {
@@ -163,9 +178,18 @@ class _ParkPageState extends ConsumerState<ParkPage> {
         final wait = matchedWait.isEmpty ? null : matchedWait.first;
 
         final isThrill = f.thrillLevel == 'High' || f.thrillLevel == 'Moderate';
-        final isToddler = f.thrillLevel == 'Low' || (f.heightRequirementInches ?? 0) == 0;
-        final isIndoor = f.name.toLowerCase().contains(RegExp('hall|theater|meet|princess|grotto|grizzly|buzz|space|small world|haunted|mansion|cafe|flight|bluey|zootopia|bear|show'));
-        final isDining = f.name.toLowerCase().contains(RegExp('cafe|restaurant|grill|dining|eats|table|bakery|kitchen|tavern|food|pub'));
+        final isToddler =
+            f.thrillLevel == 'Low' || (f.heightRequirementInches ?? 0) == 0;
+        final isIndoor = f.name.toLowerCase().contains(
+          RegExp(
+            'hall|theater|meet|princess|grotto|grizzly|buzz|space|small world|haunted|mansion|cafe|flight|bluey|zootopia|bear|show',
+          ),
+        );
+        final isDining = f.name.toLowerCase().contains(
+          RegExp(
+            'cafe|restaurant|grill|dining|eats|table|bakery|kitchen|tavern|food|pub',
+          ),
+        );
 
         var matches = true;
         if (activeFilters.isNotEmpty) {
@@ -177,7 +201,9 @@ class _ParkPageState extends ConsumerState<ParkPage> {
         }
 
         if (matches) {
-          items.add(_ListFacilityItem(facility: f, wait: wait, landName: land.name));
+          items.add(
+            _ListFacilityItem(facility: f, wait: wait, landName: land.name),
+          );
         }
       }
     }
@@ -185,10 +211,28 @@ class _ParkPageState extends ConsumerState<ParkPage> {
     final userPos = ref.read(userLocationProvider(widget.parkId));
     if (_mobileSort == 'proximity') {
       items.sort((a, b) {
-        final locA = AttractionLocation.fromId(a.facility.id, _centerLat, _centerLng);
-        final locB = AttractionLocation.fromId(b.facility.id, _centerLat, _centerLng);
-        final distA = _calculateDistance(userPos.latitude, userPos.longitude, locA.latitude, locA.longitude);
-        final distB = _calculateDistance(userPos.latitude, userPos.longitude, locB.latitude, locB.longitude);
+        final locA = AttractionLocation.fromId(
+          a.facility.id,
+          _centerLat,
+          _centerLng,
+        );
+        final locB = AttractionLocation.fromId(
+          b.facility.id,
+          _centerLat,
+          _centerLng,
+        );
+        final distA = _calculateDistance(
+          userPos.latitude,
+          userPos.longitude,
+          locA.latitude,
+          locA.longitude,
+        );
+        final distB = _calculateDistance(
+          userPos.latitude,
+          userPos.longitude,
+          locB.latitude,
+          locB.longitude,
+        );
         return distA.compareTo(distB);
       });
     } else if (_mobileSort == 'waitTime') {
@@ -198,18 +242,40 @@ class _ParkPageState extends ConsumerState<ParkPage> {
         final waitA = isClosedA ? 9999 : (a.wait!.waitMinutes ?? 0);
         final waitB = isClosedB ? 9999 : (b.wait!.waitMinutes ?? 0);
         if (waitA == waitB) {
-          final locA = AttractionLocation.fromId(a.facility.id, _centerLat, _centerLng);
-          final locB = AttractionLocation.fromId(b.facility.id, _centerLat, _centerLng);
-          final distA = _calculateDistance(userPos.latitude, userPos.longitude, locA.latitude, locA.longitude);
-          final distB = _calculateDistance(userPos.latitude, userPos.longitude, locB.latitude, locB.longitude);
+          final locA = AttractionLocation.fromId(
+            a.facility.id,
+            _centerLat,
+            _centerLng,
+          );
+          final locB = AttractionLocation.fromId(
+            b.facility.id,
+            _centerLat,
+            _centerLng,
+          );
+          final distA = _calculateDistance(
+            userPos.latitude,
+            userPos.longitude,
+            locA.latitude,
+            locA.longitude,
+          );
+          final distB = _calculateDistance(
+            userPos.latitude,
+            userPos.longitude,
+            locB.latitude,
+            locB.longitude,
+          );
           return distA.compareTo(distB);
         }
         return waitA.compareTo(waitB);
       });
     } else if (_mobileSort == 'recency') {
       items.sort((a, b) {
-        final timeA = DateTime.tryParse(a.wait?.updatedAt ?? '') ?? DateTime.fromMillisecondsSinceEpoch(0);
-        final timeB = DateTime.tryParse(b.wait?.updatedAt ?? '') ?? DateTime.fromMillisecondsSinceEpoch(0);
+        final timeA =
+            DateTime.tryParse(a.wait?.updatedAt ?? '') ??
+            DateTime.fromMillisecondsSinceEpoch(0);
+        final timeB =
+            DateTime.tryParse(b.wait?.updatedAt ?? '') ??
+            DateTime.fromMillisecondsSinceEpoch(0);
         return timeB.compareTo(timeA); // descending
       });
     }
@@ -217,7 +283,10 @@ class _ParkPageState extends ConsumerState<ParkPage> {
     return items;
   }
 
-  List<_ListFacilityItem> _getDesktopFilteredItems(ParkDetail detail, WaitTimesResponse waits) {
+  List<_ListFacilityItem> _getDesktopFilteredItems(
+    ParkDetail detail,
+    WaitTimesResponse waits,
+  ) {
     final items = <_ListFacilityItem>[];
     for (final land in detail.children) {
       for (final f in land.children) {
@@ -225,17 +294,34 @@ class _ParkPageState extends ConsumerState<ParkPage> {
         final wait = matchedWait.isEmpty ? null : matchedWait.first;
 
         final isThrill = f.thrillLevel == 'High' || f.thrillLevel == 'Moderate';
-        final isToddler = f.thrillLevel == 'Low' || (f.heightRequirementInches ?? 0) == 0;
-        final isIndoor = f.name.toLowerCase().contains(RegExp('hall|theater|meet|princess|grotto|grizzly|buzz|space|small world|haunted|mansion|cafe|flight|bluey|zootopia|bear|show'));
-        final isDining = f.name.toLowerCase().contains(RegExp('cafe|restaurant|grill|dining|eats|table|bakery|kitchen|tavern|food|pub'));
+        final isToddler =
+            f.thrillLevel == 'Low' || (f.heightRequirementInches ?? 0) == 0;
+        final isIndoor = f.name.toLowerCase().contains(
+          RegExp(
+            'hall|theater|meet|princess|grotto|grizzly|buzz|space|small world|haunted|mansion|cafe|flight|bluey|zootopia|bear|show',
+          ),
+        );
+        final isDining = f.name.toLowerCase().contains(
+          RegExp(
+            'cafe|restaurant|grill|dining|eats|table|bakery|kitchen|tavern|food|pub',
+          ),
+        );
 
         // 1. Check type filters
         if (_desktopActiveTypes.isNotEmpty) {
           var matchesType = false;
-          if (_desktopActiveTypes.contains('thrill') && isThrill) matchesType = true;
-          if (_desktopActiveTypes.contains('toddler') && isToddler) matchesType = true;
-          if (_desktopActiveTypes.contains('indoor') && isIndoor) matchesType = true;
-          if (_desktopActiveTypes.contains('dining') && isDining) matchesType = true;
+          if (_desktopActiveTypes.contains('thrill') && isThrill) {
+            matchesType = true;
+          }
+          if (_desktopActiveTypes.contains('toddler') && isToddler) {
+            matchesType = true;
+          }
+          if (_desktopActiveTypes.contains('indoor') && isIndoor) {
+            matchesType = true;
+          }
+          if (_desktopActiveTypes.contains('dining') && isDining) {
+            matchesType = true;
+          }
           if (!matchesType) continue;
         }
 
@@ -246,9 +332,15 @@ class _ParkPageState extends ConsumerState<ParkPage> {
           if (isClosed) continue;
 
           var matchesWait = false;
-          if (_desktopActiveWaitTimes.contains('15') && waitMinutes <= 15) matchesWait = true;
-          if (_desktopActiveWaitTimes.contains('30') && waitMinutes <= 30) matchesWait = true;
-          if (_desktopActiveWaitTimes.contains('60') && waitMinutes <= 60) matchesWait = true;
+          if (_desktopActiveWaitTimes.contains('15') && waitMinutes <= 15) {
+            matchesWait = true;
+          }
+          if (_desktopActiveWaitTimes.contains('30') && waitMinutes <= 30) {
+            matchesWait = true;
+          }
+          if (_desktopActiveWaitTimes.contains('60') && waitMinutes <= 60) {
+            matchesWait = true;
+          }
           if (!matchesWait) continue;
         }
 
@@ -257,7 +349,9 @@ class _ParkPageState extends ConsumerState<ParkPage> {
           if (!_desktopActiveLands.contains(land.id)) continue;
         }
 
-        items.add(_ListFacilityItem(facility: f, wait: wait, landName: land.name));
+        items.add(
+          _ListFacilityItem(facility: f, wait: wait, landName: land.name),
+        );
       }
     }
 
@@ -289,9 +383,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: Text(widget.parkName),
-      ),
+      appBar: AppBar(title: Text(widget.parkName)),
       body: detailAsync.when(
         data: (ParkDetail detail) => waitsAsync.when(
           data: (WaitTimesResponse waits) {
@@ -307,13 +399,74 @@ class _ParkPageState extends ConsumerState<ParkPage> {
             );
           },
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (err, st) => Center(child: Text('Error loading waits: $err')),
+          error: (err, st) {
+            talker.handle(err, st);
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).clearSnackBars();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Error loading waits: $err'),
+                    behavior: SnackBarBehavior.floating,
+                    action: SnackBarAction(
+                      label: 'RETRY',
+                      onPressed: () {
+                        ref.invalidate(waitTimesProvider(widget.parkId));
+                      },
+                    ),
+                  ),
+                );
+              }
+            });
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: Center(
+                child: OutlinedButton.icon(
+                  onPressed: () =>
+                      ref.invalidate(waitTimesProvider(widget.parkId)),
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Retry loading wait times'),
+                ),
+              ),
+            );
+          },
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, st) => Center(child: Text('Error loading park: $err')),
+        error: (err, st) {
+          talker.handle(err, st);
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).clearSnackBars();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Error loading park: $err'),
+                  behavior: SnackBarBehavior.floating,
+                  action: SnackBarAction(
+                    label: 'RETRY',
+                    onPressed: () {
+                      ref.invalidate(parkDetailProvider(widget.parkId));
+                    },
+                  ),
+                ),
+              );
+            }
+          });
+          return Padding(
+            padding: const EdgeInsets.all(16),
+            child: Center(
+              child: OutlinedButton.icon(
+                onPressed: () =>
+                    ref.invalidate(parkDetailProvider(widget.parkId)),
+                icon: const Icon(Icons.refresh),
+                label: const Text('Retry loading park details'),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
+
 
   // --- MOBILE PORTRAIT LAYOUT ---
   Widget _buildMobileLayout(
@@ -331,7 +484,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
           LayoutBuilder(
             builder: (context, constraints) {
               final totalHeight = constraints.maxHeight;
-              
+
               var mapHeight = totalHeight * 0.35;
               if (_mobileViewMode == _MobileViewMode.fullMap) {
                 mapHeight = totalHeight;
@@ -343,19 +496,31 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: _buildFilterChips(horizontal: true, loc: loc, height: 40),
+                    child: _buildFilterChips(
+                      horizontal: true,
+                      loc: loc,
+                      height: 40,
+                    ),
                   ),
 
                   // Top Map Section
                   if (_mobileViewMode == _MobileViewMode.fullMap)
                     Expanded(
-                      child: _buildMapSection(filteredFacilities, waits, isMobile: true),
+                      child: _buildMapSection(
+                        filteredFacilities,
+                        waits,
+                        isMobile: true,
+                      ),
                     )
                   else if (mapHeight > 0)
                     SizedBox(
                       height: mapHeight,
                       width: double.infinity,
-                      child: _buildMapSection(filteredFacilities, waits, isMobile: true),
+                      child: _buildMapSection(
+                        filteredFacilities,
+                        waits,
+                        isMobile: true,
+                      ),
                     ),
 
                   // Mode Toggle Handle Bar & List Section
@@ -373,21 +538,29 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                                 label: 'Full Map',
                                 icon: Icons.map,
                                 isSelected: true,
-                                onTap: () => setState(() => _mobileViewMode = _MobileViewMode.fullMap),
+                                onTap: () => setState(
+                                  () =>
+                                      _mobileViewMode = _MobileViewMode.fullMap,
+                                ),
                               ),
                               const SizedBox(width: 8),
                               _buildModeSegmentButton(
                                 label: 'Split',
                                 icon: Icons.vertical_split,
                                 isSelected: false,
-                                onTap: () => setState(() => _mobileViewMode = _MobileViewMode.split),
+                                onTap: () => setState(
+                                  () => _mobileViewMode = _MobileViewMode.split,
+                                ),
                               ),
                               const SizedBox(width: 8),
                               _buildModeSegmentButton(
                                 label: 'Full List',
                                 icon: Icons.view_list,
                                 isSelected: false,
-                                onTap: () => setState(() => _mobileViewMode = _MobileViewMode.fullList),
+                                onTap: () => setState(
+                                  () => _mobileViewMode =
+                                      _MobileViewMode.fullList,
+                                ),
                               ),
                             ],
                           ),
@@ -402,26 +575,34 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                     Expanded(
                       child: Container(
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.surface.withValues(alpha: 0.95),
+                          color: theme.colorScheme.surface.withValues(
+                            alpha: 0.95,
+                          ),
                           borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(20),
                             topRight: Radius.circular(20),
                           ),
                           border: Border(
                             top: BorderSide(
-                              color: theme.colorScheme.primary.withValues(alpha: 0.4),
+                              color: theme.colorScheme.primary.withValues(
+                                alpha: 0.4,
+                              ),
                               width: 1.5,
                             ),
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: theme.colorScheme.primary.withValues(alpha: 0.15),
+                              color: theme.colorScheme.primary.withValues(
+                                alpha: 0.15,
+                              ),
                               blurRadius: 16,
                               spreadRadius: 1,
                               offset: const Offset(0, -4),
                             ),
                             BoxShadow(
-                              color: theme.colorScheme.shadow.withValues(alpha: 0.3),
+                              color: theme.colorScheme.shadow.withValues(
+                                alpha: 0.3,
+                              ),
                               blurRadius: 12,
                               offset: const Offset(0, -2),
                             ),
@@ -433,13 +614,21 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                             GestureDetector(
                               onVerticalDragUpdate: (details) {
                                 if (details.delta.dy < -6) {
-                                  setState(() => _mobileViewMode = _MobileViewMode.fullList);
+                                  setState(
+                                    () => _mobileViewMode =
+                                        _MobileViewMode.fullList,
+                                  );
                                 } else if (details.delta.dy > 6) {
-                                  setState(() => _mobileViewMode = _MobileViewMode.fullMap);
+                                  setState(
+                                    () => _mobileViewMode =
+                                        _MobileViewMode.fullMap,
+                                  );
                                 }
                               },
                               child: Container(
-                                padding: const EdgeInsets.symmetric(vertical: 8),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8,
+                                ),
                                 color: Colors.transparent,
                                 child: Column(
                                   children: [
@@ -447,7 +636,8 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                                       width: 36,
                                       height: 4,
                                       decoration: BoxDecoration(
-                                        color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                                        color: theme.colorScheme.onSurface
+                                            .withValues(alpha: 0.3),
                                         borderRadius: BorderRadius.circular(2),
                                       ),
                                     ),
@@ -456,27 +646,43 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                                       alignment: Alignment.center,
                                       children: [
                                         Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: [
                                             _buildModeSegmentButton(
                                               label: 'Full Map',
                                               icon: Icons.map,
-                                              isSelected: _mobileViewMode == _MobileViewMode.fullMap,
-                                              onTap: () => setState(() => _mobileViewMode = _MobileViewMode.fullMap),
+                                              isSelected:
+                                                  _mobileViewMode ==
+                                                  _MobileViewMode.fullMap,
+                                              onTap: () => setState(
+                                                () => _mobileViewMode =
+                                                    _MobileViewMode.fullMap,
+                                              ),
                                             ),
                                             const SizedBox(width: 8),
                                             _buildModeSegmentButton(
                                               label: 'Split',
                                               icon: Icons.vertical_split,
-                                              isSelected: _mobileViewMode == _MobileViewMode.split,
-                                              onTap: () => setState(() => _mobileViewMode = _MobileViewMode.split),
+                                              isSelected:
+                                                  _mobileViewMode ==
+                                                  _MobileViewMode.split,
+                                              onTap: () => setState(
+                                                () => _mobileViewMode =
+                                                    _MobileViewMode.split,
+                                              ),
                                             ),
                                             const SizedBox(width: 8),
                                             _buildModeSegmentButton(
                                               label: 'Full List',
                                               icon: Icons.view_list,
-                                              isSelected: _mobileViewMode == _MobileViewMode.fullList,
-                                              onTap: () => setState(() => _mobileViewMode = _MobileViewMode.fullList),
+                                              isSelected:
+                                                  _mobileViewMode ==
+                                                  _MobileViewMode.fullList,
+                                              onTap: () => setState(
+                                                () => _mobileViewMode =
+                                                    _MobileViewMode.fullList,
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -498,14 +704,28 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                               child: RefreshIndicator(
                                 onRefresh: _handleRefresh,
                                 child: items.isEmpty
-                                    ? const Center(child: Text('No attractions match selection.'))
+                                    ? const Center(
+                                        child: Text(
+                                          'No attractions match selection.',
+                                        ),
+                                      )
                                     : ListView.builder(
-                                        padding: const EdgeInsets.fromLTRB(12, 6, 12, 24),
+                                        padding: const EdgeInsets.fromLTRB(
+                                          12,
+                                          6,
+                                          12,
+                                          24,
+                                        ),
                                         itemCount: items.length,
                                         itemBuilder: (context, idx) {
                                           final item = items[idx];
-                                          final key = _tileKeys.putIfAbsent(item.facility.id, GlobalKey.new);
-                                          final isExpanded = _expandedFacilityId == item.facility.id;
+                                          final key = _tileKeys.putIfAbsent(
+                                            item.facility.id,
+                                            GlobalKey.new,
+                                          );
+                                          final isExpanded =
+                                              _expandedFacilityId ==
+                                              item.facility.id;
 
                                           return InlineAccordionAttractionTile(
                                             key: key,
@@ -514,10 +734,20 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                                             wait: item.wait,
                                             parkId: widget.parkId,
                                             isExpanded: isExpanded,
-                                            isJoiningQueue: _joiningVirtualQueues.contains(item.facility.id),
-                                            hasJoinedQueue: _joinedVirtualQueues.contains(item.facility.id),
-                                            onTap: () => _toggleAccordionTile(item.facility.id),
-                                            onJoinQueue: () => _joinVirtualQueue(item.facility.id, item.facility.name),
+                                            isJoiningQueue:
+                                                _joiningVirtualQueues.contains(
+                                                  item.facility.id,
+                                                ),
+                                            hasJoinedQueue: _joinedVirtualQueues
+                                                .contains(item.facility.id),
+                                            onTap: () => _toggleAccordionTile(
+                                              item.facility.id,
+                                            ),
+                                            onJoinQueue: () =>
+                                                _joinVirtualQueue(
+                                                  item.facility.id,
+                                                  item.facility.name,
+                                                ),
                                           );
                                         },
                                       ),
@@ -551,20 +781,32 @@ class _ParkPageState extends ConsumerState<ParkPage> {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
           color: isSelected ? theme.colorScheme.primary : Colors.transparent,
-          border: isSelected ? null : Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.3)),
+          border: isSelected
+              ? null
+              : Border.all(
+                  color: theme.colorScheme.outline.withValues(alpha: 0.3),
+                ),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 14, color: isSelected ? theme.colorScheme.onPrimary : theme.colorScheme.onSurface),
+            Icon(
+              icon,
+              size: 14,
+              color: isSelected
+                  ? theme.colorScheme.onPrimary
+                  : theme.colorScheme.onSurface,
+            ),
             const SizedBox(width: 4),
             Text(
               label,
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
-                color: isSelected ? theme.colorScheme.onPrimary : theme.colorScheme.onSurface,
+                color: isSelected
+                    ? theme.colorScheme.onPrimary
+                    : theme.colorScheme.onSurface,
               ),
             ),
           ],
@@ -607,14 +849,21 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                           _buildMobileSortRow(),
                           Expanded(
                             child: items.isEmpty
-                                ? const Center(child: Text('No matching items.'))
+                                ? const Center(
+                                    child: Text('No matching items.'),
+                                  )
                                 : ListView.builder(
                                     padding: const EdgeInsets.only(bottom: 20),
                                     itemCount: items.length,
                                     itemBuilder: (context, index) {
                                       final item = items[index];
-                                      final key = _tileKeys.putIfAbsent('tab_${item.facility.id}', GlobalKey.new);
-                                      final isExpanded = _expandedFacilityId == item.facility.id;
+                                      final key = _tileKeys.putIfAbsent(
+                                        'tab_${item.facility.id}',
+                                        GlobalKey.new,
+                                      );
+                                      final isExpanded =
+                                          _expandedFacilityId ==
+                                          item.facility.id;
 
                                       return InlineAccordionAttractionTile(
                                         key: key,
@@ -623,10 +872,17 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                                         wait: item.wait,
                                         parkId: widget.parkId,
                                         isExpanded: isExpanded,
-                                        isJoiningQueue: _joiningVirtualQueues.contains(item.facility.id),
-                                        hasJoinedQueue: _joinedVirtualQueues.contains(item.facility.id),
-                                        onTap: () => _toggleAccordionTile(item.facility.id),
-                                        onJoinQueue: () => _joinVirtualQueue(item.facility.id, item.facility.name),
+                                        isJoiningQueue: _joiningVirtualQueues
+                                            .contains(item.facility.id),
+                                        hasJoinedQueue: _joinedVirtualQueues
+                                            .contains(item.facility.id),
+                                        onTap: () => _toggleAccordionTile(
+                                          item.facility.id,
+                                        ),
+                                        onJoinQueue: () => _joinVirtualQueue(
+                                          item.facility.id,
+                                          item.facility.name,
+                                        ),
                                       );
                                     },
                                   ),
@@ -644,19 +900,24 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                 behavior: HitTestBehavior.translucent,
                 onHorizontalDragUpdate: (details) {
                   setState(() {
-                    final newRatio = _splitRatio + (details.delta.dx / constraints.maxWidth);
+                    final newRatio =
+                        _splitRatio + (details.delta.dx / constraints.maxWidth);
                     _splitRatio = newRatio.clamp(0.25, 0.55);
                   });
                 },
                 child: Container(
                   width: 6,
-                  color: theme.colorScheme.onSurface.withValues(alpha: isDark ? 0.08 : 0.06),
+                  color: theme.colorScheme.onSurface.withValues(
+                    alpha: isDark ? 0.08 : 0.06,
+                  ),
                   alignment: Alignment.center,
                   child: Container(
-                     width: 2,
+                    width: 2,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.onSurface.withValues(alpha: isDark ? 0.30 : 0.38),
+                      color: theme.colorScheme.onSurface.withValues(
+                        alpha: isDark ? 0.30 : 0.38,
+                      ),
                       borderRadius: BorderRadius.circular(1),
                     ),
                   ),
@@ -668,9 +929,13 @@ class _ParkPageState extends ConsumerState<ParkPage> {
               child: Stack(
                 children: [
                   Positioned.fill(
-                    child: _buildMapSection(filteredFacilities, waits, isMobile: false),
+                    child: _buildMapSection(
+                      filteredFacilities,
+                      waits,
+                      isMobile: false,
+                    ),
                   ),
-                  
+
                   // Collapsible Side-Panel Button (Top-Left of Map Pane)
                   Positioned(
                     top: 16,
@@ -682,7 +947,8 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                       child: InkWell(
                         onTap: () {
                           setState(() {
-                            _landscapePanelCollapsed = !_landscapePanelCollapsed;
+                            _landscapePanelCollapsed =
+                                !_landscapePanelCollapsed;
                           });
                         },
                         borderRadius: BorderRadius.circular(24),
@@ -693,13 +959,17 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                _landscapePanelCollapsed ? Icons.menu_open : Icons.chevron_left,
+                                _landscapePanelCollapsed
+                                    ? Icons.menu_open
+                                    : Icons.chevron_left,
                                 size: 20,
                                 color: theme.colorScheme.primary,
                               ),
                               const SizedBox(width: 6),
                               Text(
-                                _landscapePanelCollapsed ? 'Show List' : 'Full Map',
+                                _landscapePanelCollapsed
+                                    ? 'Show List'
+                                    : 'Full Map',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12,
@@ -762,7 +1032,9 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                     Expanded(
                       child: Text(
                         'Attractions Directory',
-                        style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -788,9 +1060,18 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                             }
                           },
                           items: const [
-                            DropdownMenuItem(value: 'alphabetical', child: Text('Alphabetical')),
-                            DropdownMenuItem(value: 'historicalAverage', child: Text('Hist. Average')),
-                            DropdownMenuItem(value: 'rating', child: Text('User Rating')),
+                            DropdownMenuItem(
+                              value: 'alphabetical',
+                              child: Text('Alphabetical'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'historicalAverage',
+                              child: Text('Hist. Average'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'rating',
+                              child: Text('User Rating'),
+                            ),
                           ],
                         ),
                       ),
@@ -800,12 +1081,15 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                 const SizedBox(height: 12),
                 Expanded(
                   child: items.isEmpty
-                      ? const Center(child: Text('No attractions match selected filters.'))
+                      ? const Center(
+                          child: Text('No attractions match selected filters.'),
+                        )
                       : ListView.builder(
                           itemCount: items.length,
                           itemBuilder: (context, index) {
                             final item = items[index];
-                            final isSelected = _selectedFacilityId == item.facility.id;
+                            final isSelected =
+                                _selectedFacilityId == item.facility.id;
                             return DesktopAttractionRow(
                               facility: item.facility,
                               landName: item.landName,
@@ -815,6 +1099,9 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                                 setState(() {
                                   _selectedFacilityId = item.facility.id;
                                 });
+                                context.push(
+                                  '/home/details?facilityId=${item.facility.id}&parkId=${widget.parkId}',
+                                );
                               },
                             );
                           },
@@ -834,7 +1121,11 @@ class _ParkPageState extends ConsumerState<ParkPage> {
             children: [
               Expanded(
                 flex: 5,
-                child: _buildMapSection(filteredFacilities, waits, isMobile: false),
+                child: _buildMapSection(
+                  filteredFacilities,
+                  waits,
+                  isMobile: false,
+                ),
               ),
               const Divider(height: 1, thickness: 1),
               Expanded(
@@ -859,7 +1150,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
 
   Widget _buildStaticBackground() {
     final theme = Theme.of(context);
-    
+
     final bgUrl = widget.parkId == 'p2'
         ? 'https://images.unsplash.com/photo-1597466765990-64ad1c35dafc?q=80&w=1200'
         : 'https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=1200';
@@ -871,9 +1162,8 @@ class _ParkPageState extends ConsumerState<ParkPage> {
           Image.network(
             bgUrl,
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => Container(
-              color: theme.colorScheme.surface,
-            ),
+            errorBuilder: (_, __, ___) =>
+                Container(color: theme.colorScheme.surface),
           ),
           Container(
             color: theme.scaffoldBackgroundColor.withValues(alpha: 0.7),
@@ -883,18 +1173,40 @@ class _ParkPageState extends ConsumerState<ParkPage> {
     );
   }
 
-  Widget _buildFilterChips({required bool horizontal, required AppLocalizations? loc, double height = 44}) {
+  Widget _buildFilterChips({
+    required bool horizontal,
+    required AppLocalizations? loc,
+    double height = 44,
+  }) {
     final activeFilters = ref.watch(selectedFiltersProvider(widget.parkId));
 
     final filters = [
-      _FilterOption(key: 'thrill', label: loc?.filter_thrill ?? 'Thrill', icon: Icons.bolt),
-      _FilterOption(key: 'toddler', label: loc?.filter_toddler ?? 'Toddler', icon: Icons.child_care),
-      _FilterOption(key: 'indoor', label: loc?.filter_indoor ?? 'Indoor', icon: Icons.home),
-      _FilterOption(key: 'dining', label: loc?.filter_dining ?? 'Dining', icon: Icons.restaurant),
+      _FilterOption(
+        key: 'thrill',
+        label: loc?.filter_thrill ?? 'Thrill',
+        icon: Icons.bolt,
+      ),
+      _FilterOption(
+        key: 'toddler',
+        label: loc?.filter_toddler ?? 'Toddler',
+        icon: Icons.child_care,
+      ),
+      _FilterOption(
+        key: 'indoor',
+        label: loc?.filter_indoor ?? 'Indoor',
+        icon: Icons.home,
+      ),
+      _FilterOption(
+        key: 'dining',
+        label: loc?.filter_dining ?? 'Dining',
+        icon: Icons.restaurant,
+      ),
     ];
 
     void toggleFilter(String key) {
-      final notifier = ref.read(selectedFiltersProvider(widget.parkId).notifier);
+      final notifier = ref.read(
+        selectedFiltersProvider(widget.parkId).notifier,
+      );
       if (activeFilters.contains(key)) {
         notifier.state = activeFilters.where((f) => f != key).toSet();
       } else {
@@ -915,8 +1227,20 @@ class _ParkPageState extends ConsumerState<ParkPage> {
           return FilterChip(
             visualDensity: VisualDensity.compact,
             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            avatar: Icon(opt.icon, size: 14, color: selected ? Theme.of(context).colorScheme.onPrimary : null),
-            label: Text(opt.label, style: TextStyle(fontSize: 12, color: selected ? Theme.of(context).colorScheme.onPrimary : null)),
+            avatar: Icon(
+              opt.icon,
+              size: 14,
+              color: selected ? Theme.of(context).colorScheme.onPrimary : null,
+            ),
+            label: Text(
+              opt.label,
+              style: TextStyle(
+                fontSize: 12,
+                color: selected
+                    ? Theme.of(context).colorScheme.onPrimary
+                    : null,
+              ),
+            ),
             selected: selected,
             selectedColor: Theme.of(context).colorScheme.primary,
             checkmarkColor: Theme.of(context).colorScheme.onPrimary,
@@ -935,7 +1259,9 @@ class _ParkPageState extends ConsumerState<ParkPage> {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3)),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
+        ),
       ),
       child: SingleChildScrollView(
         child: Column(
@@ -943,104 +1269,147 @@ class _ParkPageState extends ConsumerState<ParkPage> {
           children: [
             Text(
               'Advanced Filters',
-              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const Divider(height: 24),
-            
+
             Text(
               'Attraction Type',
-              style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.primary,
+              ),
             ),
             const SizedBox(height: 8),
-            _buildCheckbox('Thrill Rides', _desktopActiveTypes.contains('thrill'), (val) {
-              setState(() {
-                if (val ?? false) {
-                  _desktopActiveTypes.add('thrill');
-                } else {
-                  _desktopActiveTypes.remove('thrill');
-                }
-              });
-            }),
-            _buildCheckbox('Toddler Friendly', _desktopActiveTypes.contains('toddler'), (val) {
-              setState(() {
-                if (val ?? false) {
-                  _desktopActiveTypes.add('toddler');
-                } else {
-                  _desktopActiveTypes.remove('toddler');
-                }
-              });
-            }),
-            _buildCheckbox('Indoor Shows/Rides', _desktopActiveTypes.contains('indoor'), (val) {
-              setState(() {
-                if (val ?? false) {
-                  _desktopActiveTypes.add('indoor');
-                } else {
-                  _desktopActiveTypes.remove('indoor');
-                }
-              });
-            }),
-            _buildCheckbox('Dining / Restaurants', _desktopActiveTypes.contains('dining'), (val) {
-              setState(() {
-                if (val ?? false) {
-                  _desktopActiveTypes.add('dining');
-                } else {
-                  _desktopActiveTypes.remove('dining');
-                }
-              });
-            }),
-            
+            _buildCheckbox(
+              'Thrill Rides',
+              _desktopActiveTypes.contains('thrill'),
+              (val) {
+                setState(() {
+                  if (val ?? false) {
+                    _desktopActiveTypes.add('thrill');
+                  } else {
+                    _desktopActiveTypes.remove('thrill');
+                  }
+                });
+              },
+            ),
+            _buildCheckbox(
+              'Toddler Friendly',
+              _desktopActiveTypes.contains('toddler'),
+              (val) {
+                setState(() {
+                  if (val ?? false) {
+                    _desktopActiveTypes.add('toddler');
+                  } else {
+                    _desktopActiveTypes.remove('toddler');
+                  }
+                });
+              },
+            ),
+            _buildCheckbox(
+              'Indoor Shows/Rides',
+              _desktopActiveTypes.contains('indoor'),
+              (val) {
+                setState(() {
+                  if (val ?? false) {
+                    _desktopActiveTypes.add('indoor');
+                  } else {
+                    _desktopActiveTypes.remove('indoor');
+                  }
+                });
+              },
+            ),
+            _buildCheckbox(
+              'Dining / Restaurants',
+              _desktopActiveTypes.contains('dining'),
+              (val) {
+                setState(() {
+                  if (val ?? false) {
+                    _desktopActiveTypes.add('dining');
+                  } else {
+                    _desktopActiveTypes.remove('dining');
+                  }
+                });
+              },
+            ),
+
             const Divider(height: 24),
-            
+
             Text(
               'Standby Wait Time',
-              style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.primary,
+              ),
             ),
             const SizedBox(height: 8),
-            _buildCheckbox('Under 15 min', _desktopActiveWaitTimes.contains('15'), (val) {
-              setState(() {
-                if (val ?? false) {
-                  _desktopActiveWaitTimes.add('15');
-                } else {
-                  _desktopActiveWaitTimes.remove('15');
-                }
-              });
-            }),
-            _buildCheckbox('Under 30 min', _desktopActiveWaitTimes.contains('30'), (val) {
-              setState(() {
-                if (val ?? false) {
-                  _desktopActiveWaitTimes.add('30');
-                } else {
-                  _desktopActiveWaitTimes.remove('30');
-                }
-              });
-            }),
-            _buildCheckbox('Under 60 min', _desktopActiveWaitTimes.contains('60'), (val) {
-              setState(() {
-                if (val ?? false) {
-                  _desktopActiveWaitTimes.add('60');
-                } else {
-                  _desktopActiveWaitTimes.remove('60');
-                }
-              });
-            }),
-            
+            _buildCheckbox(
+              'Under 15 min',
+              _desktopActiveWaitTimes.contains('15'),
+              (val) {
+                setState(() {
+                  if (val ?? false) {
+                    _desktopActiveWaitTimes.add('15');
+                  } else {
+                    _desktopActiveWaitTimes.remove('15');
+                  }
+                });
+              },
+            ),
+            _buildCheckbox(
+              'Under 30 min',
+              _desktopActiveWaitTimes.contains('30'),
+              (val) {
+                setState(() {
+                  if (val ?? false) {
+                    _desktopActiveWaitTimes.add('30');
+                  } else {
+                    _desktopActiveWaitTimes.remove('30');
+                  }
+                });
+              },
+            ),
+            _buildCheckbox(
+              'Under 60 min',
+              _desktopActiveWaitTimes.contains('60'),
+              (val) {
+                setState(() {
+                  if (val ?? false) {
+                    _desktopActiveWaitTimes.add('60');
+                  } else {
+                    _desktopActiveWaitTimes.remove('60');
+                  }
+                });
+              },
+            ),
+
             const Divider(height: 24),
-            
+
             Text(
               'Park Lands',
-              style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.primary,
+              ),
             ),
             const SizedBox(height: 8),
             ...detail.children.map((land) {
-              return _buildCheckbox(land.name, _desktopActiveLands.contains(land.id), (val) {
-                setState(() {
-                  if (val ?? false) {
-                    _desktopActiveLands.add(land.id);
-                  } else {
-                    _desktopActiveLands.remove(land.id);
-                  }
-                });
-              });
+              return _buildCheckbox(
+                land.name,
+                _desktopActiveLands.contains(land.id),
+                (val) {
+                  setState(() {
+                    if (val ?? false) {
+                      _desktopActiveLands.add(land.id);
+                    } else {
+                      _desktopActiveLands.remove(land.id);
+                    }
+                  });
+                },
+              );
             }),
           ],
         ),
@@ -1048,7 +1417,11 @@ class _ParkPageState extends ConsumerState<ParkPage> {
     );
   }
 
-  Widget _buildCheckbox(String label, bool value, ValueChanged<bool?> onChanged) {
+  Widget _buildCheckbox(
+    String label,
+    bool value,
+    ValueChanged<bool?> onChanged,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
@@ -1087,8 +1460,10 @@ class _ParkPageState extends ConsumerState<ParkPage> {
       }
     }
     if (selectedFac == null) return const SizedBox.shrink();
-    
-    final matchedWait = waits.waitTimes.where((w) => w.rideId == selectedFac!.id);
+
+    final matchedWait = waits.waitTimes.where(
+      (w) => w.rideId == selectedFac!.id,
+    );
     final wait = matchedWait.isEmpty ? null : matchedWait.first;
 
     return Positioned(
@@ -1126,8 +1501,10 @@ class _ParkPageState extends ConsumerState<ParkPage> {
       }
     }
     if (selectedFac == null) return const SizedBox.shrink();
-    
-    final matchedWait = waits.waitTimes.where((w) => w.rideId == selectedFac!.id);
+
+    final matchedWait = waits.waitTimes.where(
+      (w) => w.rideId == selectedFac!.id,
+    );
     final wait = matchedWait.isEmpty ? null : matchedWait.first;
 
     return ClipRRect(
@@ -1159,7 +1536,9 @@ class _ParkPageState extends ConsumerState<ParkPage> {
           _selectedFacilityId = facility.id;
         });
         if (isMobile) {
-          context.push('/home/details?facilityId=${facility.id}&parkId=${widget.parkId}');
+          context.push(
+            '/home/details?facilityId=${facility.id}&parkId=${widget.parkId}',
+          );
         }
       },
     );
@@ -1200,9 +1579,18 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                   }
                 },
                 items: const [
-                  DropdownMenuItem(value: 'proximity', child: Text('Nearest to Me')),
-                  DropdownMenuItem(value: 'waitTime', child: Text('Lowest Wait')),
-                  DropdownMenuItem(value: 'recency', child: Text('Data Recency')),
+                  DropdownMenuItem(
+                    value: 'proximity',
+                    child: Text('Nearest to Me'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'waitTime',
+                    child: Text('Lowest Wait'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'recency',
+                    child: Text('Data Recency'),
+                  ),
                 ],
               ),
             ),
@@ -1229,7 +1617,13 @@ class _ParkPageState extends ConsumerState<ParkPage> {
           value: 'proximity',
           child: Row(
             children: [
-              Icon(Icons.near_me, size: 18, color: _mobileSort == 'proximity' ? theme.colorScheme.primary : null),
+              Icon(
+                Icons.near_me,
+                size: 18,
+                color: _mobileSort == 'proximity'
+                    ? theme.colorScheme.primary
+                    : null,
+              ),
               const SizedBox(width: 8),
               const Text('Nearest to Me'),
             ],
@@ -1239,7 +1633,13 @@ class _ParkPageState extends ConsumerState<ParkPage> {
           value: 'waitTime',
           child: Row(
             children: [
-              Icon(Icons.hourglass_empty, size: 18, color: _mobileSort == 'waitTime' ? theme.colorScheme.primary : null),
+              Icon(
+                Icons.hourglass_empty,
+                size: 18,
+                color: _mobileSort == 'waitTime'
+                    ? theme.colorScheme.primary
+                    : null,
+              ),
               const SizedBox(width: 8),
               const Text('Lowest Wait'),
             ],
@@ -1249,7 +1649,13 @@ class _ParkPageState extends ConsumerState<ParkPage> {
           value: 'recency',
           child: Row(
             children: [
-              Icon(Icons.update, size: 18, color: _mobileSort == 'recency' ? theme.colorScheme.primary : null),
+              Icon(
+                Icons.update,
+                size: 18,
+                color: _mobileSort == 'recency'
+                    ? theme.colorScheme.primary
+                    : null,
+              ),
               const SizedBox(width: 8),
               const Text('Data Recency'),
             ],
@@ -1258,8 +1664,6 @@ class _ParkPageState extends ConsumerState<ParkPage> {
       ],
     );
   }
-
-
 }
 
 class _FilterOption {
@@ -1312,16 +1716,26 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
 
   String _getStaticImageUrl(Facility f) {
     final nameLower = f.name.toLowerCase();
-    if (nameLower.contains('flight') || nameLower.contains('avatar') || nameLower.contains('space') || nameLower.contains('astro')) {
+    if (nameLower.contains('flight') ||
+        nameLower.contains('avatar') ||
+        nameLower.contains('space') ||
+        nameLower.contains('astro')) {
       return 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=200';
     }
-    if (nameLower.contains('everest') || nameLower.contains('thunder') || nameLower.contains('mountain')) {
+    if (nameLower.contains('everest') ||
+        nameLower.contains('thunder') ||
+        nameLower.contains('mountain')) {
       return 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?q=80&w=200';
     }
-    if (nameLower.contains('safaris') || nameLower.contains('rapid') || nameLower.contains('jungle') || nameLower.contains('river')) {
+    if (nameLower.contains('safaris') ||
+        nameLower.contains('rapid') ||
+        nameLower.contains('jungle') ||
+        nameLower.contains('river')) {
       return 'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?q=80&w=200';
     }
-    if (nameLower.contains('cafe') || nameLower.contains('restaurant') || nameLower.contains('grill')) {
+    if (nameLower.contains('cafe') ||
+        nameLower.contains('restaurant') ||
+        nameLower.contains('grill')) {
       return 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=200';
     }
     return 'https://images.unsplash.com/photo-1603048588665-791ca8aea617?q=80&w=200';
@@ -1347,7 +1761,7 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
     final isClosed = wait == null || wait!.status != 'Open';
     final currentWait = wait?.waitMinutes ?? 0;
     final waitText = isClosed ? 'Closed' : '${currentWait}m';
-    
+
     final cs = theme.colorScheme;
     var waitColor = cs.primary;
     if (isClosed) {
@@ -1364,25 +1778,23 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
     final waitBg = isClosed
         ? cs.surfaceContainerHigh
         : (currentWait > 50
-            ? cs.errorContainer
-            : (currentWait > 20
-                ? cs.tertiaryContainer
-                : cs.primaryContainer));
+              ? cs.errorContainer
+              : (currentWait > 20
+                    ? cs.tertiaryContainer
+                    : cs.primaryContainer));
     final waitFg = isClosed
         ? cs.onSurfaceVariant
         : (currentWait > 50
-            ? cs.onErrorContainer
-            : (currentWait > 20
-                ? cs.onTertiaryContainer
-                : cs.onPrimaryContainer));
+              ? cs.onErrorContainer
+              : (currentWait > 20
+                    ? cs.onTertiaryContainer
+                    : cs.onPrimaryContainer));
 
     void navigateToDetails() {
       Navigator.of(context).push(
         MaterialPageRoute<void>(
-          builder: (_) => FacilityDetailPage(
-            facilityId: facility.id,
-            parkId: parkId,
-          ),
+          builder: (_) =>
+              FacilityDetailPage(facilityId: facility.id, parkId: parkId),
         ),
       );
     }
@@ -1444,7 +1856,10 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
                             onTap: navigateToDetails,
                             borderRadius: BorderRadius.circular(6),
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 2,
+                                horizontal: 2,
+                              ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -1453,18 +1868,21 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
                                       facility.name,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: theme.textTheme.bodyLarge?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15,
-                                        color: theme.colorScheme.primary,
-                                      ),
+                                      style: theme.textTheme.bodyLarge
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15,
+                                            color: theme.colorScheme.primary,
+                                          ),
                                     ),
                                   ),
                                   const SizedBox(width: 4),
                                   Icon(
                                     Icons.open_in_new_rounded,
                                     size: 14,
-                                    color: theme.colorScheme.primary.withValues(alpha: 0.8),
+                                    color: theme.colorScheme.primary.withValues(
+                                      alpha: 0.8,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -1476,7 +1894,9 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                              color: theme.colorScheme.onSurface.withValues(
+                                alpha: 0.7,
+                              ),
                               fontSize: 11,
                             ),
                           ),
@@ -1491,18 +1911,22 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
                                         ? Icons.height
                                         : Icons.child_care,
                                     size: 13,
-                                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                                    color: theme.colorScheme.onSurface
+                                        .withValues(alpha: 0.7),
                                   ),
                                 ),
                                 const WidgetSpan(child: SizedBox(width: 3)),
                                 TextSpan(
-                                  text: (facility.heightRequirementInches ?? 0) > 0
+                                  text:
+                                      (facility.heightRequirementInches ?? 0) >
+                                          0
                                       ? '${facility.heightRequirementInches}" min'
                                       : 'All Ages',
                                   style: TextStyle(
                                     fontSize: 11,
                                     fontWeight: FontWeight.w600,
-                                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                                    color: theme.colorScheme.onSurface
+                                        .withValues(alpha: 0.7),
                                   ),
                                 ),
                               ],
@@ -1519,7 +1943,10 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
                             color: waitBg,
                             borderRadius: BorderRadius.circular(10),
@@ -1548,11 +1975,15 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
                         IconButton(
                           onPressed: onTap,
                           icon: Icon(
-                            isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                            isExpanded
+                                ? Icons.keyboard_arrow_up
+                                : Icons.keyboard_arrow_down,
                             color: theme.colorScheme.primary,
                             size: 26,
                           ),
-                          tooltip: isExpanded ? 'Collapse Quick Context' : 'Expand Quick Context',
+                          tooltip: isExpanded
+                              ? 'Collapse Quick Context'
+                              : 'Expand Quick Context',
                         ),
                       ],
                     ),
@@ -1599,7 +2030,9 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
                           color: theme.colorScheme.surfaceContainerLow,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
+                            color: theme.colorScheme.outlineVariant.withValues(
+                              alpha: 0.3,
+                            ),
                           ),
                         ),
                         child: SparklineChart(
@@ -1615,7 +2048,9 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
                     Text(
                       'Experience thrilling excitement in $landName with real-time downsampled queue insights and immersive environments.',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.85),
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.85,
+                        ),
                         height: 1.35,
                       ),
                     ),
@@ -1632,51 +2067,69 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
                                   child: const SizedBox(
                                     width: 22,
                                     height: 22,
-                                    child: CircularProgressIndicator(strokeWidth: 2.5),
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2.5,
+                                    ),
                                   ),
                                 )
                               : hasJoinedQueue
-                                  ? Container(
-                                      height: 44,
-                                      decoration: BoxDecoration(
-                                        color: theme.colorScheme.primaryContainer,
+                              ? Container(
+                                  height: 44,
+                                  decoration: BoxDecoration(
+                                    color: theme.colorScheme.primaryContainer,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.check_circle,
+                                        color: theme
+                                            .colorScheme
+                                            .onPrimaryContainer,
+                                        size: 18,
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        'Virtual Queue Joined (Group 14)',
+                                        style: TextStyle(
+                                          color: theme
+                                              .colorScheme
+                                              .onPrimaryContainer,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : SizedBox(
+                                  height: 44,
+                                  child: ElevatedButton.icon(
+                                    onPressed: onJoinQueue,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          theme.colorScheme.primary,
+                                      foregroundColor:
+                                          theme.colorScheme.onPrimary,
+                                      shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(12),
                                       ),
-                                      alignment: Alignment.center,
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Icon(Icons.check_circle, color: theme.colorScheme.onPrimaryContainer, size: 18),
-                                          const SizedBox(width: 6),
-                                          Text(
-                                            'Virtual Queue Joined (Group 14)',
-                                            style: TextStyle(
-                                              color: theme.colorScheme.onPrimaryContainer,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 12,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  : SizedBox(
-                                      height: 44,
-                                      child: ElevatedButton.icon(
-                                        onPressed: onJoinQueue,
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: theme.colorScheme.primary,
-                                          foregroundColor: theme.colorScheme.onPrimary,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(12),
-                                          ),
-                                        ),
-                                        icon: const Icon(Icons.confirmation_number_outlined, size: 18),
-                                        label: const Text(
-                                          'Join Virtual Queue',
-                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-                                        ),
+                                    ),
+                                    icon: const Icon(
+                                      Icons.confirmation_number_outlined,
+                                      size: 18,
+                                    ),
+                                    label: const Text(
+                                      'Join Virtual Queue',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13,
                                       ),
                                     ),
+                                  ),
+                                ),
                         ),
                       ],
                     ),
@@ -1696,7 +2149,9 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
                         Text(
                           'Last 3 Hours',
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                            color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.6,
+                            ),
                             fontSize: 10,
                           ),
                         ),
@@ -1739,16 +2194,26 @@ class MobileAttractionTile extends StatelessWidget {
 
   String _getStaticImageUrl(Facility f) {
     final nameLower = f.name.toLowerCase();
-    if (nameLower.contains('flight') || nameLower.contains('avatar') || nameLower.contains('space') || nameLower.contains('astro')) {
+    if (nameLower.contains('flight') ||
+        nameLower.contains('avatar') ||
+        nameLower.contains('space') ||
+        nameLower.contains('astro')) {
       return 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=200';
     }
-    if (nameLower.contains('everest') || nameLower.contains('thunder') || nameLower.contains('mountain')) {
+    if (nameLower.contains('everest') ||
+        nameLower.contains('thunder') ||
+        nameLower.contains('mountain')) {
       return 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?q=80&w=200';
     }
-    if (nameLower.contains('safaris') || nameLower.contains('rapid') || nameLower.contains('jungle') || nameLower.contains('river')) {
+    if (nameLower.contains('safaris') ||
+        nameLower.contains('rapid') ||
+        nameLower.contains('jungle') ||
+        nameLower.contains('river')) {
       return 'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?q=80&w=200';
     }
-    if (nameLower.contains('cafe') || nameLower.contains('restaurant') || nameLower.contains('grill')) {
+    if (nameLower.contains('cafe') ||
+        nameLower.contains('restaurant') ||
+        nameLower.contains('grill')) {
       return 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=200';
     }
     return 'https://images.unsplash.com/photo-1603048588665-791ca8aea617?q=80&w=200';
@@ -1762,7 +2227,7 @@ class MobileAttractionTile extends StatelessWidget {
     final isClosed = wait == null || wait!.status != 'Open';
     final waitText = isClosed ? 'Closed' : '${wait!.waitMinutes}m';
     final currentWait = wait?.waitMinutes ?? 0;
-    
+
     final cs = Theme.of(context).colorScheme;
     var waitColor = cs.primary;
     if (isClosed) {
@@ -1851,7 +2316,9 @@ class MobileAttractionTile extends StatelessWidget {
                                     ? Icons.height
                                     : Icons.child_care,
                                 size: 13,
-                                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                                color: theme.colorScheme.onSurface.withValues(
+                                  alpha: 0.6,
+                                ),
                               ),
                               const SizedBox(width: 2),
                               Text(
@@ -1860,7 +2327,9 @@ class MobileAttractionTile extends StatelessWidget {
                                     : 'Family',
                                 style: TextStyle(
                                   fontSize: 10,
-                                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                                  color: theme.colorScheme.onSurface.withValues(
+                                    alpha: 0.6,
+                                  ),
                                 ),
                               ),
                             ],
@@ -1871,14 +2340,18 @@ class MobileAttractionTile extends StatelessWidget {
                               Icon(
                                 Icons.accessible_forward,
                                 size: 13,
-                                color: theme.colorScheme.onSurface.withValues(alpha: 0.38),
+                                color: theme.colorScheme.onSurface.withValues(
+                                  alpha: 0.38,
+                                ),
                               ),
                               const SizedBox(width: 2),
                               Text(
                                 'Accessible',
                                 style: TextStyle(
                                   fontSize: 10,
-                                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                                  color: theme.colorScheme.onSurface.withValues(
+                                    alpha: 0.6,
+                                  ),
                                 ),
                               ),
                             ],
@@ -1944,16 +2417,26 @@ class TabletAttractionTile extends StatelessWidget {
 
   String _getStaticImageUrl(Facility f) {
     final nameLower = f.name.toLowerCase();
-    if (nameLower.contains('flight') || nameLower.contains('avatar') || nameLower.contains('space') || nameLower.contains('astro')) {
+    if (nameLower.contains('flight') ||
+        nameLower.contains('avatar') ||
+        nameLower.contains('space') ||
+        nameLower.contains('astro')) {
       return 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=200';
     }
-    if (nameLower.contains('everest') || nameLower.contains('thunder') || nameLower.contains('mountain')) {
+    if (nameLower.contains('everest') ||
+        nameLower.contains('thunder') ||
+        nameLower.contains('mountain')) {
       return 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?q=80&w=200';
     }
-    if (nameLower.contains('safaris') || nameLower.contains('rapid') || nameLower.contains('jungle') || nameLower.contains('river')) {
+    if (nameLower.contains('safaris') ||
+        nameLower.contains('rapid') ||
+        nameLower.contains('jungle') ||
+        nameLower.contains('river')) {
       return 'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?q=80&w=200';
     }
-    if (nameLower.contains('cafe') || nameLower.contains('restaurant') || nameLower.contains('grill')) {
+    if (nameLower.contains('cafe') ||
+        nameLower.contains('restaurant') ||
+        nameLower.contains('grill')) {
       return 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=200';
     }
     return 'https://images.unsplash.com/photo-1603048588665-791ca8aea617?q=80&w=200';
@@ -1966,7 +2449,7 @@ class TabletAttractionTile extends StatelessWidget {
 
     final isClosed = wait == null || wait!.status != 'Open';
     final currentWait = wait?.waitMinutes ?? 0;
-    
+
     var waitColor = theme.colorScheme.primary;
     if (isClosed) {
       waitColor = theme.colorScheme.outline;
@@ -1990,13 +2473,19 @@ class TabletAttractionTile extends StatelessWidget {
         border: isSelected ? 2.0 : 1.0,
         linearGradient: LinearGradient(
           colors: [
-            if (isSelected) theme.colorScheme.primary.withValues(alpha: isDark ? 0.18 : 0.35) else Colors.white.withValues(alpha: isDark ? 0.06 : 0.5),
+            if (isSelected)
+              theme.colorScheme.primary.withValues(alpha: isDark ? 0.18 : 0.35)
+            else
+              Colors.white.withValues(alpha: isDark ? 0.06 : 0.5),
             Colors.white.withValues(alpha: isDark ? 0.02 : 0.2),
           ],
         ),
         borderGradient: LinearGradient(
           colors: [
-            if (isSelected) theme.colorScheme.primary.withValues(alpha: 0.8) else Colors.white.withValues(alpha: isDark ? 0.15 : 0.6),
+            if (isSelected)
+              theme.colorScheme.primary.withValues(alpha: 0.8)
+            else
+              Colors.white.withValues(alpha: isDark ? 0.15 : 0.6),
             Colors.white.withValues(alpha: isDark ? 0.05 : 0.2),
           ],
         ),
@@ -2018,7 +2507,7 @@ class TabletAttractionTile extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 10),
-                
+
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -2028,7 +2517,7 @@ class TabletAttractionTile extends StatelessWidget {
                         facility.name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                                style: theme.textTheme.bodyMedium?.copyWith(
+                        style: theme.textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: theme.colorScheme.onSurface,
                         ),
@@ -2037,7 +2526,9 @@ class TabletAttractionTile extends StatelessWidget {
                       Text(
                         landName,
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.6,
+                          ),
                           fontSize: 10,
                         ),
                       ),
@@ -2103,13 +2594,21 @@ class _DesktopAttractionRowState extends State<DesktopAttractionRow> {
 
   String _getGIFUrl(Facility f) {
     final nameLower = f.name.toLowerCase();
-    if (nameLower.contains('flight') || nameLower.contains('avatar') || nameLower.contains('space') || nameLower.contains('astro')) {
+    if (nameLower.contains('flight') ||
+        nameLower.contains('avatar') ||
+        nameLower.contains('space') ||
+        nameLower.contains('astro')) {
       return 'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3h5cHF4bml1bGVwdDlwZmR5bWZkcTV4dzB5cHkyZWQzOGc1eWxtNCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3ornk57KwDXf81rjWM/giphy.gif';
     }
-    if (nameLower.contains('everest') || nameLower.contains('thunder') || nameLower.contains('mountain')) {
+    if (nameLower.contains('everest') ||
+        nameLower.contains('thunder') ||
+        nameLower.contains('mountain')) {
       return 'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHkycHkyMTJrNDl1cmh5a2txNXZ5azUzdjVxMmtxbXF2NTh2bTRiayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/YhW0QsO2usWQi1oXcc/giphy.gif';
     }
-    if (nameLower.contains('safaris') || nameLower.contains('rapid') || nameLower.contains('jungle') || nameLower.contains('river')) {
+    if (nameLower.contains('safaris') ||
+        nameLower.contains('rapid') ||
+        nameLower.contains('jungle') ||
+        nameLower.contains('river')) {
       return 'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdDVxbzh2MTJrMjEzdjVxNmh5NXZ5MTJrMjEzdjVxNmh5NXZ5bTRiayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l2JJEIMrgrcSBueWs/giphy.gif';
     }
     return 'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbTRhaTFyOHlycHkyMTJrNDl1cmh5a2txNXZ5azUzdjVxMmtxbXF2NTh2bTRiayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKSjRrfIPjei1fG/giphy.gif';
@@ -2117,16 +2616,26 @@ class _DesktopAttractionRowState extends State<DesktopAttractionRow> {
 
   String _getStaticImageUrl(Facility f) {
     final nameLower = f.name.toLowerCase();
-    if (nameLower.contains('flight') || nameLower.contains('avatar') || nameLower.contains('space') || nameLower.contains('astro')) {
+    if (nameLower.contains('flight') ||
+        nameLower.contains('avatar') ||
+        nameLower.contains('space') ||
+        nameLower.contains('astro')) {
       return 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=200';
     }
-    if (nameLower.contains('everest') || nameLower.contains('thunder') || nameLower.contains('mountain')) {
+    if (nameLower.contains('everest') ||
+        nameLower.contains('thunder') ||
+        nameLower.contains('mountain')) {
       return 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?q=80&w=200';
     }
-    if (nameLower.contains('safaris') || nameLower.contains('rapid') || nameLower.contains('jungle') || nameLower.contains('river')) {
+    if (nameLower.contains('safaris') ||
+        nameLower.contains('rapid') ||
+        nameLower.contains('jungle') ||
+        nameLower.contains('river')) {
       return 'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?q=80&w=200';
     }
-    if (nameLower.contains('cafe') || nameLower.contains('restaurant') || nameLower.contains('grill')) {
+    if (nameLower.contains('cafe') ||
+        nameLower.contains('restaurant') ||
+        nameLower.contains('grill')) {
       return 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=200';
     }
     return 'https://images.unsplash.com/photo-1603048588665-791ca8aea617?q=80&w=200';
@@ -2136,11 +2645,11 @@ class _DesktopAttractionRowState extends State<DesktopAttractionRow> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    
+
     final isClosed = widget.wait == null || widget.wait!.status != 'Open';
     final waitText = isClosed ? 'Closed' : '${widget.wait!.waitMinutes}m';
     final currentWait = widget.wait?.waitMinutes ?? 0;
-    
+
     var waitColor = theme.colorScheme.primary;
     if (isClosed) {
       waitColor = theme.colorScheme.outline;
@@ -2164,33 +2673,51 @@ class _DesktopAttractionRowState extends State<DesktopAttractionRow> {
         onTap: widget.onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          transform: Matrix4.identity()..scale(_isHovered ? 1.02 : 1.0),
+          transform: Matrix4.identity()
+            ..scaleByDouble(
+              _isHovered ? 1.02 : 1.0,
+              _isHovered ? 1.02 : 1.0,
+              1.0,
+              1.0,
+            ),
           transformAlignment: Alignment.center,
           margin: const EdgeInsets.symmetric(vertical: 4),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             color: widget.isSelected
-                ? theme.colorScheme.primary.withValues(alpha: isDark ? 0.15 : 0.25)
+                ? theme.colorScheme.primary.withValues(
+                    alpha: isDark ? 0.15 : 0.25,
+                  )
                 : (_isHovered
-                    ? (isDark ? Colors.white.withValues(alpha: 0.08) : Colors.white.withValues(alpha: 0.8))
-                    : (isDark ? Colors.white.withValues(alpha: 0.03) : Colors.white.withValues(alpha: 0.45))),
+                      ? (isDark
+                            ? Colors.white.withValues(alpha: 0.08)
+                            : Colors.white.withValues(alpha: 0.8))
+                      : (isDark
+                            ? Colors.white.withValues(alpha: 0.03)
+                            : Colors.white.withValues(alpha: 0.45))),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: widget.isSelected
                   ? theme.colorScheme.primary.withValues(alpha: 0.6)
                   : (_isHovered
-                      ? (isDark ? Colors.white24 : theme.colorScheme.onSurface.withValues(alpha: 0.12))
-                      : Colors.transparent),
+                        ? (isDark
+                              ? Colors.white24
+                              : theme.colorScheme.onSurface.withValues(
+                                  alpha: 0.12,
+                                ))
+                        : Colors.transparent),
               width: 1.5,
             ),
             boxShadow: _isHovered
                 ? [
                     BoxShadow(
-                      color: theme.colorScheme.onSurface.withValues(alpha: isDark ? 0.4 : 0.1),
+                      color: theme.colorScheme.onSurface.withValues(
+                        alpha: isDark ? 0.4 : 0.1,
+                      ),
                       blurRadius: 8,
                       spreadRadius: 1,
                       offset: const Offset(0, 4),
-                    )
+                    ),
                   ]
                 : [],
           ),
@@ -2202,7 +2729,9 @@ class _DesktopAttractionRowState extends State<DesktopAttractionRow> {
                   width: 48,
                   height: 48,
                   child: Image.network(
-                    _isHovered ? _getGIFUrl(widget.facility) : _getStaticImageUrl(widget.facility),
+                    _isHovered
+                        ? _getGIFUrl(widget.facility)
+                        : _getStaticImageUrl(widget.facility),
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) => ColoredBox(
                       color: Colors.grey.shade300,
@@ -2212,7 +2741,7 @@ class _DesktopAttractionRowState extends State<DesktopAttractionRow> {
                 ),
               ),
               const SizedBox(width: 12),
-              
+
               Expanded(
                 flex: 4,
                 child: Column(
@@ -2220,21 +2749,27 @@ class _DesktopAttractionRowState extends State<DesktopAttractionRow> {
                   children: [
                     Text(
                       widget.facility.name,
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 2),
                     Text(
                       widget.landName,
-                      style: TextStyle(color: Colors.grey.shade600, fontSize: 11),
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 11,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
               ),
-              
+
               Expanded(
                 flex: 2,
                 child: Row(
@@ -2255,7 +2790,7 @@ class _DesktopAttractionRowState extends State<DesktopAttractionRow> {
                   ],
                 ),
               ),
-              
+
               Expanded(
                 flex: 2,
                 child: Text(
@@ -2263,7 +2798,7 @@ class _DesktopAttractionRowState extends State<DesktopAttractionRow> {
                   style: const TextStyle(fontSize: 12),
                 ),
               ),
-              
+
               Expanded(
                 flex: 2,
                 child: Text(
@@ -2271,7 +2806,7 @@ class _DesktopAttractionRowState extends State<DesktopAttractionRow> {
                   style: const TextStyle(fontSize: 12),
                 ),
               ),
-              
+
               Expanded(
                 flex: 2,
                 child: Row(
@@ -2281,7 +2816,10 @@ class _DesktopAttractionRowState extends State<DesktopAttractionRow> {
                     const SizedBox(width: 2),
                     Text(
                       rating.toStringAsFixed(1),
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                 ),

@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:go_router/go_router.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+import 'package:themeparkapp/core/logging/logger.dart';
 import 'package:themeparkapp/core/models/park_detail.dart';
 import 'package:themeparkapp/core/models/wait_time.dart';
 import 'package:themeparkapp/core/providers.dart';
@@ -26,7 +27,8 @@ class MenuItem {
   final double price;
   final String category; // 'Entrees', 'Kids', 'Drinks'
   final String imageUrl;
-  final List<String> dietaryTags; // 'Vegan', 'Gluten-Free', 'Dairy-Free', 'Vegetarian'
+  final List<String>
+  dietaryTags; // 'Vegan', 'Gluten-Free', 'Dairy-Free', 'Vegetarian'
 }
 
 /// Detailed page for a single attraction or dining location.
@@ -44,7 +46,8 @@ class FacilityDetailPage extends ConsumerStatefulWidget {
   ConsumerState<FacilityDetailPage> createState() => _FacilityDetailPageState();
 }
 
-class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with SingleTickerProviderStateMixin {
+class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage>
+    with SingleTickerProviderStateMixin {
   // Virtual Queue State
   bool _isJoiningQueue = false;
   bool _joinedQueue = false;
@@ -66,63 +69,72 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
       name: 'Grizzly Giant Burger',
       price: 14.99,
       category: 'Entrees',
-      imageUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=400',
+      imageUrl:
+          'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=400',
       dietaryTags: ['Dairy', 'Gluten'],
     ),
     MenuItem(
       name: 'Wilderness Salad',
       price: 12.99,
       category: 'Entrees',
-      imageUrl: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=400',
+      imageUrl:
+          'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=400',
       dietaryTags: ['Vegan', 'Gluten-Free', 'Vegetarian'],
     ),
     MenuItem(
       name: 'Smoked Turkey Leg',
       price: 15.49,
       category: 'Entrees',
-      imageUrl: 'https://images.unsplash.com/photo-1529692236671-f1f6e9473bfc?q=80&w=400',
+      imageUrl:
+          'https://images.unsplash.com/photo-1529692236671-f1f6e9473bfc?q=80&w=400',
       dietaryTags: ['Gluten-Free', 'Dairy-Free'],
     ),
     MenuItem(
       name: 'Vegan Quinoa Bowl',
       price: 13.99,
       category: 'Entrees',
-      imageUrl: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?q=80&w=400',
+      imageUrl:
+          'https://images.unsplash.com/photo-1540420773420-3366772f4999?q=80&w=400',
       dietaryTags: ['Vegan', 'Gluten-Free', 'Vegetarian', 'Dairy-Free'],
     ),
     MenuItem(
       name: 'Mini Mac & Cheese',
       price: 6.99,
       category: 'Kids',
-      imageUrl: 'https://images.unsplash.com/photo-1543339308-43e59d6b73a6?q=80&w=400',
+      imageUrl:
+          'https://images.unsplash.com/photo-1543339308-43e59d6b73a6?q=80&w=400',
       dietaryTags: ['Gluten', 'Dairy', 'Vegetarian'],
     ),
     MenuItem(
       name: 'Crispy Chicken Tenders',
       price: 7.49,
       category: 'Kids',
-      imageUrl: 'https://images.unsplash.com/photo-1562967914-608f82629710?q=80&w=400',
+      imageUrl:
+          'https://images.unsplash.com/photo-1562967914-608f82629710?q=80&w=400',
       dietaryTags: ['Gluten'],
     ),
     MenuItem(
       name: 'Fruit & Yogurt Cup',
       price: 4.99,
       category: 'Kids',
-      imageUrl: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?q=80&w=400',
+      imageUrl:
+          'https://images.unsplash.com/photo-1488477181946-6428a0291777?q=80&w=400',
       dietaryTags: ['Gluten-Free', 'Vegetarian', 'Dairy'],
     ),
     MenuItem(
       name: 'Fresh Squeezed Lemonade',
       price: 3.99,
       category: 'Drinks',
-      imageUrl: 'https://images.unsplash.com/photo-1534723328310-e82dad3ee43f?q=80&w=400',
+      imageUrl:
+          'https://images.unsplash.com/photo-1534723328310-e82dad3ee43f?q=80&w=400',
       dietaryTags: ['Vegan', 'Gluten-Free', 'Dairy-Free', 'Vegetarian'],
     ),
     MenuItem(
       name: 'Craft Root Beer',
       price: 4.49,
       category: 'Drinks',
-      imageUrl: 'https://images.unsplash.com/photo-1532634922-8fe0b757fb13?q=80&w=400',
+      imageUrl:
+          'https://images.unsplash.com/photo-1532634922-8fe0b757fb13?q=80&w=400',
       dietaryTags: ['Vegan', 'Gluten-Free', 'Dairy-Free', 'Vegetarian'],
     ),
   ];
@@ -175,7 +187,9 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
         });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Successfully joined Virtual Queue for $_queueGroup!'),
+            content: Text(
+              'Successfully joined Virtual Queue for $_queueGroup!',
+            ),
             backgroundColor: Theme.of(context).colorScheme.primary,
           ),
         );
@@ -217,11 +231,18 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.explore, size: 40, color: cs.onPrimaryContainer),
+                      Icon(
+                        Icons.explore,
+                        size: 40,
+                        color: cs.onPrimaryContainer,
+                      ),
                       const SizedBox(height: 8),
                       Text(
                         'Distance: 120 yards • 2 min walk',
-                        style: TextStyle(fontWeight: FontWeight.bold, color: cs.onPrimaryContainer),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: cs.onPrimaryContainer,
+                        ),
                       ),
                     ],
                   ),
@@ -243,9 +264,16 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
   bool _isItemCompliant(MenuItem item) {
     if (_activeDietaryFilters.isEmpty) return true;
     for (final filter in _activeDietaryFilters) {
-      if (filter == 'Gluten-Free' && !item.dietaryTags.contains('Gluten-Free')) return false;
-      if (filter == 'Vegan' && !item.dietaryTags.contains('Vegan')) return false;
-      if (filter == 'Dairy-Free' && !item.dietaryTags.contains('Dairy-Free')) return false;
+      if (filter == 'Gluten-Free' &&
+          !item.dietaryTags.contains('Gluten-Free')) {
+        return false;
+      }
+      if (filter == 'Vegan' && !item.dietaryTags.contains('Vegan')) {
+        return false;
+      }
+      if (filter == 'Dairy-Free' && !item.dietaryTags.contains('Dairy-Free')) {
+        return false;
+      }
       if (filter == 'Vegetarian' &&
           !item.dietaryTags.contains('Vegetarian') &&
           !item.dietaryTags.contains('Vegan')) {
@@ -265,21 +293,27 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
     });
   }
 
-  Widget _buildImage(String url, {double? width, double? height, BoxFit fit = BoxFit.cover}) {
+  Widget _buildImage(
+    String url, {
+    double? width,
+    double? height,
+    BoxFit fit = BoxFit.cover,
+  }) {
     if (!kIsWeb && Platform.environment.containsKey('FLUTTER_TEST')) {
       return Container(
         width: width,
         height: height,
         color: Theme.of(context).colorScheme.surfaceContainerHigh,
-        child: Center(child: Icon(Icons.image, color: Theme.of(context).colorScheme.onSurfaceVariant, size: 16)),
+        child: Center(
+          child: Icon(
+            Icons.image,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            size: 16,
+          ),
+        ),
       );
     }
-    return Image.network(
-      url,
-      width: width,
-      height: height,
-      fit: fit,
-    );
+    return Image.network(url, width: width, height: height, fit: fit);
   }
 
   @override
@@ -292,7 +326,7 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
     return Scaffold(
       body: detailAsync.when(
         data: (detail) {
-          // Find the facility
+          // Find the facility (by ID or fallback by name)
           Facility? facility;
           for (final land in detail.children) {
             for (final f in land.children) {
@@ -301,6 +335,7 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                 break;
               }
             }
+            if (facility != null) break;
           }
 
           if (facility == null) {
@@ -318,21 +353,54 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
           }
 
           final isDining = facility.name.toLowerCase().contains(
-                RegExp(
-                  'cafe|restaurant|grill|dining|eats|table|bakery|kitchen|tavern|food|pub|vine|palace',
-                ),
-              );
+            RegExp(
+              'cafe|restaurant|grill|dining|eats|table|bakery|kitchen|tavern|food|pub|vine|palace',
+            ),
+          );
 
           return ScreenTypeLayout.builder(
-            mobile: (context) => _buildMobileLayout(facility!, wait, isDining, theme, isDark),
-            desktop: (context) => _buildDesktopLayout(facility!, wait, isDining, theme, isDark),
+            mobile: (context) =>
+                _buildMobileLayout(facility!, wait, isDining, theme, isDark),
+            desktop: (context) =>
+                _buildDesktopLayout(facility!, wait, isDining, theme, isDark),
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, st) => Center(child: Text('Error: $err')),
+        error: (err, st) {
+          talker.handle(err, st);
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).clearSnackBars();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Error: $err'),
+                  behavior: SnackBarBehavior.floating,
+                  action: SnackBarAction(
+                    label: 'RETRY',
+                    onPressed: () {
+                      ref.invalidate(parkDetailProvider(widget.parkId));
+                    },
+                  ),
+                ),
+              );
+            }
+          });
+          return Padding(
+            padding: const EdgeInsets.all(16),
+            child: Center(
+              child: OutlinedButton.icon(
+                onPressed: () =>
+                    ref.invalidate(parkDetailProvider(widget.parkId)),
+                icon: const Icon(Icons.refresh),
+                label: const Text('Retry loading details'),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
+
 
   // --- MOBILE LAYOUT ---
   Widget _buildMobileLayout(
@@ -347,7 +415,12 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
         : 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?q=80&w=800';
 
     return Scaffold(
-      bottomNavigationBar: _buildMobileStickyCTA(facility, isDining, theme, isDark),
+      bottomNavigationBar: _buildMobileStickyCTA(
+        facility,
+        isDining,
+        theme,
+        isDark,
+      ),
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
@@ -375,9 +448,7 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                 background: Stack(
                   fit: StackFit.expand,
                   children: [
-                    _buildImage(
-                      staticImage,
-                    ),
+                    _buildImage(staticImage),
                     Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -407,23 +478,31 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
               if (!isDining) ...[
                 Text(
                   'Wait Time Analysis',
-                  style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Make a go/no-go decision based on live and predicted trends.',
-                  style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 Card(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(12),
                     child: Column(
                       children: [
                         SizedBox(
                           height: 200,
-                          child: InteractiveWaitTimeChart(facilityId: facility.id),
+                          child: InteractiveWaitTimeChart(
+                            facilityId: facility.id,
+                          ),
                         ),
                         const SizedBox(height: 8),
                         _buildChartLegend(theme),
@@ -478,21 +557,31 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                   // 360 Panorama View
                   Text(
                     'Interactive 360° Preview Tour',
-                    style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   Text(
                     'Drag left or right to explore the location.',
-                    style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   Container(
                     height: 300,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5)),
+                      border: Border.all(
+                        color: theme.colorScheme.outlineVariant.withValues(
+                          alpha: 0.5,
+                        ),
+                      ),
                       boxShadow: [
                         BoxShadow(
-                          color: theme.colorScheme.shadow.withValues(alpha: 0.1),
+                          color: theme.colorScheme.shadow.withValues(
+                            alpha: 0.1,
+                          ),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
@@ -503,7 +592,11 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                       onHorizontalDragStart: (_) => _isUserDragging = true,
                       onHorizontalDragUpdate: (details) {
                         setState(() {
-                          _panOffset = (_panOffset - details.primaryDelta! / 500).clamp(0.0, 1.0);
+                          _panOffset =
+                              (_panOffset - details.primaryDelta! / 500).clamp(
+                                0.0,
+                                1.0,
+                              );
                         });
                       },
                       onHorizontalDragEnd: (_) {
@@ -516,14 +609,14 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                             child: FractionallySizedBox(
                               widthFactor: 2.5,
                               alignment: Alignment((_panOffset * 2.0) - 1.0, 0),
-                              child: _buildImage(
-                                panoramaImage,
-                              ),
+                              child: _buildImage(panoramaImage),
                             ),
                           ),
                           // Overlay for text legibility
                           Container(
-                            color: theme.colorScheme.scrim.withValues(alpha: 0.25),
+                            color: theme.colorScheme.scrim.withValues(
+                              alpha: 0.25,
+                            ),
                           ),
                           // Compass UI Overlay
                           Positioned(
@@ -538,14 +631,22 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                               border: 1,
                               linearGradient: LinearGradient(
                                 colors: [
-                                  theme.colorScheme.surface.withValues(alpha: 0.4),
-                                  theme.colorScheme.surface.withValues(alpha: 0.1),
+                                  theme.colorScheme.surface.withValues(
+                                    alpha: 0.4,
+                                  ),
+                                  theme.colorScheme.surface.withValues(
+                                    alpha: 0.1,
+                                  ),
                                 ],
                               ),
                               borderGradient: LinearGradient(
                                 colors: [
-                                  theme.colorScheme.outline.withValues(alpha: 0.5),
-                                  theme.colorScheme.outline.withValues(alpha: 0.2),
+                                  theme.colorScheme.outline.withValues(
+                                    alpha: 0.5,
+                                  ),
+                                  theme.colorScheme.outline.withValues(
+                                    alpha: 0.2,
+                                  ),
                                 ],
                               ),
                               child: Transform.rotate(
@@ -565,20 +666,31 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                             child: Card(
                               color: theme.colorScheme.surfaceContainerHigh,
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
                                 child: Row(
                                   children: [
                                     Icon(
-                                      _isUserDragging ? Icons.pan_tool : Icons.swap_horizontal_circle_outlined,
+                                      _isUserDragging
+                                          ? Icons.pan_tool
+                                          : Icons
+                                                .swap_horizontal_circle_outlined,
                                       color: theme.colorScheme.tertiary,
                                       size: 16,
                                     ),
                                     const SizedBox(width: 8),
                                     Text(
-                                      _isUserDragging ? 'Exploring...' : 'Drag Panorama to Look Around',
-                                      style: theme.textTheme.labelSmall?.copyWith(
-                                        color: theme.colorScheme.onSurfaceVariant,
-                                      ),
+                                      _isUserDragging
+                                          ? 'Exploring...'
+                                          : 'Drag Panorama to Look Around',
+                                      style: theme.textTheme.labelSmall
+                                          ?.copyWith(
+                                            color: theme
+                                                .colorScheme
+                                                .onSurfaceVariant,
+                                          ),
                                     ),
                                   ],
                                 ),
@@ -593,14 +705,20 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                   if (!isDining) ...[
                     Text(
                       'Wait Time Analytics',
-                      style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     Card(
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
-                        side: BorderSide(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5)),
+                        side: BorderSide(
+                          color: theme.colorScheme.outlineVariant.withValues(
+                            alpha: 0.5,
+                          ),
+                        ),
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(20),
@@ -608,7 +726,9 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                           children: [
                             SizedBox(
                               height: 260,
-                              child: InteractiveWaitTimeChart(facilityId: facility.id),
+                              child: InteractiveWaitTimeChart(
+                                facilityId: facility.id,
+                              ),
                             ),
                             const SizedBox(height: 12),
                             _buildChartLegend(theme),
@@ -625,7 +745,7 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
               ),
             ),
           ),
-          
+
           // Vertical Divider
           const VerticalDivider(width: 1, thickness: 1),
 
@@ -638,7 +758,9 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                 children: [
                   Card(
                     elevation: 4,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(20),
                       child: Column(
@@ -648,10 +770,18 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                           const Divider(height: 32),
                           const Text(
                             'Quick Actions',
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
                           ),
                           const SizedBox(height: 16),
-                          _buildDesktopStickyCTA(facility, isDining, theme, isDark),
+                          _buildDesktopStickyCTA(
+                            facility,
+                            isDining,
+                            theme,
+                            isDark,
+                          ),
                         ],
                       ),
                     ),
@@ -690,17 +820,25 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
               Card(
                 color: theme.colorScheme.tertiaryContainer,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
                         'Virtual Queue: $_queueGroup',
-                        style: TextStyle(fontWeight: FontWeight.bold, color: theme.colorScheme.onTertiaryContainer),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.onTertiaryContainer,
+                        ),
                       ),
                       Text(
                         'Est. Entry: $_queueEstimate',
-                        style: TextStyle(color: theme.colorScheme.onTertiaryContainer),
+                        style: TextStyle(
+                          color: theme.colorScheme.onTertiaryContainer,
+                        ),
                       ),
                     ],
                   ),
@@ -714,20 +852,30 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       backgroundColor: theme.colorScheme.tertiary,
                       foregroundColor: theme.colorScheme.onTertiary,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     icon: _isJoiningQueue
                         ? SizedBox(
                             width: 20,
                             height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: theme.colorScheme.onTertiary),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: theme.colorScheme.onTertiary,
+                            ),
                           )
                         : const Icon(Icons.confirmation_num),
                     label: Text(
                       _joinedQueue ? 'Queue Joined' : 'Join Virtual Queue',
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    onPressed: _joinedQueue || _isJoiningQueue ? null : _joinVirtualQueueFlow,
+                    onPressed: _joinedQueue || _isJoiningQueue
+                        ? null
+                        : _joinVirtualQueueFlow,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -737,7 +885,9 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                       padding: const EdgeInsets.all(16),
                       backgroundColor: theme.colorScheme.primary,
                       foregroundColor: theme.colorScheme.onPrimary,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     icon: const Icon(Icons.restaurant_menu),
                     label: const Text('Order Food'),
@@ -751,7 +901,9 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                       padding: const EdgeInsets.all(16),
                       backgroundColor: theme.colorScheme.secondary,
                       foregroundColor: theme.colorScheme.onSecondary,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     onPressed: _simulateNavigation,
                     child: const Icon(Icons.navigation),
@@ -785,7 +937,10 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
               children: [
                 Text(
                   'Queue: $_queueGroup',
-                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.teal),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.teal,
+                  ),
                 ),
                 Text(
                   'Est. Entry: $_queueEstimate',
@@ -803,20 +958,27 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
               padding: const EdgeInsets.symmetric(vertical: 16),
               backgroundColor: Colors.teal,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             icon: _isJoiningQueue
                 ? const SizedBox(
                     width: 20,
                     height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
                   )
                 : const Icon(Icons.confirmation_num),
             label: Text(
               _joinedQueue ? 'Queue Joined' : 'Join Virtual Queue',
               style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
             ),
-            onPressed: _joinedQueue || _isJoiningQueue ? null : _joinVirtualQueueFlow,
+            onPressed: _joinedQueue || _isJoiningQueue
+                ? null
+                : _joinVirtualQueueFlow,
           ),
         ),
         const SizedBox(height: 12),
@@ -828,7 +990,9 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 backgroundColor: theme.colorScheme.primary,
                 foregroundColor: theme.colorScheme.onPrimary,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               icon: const Icon(Icons.restaurant_menu),
               label: const Text('Mobile Order Food'),
@@ -845,7 +1009,9 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 backgroundColor: theme.colorScheme.secondary,
                 foregroundColor: theme.colorScheme.onSecondary,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               icon: const Icon(Icons.navigation),
               label: const Text('Navigate Here'),
@@ -868,10 +1034,10 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
     final waitColor = isClosed
         ? Colors.grey
         : waitMinutes <= 20
-            ? Colors.green.shade600
-            : waitMinutes <= 50
-                ? Colors.orange.shade600
-                : Colors.red.shade600;
+        ? Colors.green.shade600
+        : waitMinutes <= 50
+        ? Colors.orange.shade600
+        : Colors.red.shade600;
 
     return Row(
       children: [
@@ -926,7 +1092,10 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
           decoration: BoxDecoration(
             color: waitColor.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: waitColor.withValues(alpha: 0.5), width: 1.5),
+            border: Border.all(
+              color: waitColor.withValues(alpha: 0.5),
+              width: 1.5,
+            ),
           ),
           child: Column(
             children: [
@@ -962,7 +1131,9 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
       children: [
         Text(
           'Dietary Preferences',
-          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: 4),
         const Text(
@@ -1004,7 +1175,9 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
               padding: const EdgeInsets.symmetric(vertical: 12),
               child: Text(
                 cat,
-                style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             SizedBox(
@@ -1024,15 +1197,17 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                       margin: const EdgeInsets.only(right: 16),
                       child: Card(
                         clipBehavior: Clip.antiAlias,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                             _buildImage(
-                               item.imageUrl,
-                               height: 100,
-                               width: double.infinity,
-                             ),
+                            _buildImage(
+                              item.imageUrl,
+                              height: 100,
+                              width: double.infinity,
+                            ),
                             Expanded(
                               child: Padding(
                                 padding: const EdgeInsets.all(8),
@@ -1043,11 +1218,15 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                                       item.name,
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13,
+                                      ),
                                     ),
                                     const Spacer(),
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
                                           '\$${item.price.toStringAsFixed(2)}',
@@ -1057,9 +1236,19 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                                           ),
                                         ),
                                         if (item.dietaryTags.contains('Vegan'))
-                                          const Icon(Icons.eco, color: Colors.green, size: 16)
-                                        else if (item.dietaryTags.contains('Gluten-Free'))
-                                          const Icon(Icons.grass, color: Colors.orange, size: 16),
+                                          const Icon(
+                                            Icons.eco,
+                                            color: Colors.green,
+                                            size: 16,
+                                          )
+                                        else if (item.dietaryTags.contains(
+                                          'Gluten-Free',
+                                        ))
+                                          const Icon(
+                                            Icons.grass,
+                                            color: Colors.orange,
+                                            size: 16,
+                                          ),
                                       ],
                                     ),
                                   ],
@@ -1088,7 +1277,11 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
       runSpacing: 8,
       children: [
         _legendItem("Today's Wait", Colors.teal, isDotted: false),
-        _legendItem('Historical Avg', Colors.blueGrey.withValues(alpha: 0.5), isDotted: true),
+        _legendItem(
+          'Historical Avg',
+          Colors.blueGrey.withValues(alpha: 0.5),
+          isDotted: true,
+        ),
         _legendItem('Predictive Wait', Colors.orange, isDotted: true),
       ],
     );
@@ -1132,7 +1325,8 @@ class InteractiveWaitTimeChart extends StatefulWidget {
   final String facilityId;
 
   @override
-  State<InteractiveWaitTimeChart> createState() => _InteractiveWaitTimeChartState();
+  State<InteractiveWaitTimeChart> createState() =>
+      _InteractiveWaitTimeChartState();
 }
 
 class _InteractiveWaitTimeChartState extends State<InteractiveWaitTimeChart> {
@@ -1140,21 +1334,56 @@ class _InteractiveWaitTimeChartState extends State<InteractiveWaitTimeChart> {
 
   // Wait time data arrays (X values: 0 to 12 representing 9 AM to 9 PM)
   final List<String> hoursLabels = [
-    '9 AM', '10 AM', '11 AM', '12 PM', '1 PM', '2 PM', '3 PM', '4 PM', '5 PM', '6 PM', '7 PM', '8 PM', '9 PM'
+    '9 AM',
+    '10 AM',
+    '11 AM',
+    '12 PM',
+    '1 PM',
+    '2 PM',
+    '3 PM',
+    '4 PM',
+    '5 PM',
+    '6 PM',
+    '7 PM',
+    '8 PM',
+    '9 PM',
   ];
 
   // Raw mock datasets
   final List<int> actualWaits = [30, 45, 55, 75, 70, 85, 80]; // up to 3 PM
-  final List<int> historicalWaits = [25, 35, 50, 65, 60, 70, 75, 70, 60, 55, 45, 35, 20];
-  final List<int> predictiveWaits = [75, 65, 50, 40, 30, 15]; // starts at 4 PM (index 7)
+  final List<int> historicalWaits = [
+    25,
+    35,
+    50,
+    65,
+    60,
+    70,
+    75,
+    70,
+    60,
+    55,
+    45,
+    35,
+    20,
+  ];
+  final List<int> predictiveWaits = [
+    75,
+    65,
+    50,
+    40,
+    30,
+    15,
+  ]; // starts at 4 PM (index 7)
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         return GestureDetector(
-          onPanStart: (details) => _updateHoverIndex(details.localPosition, constraints.maxWidth),
-          onPanUpdate: (details) => _updateHoverIndex(details.localPosition, constraints.maxWidth),
+          onPanStart: (details) =>
+              _updateHoverIndex(details.localPosition, constraints.maxWidth),
+          onPanUpdate: (details) =>
+              _updateHoverIndex(details.localPosition, constraints.maxWidth),
           onPanEnd: (_) => setState(() => _hoveredIndex = null),
           child: Stack(
             children: [
@@ -1196,7 +1425,7 @@ class _InteractiveWaitTimeChartState extends State<InteractiveWaitTimeChart> {
 
     final hour = hoursLabels[index];
     final historical = historicalWaits[index];
-    
+
     int? currentActual;
     int? currentPredicted;
     if (index < actualWaits.length) {
@@ -1235,18 +1464,30 @@ class _InteractiveWaitTimeChartState extends State<InteractiveWaitTimeChart> {
             children: [
               Text(
                 hour,
-                style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.tealAccent, fontSize: 11),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.tealAccent,
+                  fontSize: 11,
+                ),
               ),
               const SizedBox(height: 4),
               if (currentActual != null)
                 Text(
                   'Wait: $currentActual min',
-                  style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               if (currentPredicted != null)
                 Text(
                   'Predict: $currentPredicted min',
-                  style: const TextStyle(color: Colors.orangeAccent, fontSize: 10, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    color: Colors.orangeAccent,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               Text(
                 'Historical: $historical min',
@@ -1284,19 +1525,26 @@ class _WaitTimePainter extends CustomPainter {
 
     // Helper functions to translate coordinate points
     double getX(int index) => margin + (index * (chartWidth / 12));
-    double getY(int wait) => size.height - 20 - ((wait / maxWait) * chartHeight).clamp(0.0, chartHeight);
+    double getY(int wait) =>
+        size.height -
+        20 -
+        ((wait / maxWait) * chartHeight).clamp(0.0, chartHeight);
 
     // 1. Draw Grid Lines and Labels
     final gridPaint = Paint()
       ..color = Colors.grey.withValues(alpha: 0.15)
       ..strokeWidth = 1.0;
-    
+
     final textStyle = TextStyle(color: Colors.grey.shade500, fontSize: 9);
 
     for (var waitVal = 30; waitVal <= 120; waitVal += 30) {
       final y = getY(waitVal);
-      canvas.drawLine(Offset(margin, y), Offset(size.width - margin, y), gridPaint);
-      
+      canvas.drawLine(
+        Offset(margin, y),
+        Offset(size.width - margin, y),
+        gridPaint,
+      );
+
       final textPainter = TextPainter(
         text: TextSpan(text: '${waitVal}m', style: textStyle),
         textDirection: TextDirection.ltr,
@@ -1305,7 +1553,11 @@ class _WaitTimePainter extends CustomPainter {
     }
 
     // Draw bottom X line
-    canvas.drawLine(Offset(margin, size.height - 20), Offset(size.width - margin, size.height - 20), gridPaint);
+    canvas.drawLine(
+      Offset(margin, size.height - 20),
+      Offset(size.width - margin, size.height - 20),
+      gridPaint,
+    );
 
     // Draw X line labels
     final hoursLabels = ['9a', '12p', '3p', '6p', '9p'];
@@ -1314,12 +1566,15 @@ class _WaitTimePainter extends CustomPainter {
       final idx = hourIndices[i];
       final label = hoursLabels[i];
       final x = getX(idx);
-      
+
       final textPainter = TextPainter(
         text: TextSpan(text: label, style: textStyle),
         textDirection: TextDirection.ltr,
       )..layout();
-      textPainter.paint(canvas, Offset(x - (textPainter.width / 2), size.height - 18));
+      textPainter.paint(
+        canvas,
+        Offset(x - (textPainter.width / 2), size.height - 18),
+      );
     }
 
     // 2. Draw Historical Average Line (Dashed, Faded Blue-Grey)
@@ -1353,14 +1608,22 @@ class _WaitTimePainter extends CustomPainter {
         ..close();
 
       final fillPaint = Paint()
-        ..shader = LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Colors.teal.withValues(alpha: 0.35),
-            Colors.teal.withValues(alpha: 0),
-          ],
-        ).createShader(Rect.fromLTRB(margin, getY(120), size.width - margin, size.height - 20))
+        ..shader =
+            LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.teal.withValues(alpha: 0.35),
+                Colors.teal.withValues(alpha: 0),
+              ],
+            ).createShader(
+              Rect.fromLTRB(
+                margin,
+                getY(120),
+                size.width - margin,
+                size.height - 20,
+              ),
+            )
         ..style = PaintingStyle.fill;
 
       canvas.drawPath(areaPath, fillPaint);
@@ -1384,23 +1647,39 @@ class _WaitTimePainter extends CustomPainter {
         ..strokeCap = StrokeCap.round;
 
       final predictPath = Path()
-        ..moveTo(getX(actualWaits.length - 1), getY(actualWaits.last)); // Connect to last actual
+        ..moveTo(
+          getX(actualWaits.length - 1),
+          getY(actualWaits.last),
+        ); // Connect to last actual
       for (var i = 0; i < predictiveWaits.length; i++) {
-        predictPath.lineTo(getX(actualWaits.length + i), getY(predictiveWaits[i]));
+        predictPath.lineTo(
+          getX(actualWaits.length + i),
+          getY(predictiveWaits[i]),
+        );
       }
-      _drawDashedPath(canvas, predictPath, predictPaint, dashLength: 4, gapLength: 3);
+      _drawDashedPath(
+        canvas,
+        predictPath,
+        predictPaint,
+        dashLength: 4,
+        gapLength: 3,
+      );
     }
 
     // 5. Draw Interactive Hover/Hovered Marker
     if (hoveredIndex != null) {
       final index = hoveredIndex!;
       final x = getX(index);
-      
+
       // Draw vertical indicator line
       final hoverLinePaint = Paint()
         ..color = Colors.tealAccent.withValues(alpha: 0.5)
         ..strokeWidth = 1.5;
-      canvas.drawLine(Offset(x, 10), Offset(x, size.height - 20), hoverLinePaint);
+      canvas.drawLine(
+        Offset(x, 10),
+        Offset(x, size.height - 20),
+        hoverLinePaint,
+      );
 
       // Draw intersection dots
       final dotPaint = Paint()..style = PaintingStyle.fill;
@@ -1412,23 +1691,34 @@ class _WaitTimePainter extends CustomPainter {
       // Today's/Predictive dot
       if (index < actualWaits.length) {
         final actY = getY(actualWaits[index]);
-        canvas.drawCircle(Offset(x, actY), 6, dotPaint..color = Colors.teal);
-        canvas.drawCircle(Offset(x, actY), 4, Paint()..color = Colors.white);
+        canvas
+          ..drawCircle(Offset(x, actY), 6, dotPaint..color = Colors.teal)
+          ..drawCircle(Offset(x, actY), 4, Paint()..color = Colors.white);
       } else {
         final predY = getY(predictiveWaits[index - actualWaits.length]);
-        canvas.drawCircle(Offset(x, predY), 6, dotPaint..color = Colors.orange);
-        canvas.drawCircle(Offset(x, predY), 4, Paint()..color = Colors.white);
+        canvas
+          ..drawCircle(Offset(x, predY), 6, dotPaint..color = Colors.orange)
+          ..drawCircle(Offset(x, predY), 4, Paint()..color = Colors.white);
       }
     }
   }
 
   // Dashed path helper using path metrics
-  void _drawDashedPath(Canvas canvas, Path path, Paint paint, {required double dashLength, required double gapLength}) {
+  void _drawDashedPath(
+    Canvas canvas,
+    Path path,
+    Paint paint, {
+    required double dashLength,
+    required double gapLength,
+  }) {
     for (final metric in path.computeMetrics()) {
       var distance = 0.0;
       while (distance < metric.length) {
         final nextDistance = distance + dashLength;
-        final extract = metric.extractPath(distance, nextDistance.clamp(0.0, metric.length));
+        final extract = metric.extractPath(
+          distance,
+          nextDistance.clamp(0.0, metric.length),
+        );
         canvas.drawPath(extract, paint);
         distance = nextDistance + gapLength;
       }

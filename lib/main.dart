@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
+import 'package:talker_riverpod_logger/talker_riverpod_logger.dart';
+import 'package:themeparkapp/core/logging/logger.dart';
 import 'package:themeparkapp/core/onboarding_state.dart';
 import 'package:themeparkapp/core/permissions.dart';
 import 'package:themeparkapp/core/providers.dart';
@@ -21,7 +23,14 @@ import 'package:themeparkapp/l10n/app_localizations.dart';
 ///
 /// Initializes and runs the top-level `ProviderScope` and `MyApp`.
 void main() {
-  runApp(const ProviderScope(child: MyApp()));
+  runApp(
+    ProviderScope(
+      observers: [
+        TalkerRiverpodObserver(talker: talker),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 /// Global navigator keys used by the app shell branches.
@@ -33,9 +42,9 @@ final GlobalKey<NavigatorState> _shellNavigatorSearchKey =
 final GlobalKey<NavigatorState> _shellNavigatorSettingsKey =
     GlobalKey<NavigatorState>(debugLabel: 'settings');
 final GlobalKey<NavigatorState> _shellNavigatorParksKey =
-  GlobalKey<NavigatorState>(debugLabel: 'parks');
+    GlobalKey<NavigatorState>(debugLabel: 'parks');
 final GlobalKey<NavigatorState> _shellNavigatorFavoritesKey =
-  GlobalKey<NavigatorState>(debugLabel: 'favorites');
+    GlobalKey<NavigatorState>(debugLabel: 'favorites');
 
 /// Primary `GoRouter` instance for the application routes.
 final GoRouter goRouter = GoRouter(
@@ -58,9 +67,13 @@ final GoRouter goRouter = GoRouter(
                 GoRoute(
                   path: 'details',
                   builder: (context, state) {
-                    final facilityId = state.queryParameters['facilityId'] ?? '';
+                    final facilityId =
+                        state.queryParameters['facilityId'] ?? '';
                     final parkId = state.queryParameters['parkId'] ?? '';
-                    return FacilityDetailPage(facilityId: facilityId, parkId: parkId);
+                    return FacilityDetailPage(
+                      facilityId: facilityId,
+                      parkId: parkId,
+                    );
                   },
                 ),
               ],
@@ -132,7 +145,9 @@ class MyApp extends ConsumerWidget {
     final perm = ref.watch(locationPermissionProvider);
     final onboardingDone = ref.watch(onboardingCompletedProvider);
 
-    if ((perm == LocationPermission.denied || perm == LocationPermission.deniedForever) && !onboardingDone) {
+    if ((perm == LocationPermission.denied ||
+            perm == LocationPermission.deniedForever) &&
+        !onboardingDone) {
       return MaterialApp(
         title: loc?.appTitle ?? 'Flutter Demo',
         localizationsDelegates: AppLocalizations.localizationsDelegates,

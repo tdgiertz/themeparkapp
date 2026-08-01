@@ -28,9 +28,15 @@ void main() {
     await notifier.submitQuery('Hello agent');
 
     final state = container.read(searchProvider);
-    expect(state.messages.length, 3); // Initial welcome + User message + Assistant reply
+    expect(
+      state.messages.length,
+      3,
+    ); // Initial welcome + User message + Assistant reply
     expect(state.messages.last.isUser, false);
-    expect(state.messages.last.text, contains('I received your request: "Hello agent"'));
+    expect(
+      state.messages.last.text,
+      contains('I received your request: "Hello agent"'),
+    );
   });
 
   test('SearchNotifier processes nearest pretzel/food search', () async {

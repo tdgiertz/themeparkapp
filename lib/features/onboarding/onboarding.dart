@@ -39,8 +39,12 @@ class OnboardingScreen extends ConsumerWidget {
                   key: const ValueKey('onboarding_skip'),
                   onPressed: () async {
                     // Persist that the user skipped onboarding so we don't show it again.
-                    await ref.read(onboardingCompletedProvider.notifier).complete();
-                    Navigator.of(context).maybePop();
+                    await ref
+                        .read(onboardingCompletedProvider.notifier)
+                        .complete();
+                    if (context.mounted) {
+                      await Navigator.of(context).maybePop();
+                    }
                   },
                   child: Text(loc?.skip ?? 'Skip'),
                 ),
@@ -52,12 +56,14 @@ class OnboardingScreen extends ConsumerWidget {
                         .read(locationPermissionProvider.notifier)
                         .checkAndRequestIfNeeded();
                     // User tapped continue — persist onboarding as completed.
-                    await ref.read(onboardingCompletedProvider.notifier).complete();
+                    await ref
+                        .read(onboardingCompletedProvider.notifier)
+                        .complete();
                   },
                   child: Text(loc?.continueText ?? 'Continue'),
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),

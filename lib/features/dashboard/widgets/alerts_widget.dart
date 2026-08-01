@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:themeparkapp/core/models/favorite.dart';
+import 'package:themeparkapp/features/park/facility_detail_page.dart';
 
 class DashboardAlert {
   DashboardAlert({
@@ -9,7 +10,9 @@ class DashboardAlert {
     required this.message,
     required this.accentColor,
     required this.icon,
-    required this.actionTag, required this.parkId, this.scarcityTag,
+    required this.actionTag,
+    required this.parkId,
+    this.scarcityTag,
     this.trendTag,
     this.statusTag,
     this.onAction,
@@ -24,17 +27,14 @@ class DashboardAlert {
   final String? scarcityTag;
   final String? trendTag;
   final String? statusTag;
-  final String actionTag; // 'View on Map', 'Get Walking Directions', 'Modify Alert Threshold'
+  final String
+  actionTag; // 'View on Map', 'Get Walking Directions', 'Modify Alert Threshold'
   final String parkId;
   final VoidCallback? onAction;
 }
 
 class AlertsWidget extends StatelessWidget {
-  const AlertsWidget({
-    required this.alerts,
-    this.onDismiss,
-    super.key,
-  });
+  const AlertsWidget({required this.alerts, this.onDismiss, super.key});
 
   final List<DashboardAlert> alerts;
   final void Function(String alertId)? onDismiss;
@@ -57,9 +57,9 @@ class AlertsWidget extends StatelessWidget {
               Text(
                 'Live Action Center',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.5,
-                    ),
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                ),
               ),
             ],
           ),
@@ -86,10 +86,7 @@ class AlertsWidget extends StatelessWidget {
 }
 
 class _AlertCard extends StatelessWidget {
-  const _AlertCard({
-    required this.alert,
-    required this.onDismiss,
-  });
+  const _AlertCard({required this.alert, required this.onDismiss});
 
   final DashboardAlert alert;
   final VoidCallback onDismiss;
@@ -99,132 +96,139 @@ class _AlertCard extends StatelessWidget {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
 
-    return Dismissible(
-      key: Key(alert.id),
-      onDismissed: (_) => onDismiss(),
-      direction: DismissDirection.endToStart,
-      background: Container(
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 24),
-        color: cs.errorContainer,
-        child: Icon(Icons.delete_outline, color: cs.onErrorContainer),
-      ),
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16),
-        decoration: BoxDecoration(
-          color: cs.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-          border: Border(
-            left: BorderSide(
-              color: alert.accentColor,
-              width: 5,
-            ),
-          ),
+    return InkWell(
+      onTap: alert.onAction,
+      borderRadius: BorderRadius.circular(16),
+      child: Dismissible(
+        key: Key(alert.id),
+        onDismissed: (_) => onDismiss(),
+        direction: DismissDirection.endToStart,
+        background: Container(
+          alignment: Alignment.centerRight,
+          padding: const EdgeInsets.only(right: 24),
+          color: cs.errorContainer,
+          child: Icon(Icons.delete_outline, color: cs.onErrorContainer),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(14),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: alert.accentColor.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Icon(
-                      alert.icon,
-                      color: alert.accentColor,
-                      size: 22,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          alert.title,
-                          style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: cs.onSurface,
-                              ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          alert.message,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                                color: cs.onSurfaceVariant,
-                                fontSize: 13,
-                              ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              // Badges & Action Section
-              Row(
-                children: [
-                  Expanded(
-                    child: Wrap(
-                      spacing: 6,
-                      runSpacing: 6,
-                      children: [
-                        if (alert.scarcityTag != null)
-                          _Badge(
-                            label: alert.scarcityTag!,
-                            color: Colors.orange,
-                            icon: Icons.star_border_rounded,
-                          ),
-                        if (alert.trendTag != null)
-                          _Badge(
-                            label: alert.trendTag!,
-                            color: Colors.blue,
-                            icon: Icons.trending_up,
-                          ),
-                        if (alert.statusTag != null)
-                          _Badge(
-                            label: alert.statusTag!,
-                            color: Colors.red,
-                            icon: Icons.info_outline,
-                          ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  ElevatedButton(
-                    onPressed: alert.onAction,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: alert.accentColor,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: Text(
-                      alert.actionTag,
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ],
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: cs.surfaceContainerHigh,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
               ),
             ],
+            border: Border(
+              left: BorderSide(color: alert.accentColor, width: 5),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: alert.accentColor.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(
+                        alert.icon,
+                        color: alert.accentColor,
+                        size: 22,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            alert.title,
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: cs.onSurface,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            alert.message,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: cs.onSurfaceVariant,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                // Badges & Action Section
+                Row(
+                  children: [
+                    Expanded(
+                      child: Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: [
+                          if (alert.scarcityTag != null)
+                            _Badge(
+                              label: alert.scarcityTag!,
+                              color: Colors.orange,
+                              icon: Icons.star_border_rounded,
+                            ),
+                          if (alert.trendTag != null)
+                            _Badge(
+                              label: alert.trendTag!,
+                              color: Colors.blue,
+                              icon: Icons.trending_up,
+                            ),
+                          if (alert.statusTag != null)
+                            _Badge(
+                              label: alert.statusTag!,
+                              color: Colors.red,
+                              icon: Icons.info_outline,
+                            ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: alert.onAction,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: alert.accentColor,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: Text(
+                        alert.actionTag,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -233,11 +237,7 @@ class _AlertCard extends StatelessWidget {
 }
 
 class _Badge extends StatelessWidget {
-  const _Badge({
-    required this.label,
-    required this.color,
-    required this.icon,
-  });
+  const _Badge({required this.label, required this.color, required this.icon});
 
   final String label;
   final Color color;
@@ -308,7 +308,7 @@ List<DashboardAlert> generateDynamicAlerts({
   for (final f in filteredFavs) {
     final status = f.currentWait?['status'] as String? ?? 'Closed';
     final wait = f.currentWait?['waitMinutes'] as int? ?? 0;
-    
+
     // Simulate user-defined threshold for demo. We'll say Pirates has a threshold of 50.
     final maxWaitThreshold = f.rideId == '1' ? 50 : 30;
 
@@ -332,7 +332,14 @@ List<DashboardAlert> generateDynamicAlerts({
           statusTag: 'Open',
           actionTag: 'Get Walking Directions',
           parkId: f.parkId,
-          onAction: () {},
+          onAction: () {
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) =>
+                    FacilityDetailPage(facilityId: f.rideId, parkId: f.parkId),
+              ),
+            );
+          },
         ),
       );
     }
@@ -340,7 +347,9 @@ List<DashboardAlert> generateDynamicAlerts({
     // 2. Last Call (Closing Soon): Queue Closure Time - (Current Time + Estimated Transit) <= 45 minutes
     // Let's mock a ride closing soon. E.g. Hagrid's (id: "88") closes at 15:30.
     // Current time: 14:40. Estimated Transit: 15 mins. Difference: 35 mins <= 45 mins.
-    final isLastCall = f.rideId == '88' && status == 'Delayed'; // Let's trigger last call for demo
+    final isLastCall =
+        f.rideId == '88' &&
+        status == 'Delayed'; // Let's trigger last call for demo
     if (isLastCall) {
       list.add(
         DashboardAlert(
@@ -354,7 +363,14 @@ List<DashboardAlert> generateDynamicAlerts({
           statusTag: 'Delayed',
           actionTag: 'View on Map',
           parkId: f.parkId,
-          onAction: () {},
+          onAction: () {
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) =>
+                    FacilityDetailPage(facilityId: f.rideId, parkId: f.parkId),
+              ),
+            );
+          },
         ),
       );
     }
@@ -372,7 +388,14 @@ List<DashboardAlert> generateDynamicAlerts({
           trendTag: '📉',
           actionTag: 'Modify Alert Threshold',
           parkId: f.parkId,
-          onAction: () {},
+          onAction: () {
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) =>
+                    FacilityDetailPage(facilityId: f.rideId, parkId: f.parkId),
+              ),
+            );
+          },
         ),
       );
     }
@@ -385,13 +408,21 @@ List<DashboardAlert> generateDynamicAlerts({
           id: 'opportunity_${f.rideId}',
           type: 'opportunity',
           title: 'Trending Down',
-          message: 'Trending Down: ${f.name} dropped 15 mins in the last half hour.',
+          message:
+              'Trending Down: ${f.name} dropped 15 mins in the last half hour.',
           accentColor: Colors.blue,
           icon: Icons.trending_down_rounded,
           trendTag: '📉',
           actionTag: 'Get Walking Directions',
           parkId: f.parkId,
-          onAction: () {},
+          onAction: () {
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) =>
+                    FacilityDetailPage(facilityId: f.rideId, parkId: f.parkId),
+              ),
+            );
+          },
         ),
       );
     }
@@ -405,13 +436,21 @@ List<DashboardAlert> generateDynamicAlerts({
         id: 'time_to_go_show1',
         type: 'time_to_go',
         title: 'Starting Soon',
-        message: 'Starting Soon: Festival of Fantasy Parade begins in 10 mins (8 min walk).',
+        message:
+            'Starting Soon: Festival of Fantasy Parade begins in 10 mins (8 min walk).',
         accentColor: Theme.of(context).colorScheme.primary,
         icon: Icons.directions_walk_rounded,
         scarcityTag: 'Only Performance Today',
         actionTag: 'Get Walking Directions',
         parkId: 'p2',
-        onAction: () {},
+        onAction: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) =>
+                  const FacilityDetailPage(facilityId: 'show_1', parkId: 'p2'),
+            ),
+          );
+        },
       ),
     );
   }

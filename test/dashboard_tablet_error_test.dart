@@ -12,7 +12,6 @@ class ErrorParksNotifier extends ParksNotifier {
   }
 }
 
-
 void main() {
   testWidgets('Dashboard tablet/desktop layout handles error states cleanly', (
     WidgetTester tester,
@@ -28,7 +27,9 @@ void main() {
       ProviderScope(
         overrides: [
           parksProvider.overrideWith(ErrorParksNotifier.new),
-          favoritesProvider.overrideWith((ref) => Future.error('Failed to load favorites', StackTrace.empty)),
+          favoritesProvider.overrideWith(
+            (ref) => Future.error('Failed to load favorites', StackTrace.empty),
+          ),
         ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

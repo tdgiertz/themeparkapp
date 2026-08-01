@@ -12,7 +12,9 @@ void main() {
   }
 
   group('FacilityDetailPage Tests', () {
-    testWidgets('Renders attraction details correctly on mobile', (WidgetTester tester) async {
+    testWidgets('Renders attraction details correctly on mobile', (
+      WidgetTester tester,
+    ) async {
       // Setup mobile size
       tester.view.physicalSize = const Size(400, 800);
       tester.view.devicePixelRatio = 1.0;
@@ -23,13 +25,14 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
-          overrides: [
-            assetLoaderProvider.overrideWithValue(fileLoader),
-          ],
+          overrides: [assetLoaderProvider.overrideWithValue(fileLoader)],
           child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: FacilityDetailPage(facilityId: 'a1', parkId: 'p1'), // Flight of Passage
+            home: FacilityDetailPage(
+              facilityId: 'a1',
+              parkId: 'p1',
+            ), // Flight of Passage
           ),
         ),
       );
@@ -37,12 +40,12 @@ void main() {
       // Await Riverpod async data load
       final context = tester.element(find.byType(FacilityDetailPage));
       final container = ProviderScope.containerOf(context);
-      
+
       await tester.runAsync(() async {
         await container.read(parkDetailProvider('p1').notifier).refresh();
         await container.read(waitTimesProvider('p1').notifier).refresh();
       });
-      
+
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
 
@@ -53,7 +56,9 @@ void main() {
       expect(find.text('Join Virtual Queue'), findsWidgets);
     });
 
-    testWidgets('Renders dining details and filters correctly on mobile', (WidgetTester tester) async {
+    testWidgets('Renders dining details and filters correctly on mobile', (
+      WidgetTester tester,
+    ) async {
       // Setup mobile size
       tester.view.physicalSize = const Size(400, 800);
       tester.view.devicePixelRatio = 1.0;
@@ -64,13 +69,14 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
-          overrides: [
-            assetLoaderProvider.overrideWithValue(fileLoader),
-          ],
+          overrides: [assetLoaderProvider.overrideWithValue(fileLoader)],
           child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: FacilityDetailPage(facilityId: 'a10', parkId: 'p1'), // Rainforest Cafe
+            home: FacilityDetailPage(
+              facilityId: 'a10',
+              parkId: 'p1',
+            ), // Rainforest Cafe
           ),
         ),
       );
@@ -86,7 +92,10 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
 
       // Check name, dietary title and menu
-      expect(find.text("Rainforest Cafe at Disney's Animal Kingdom"), findsWidgets);
+      expect(
+        find.text("Rainforest Cafe at Disney's Animal Kingdom"),
+        findsWidgets,
+      );
       expect(find.text('Dietary Preferences'), findsOneWidget);
       expect(find.text('Grizzly Giant Burger'), findsOneWidget);
       expect(find.text('Wilderness Salad'), findsOneWidget);
@@ -128,7 +137,9 @@ void main() {
       expect(foundSaladOpacity, isTrue);
     });
 
-    testWidgets('Renders 360 tour preview and charts correctly on desktop', (WidgetTester tester) async {
+    testWidgets('Renders 360 tour preview and charts correctly on desktop', (
+      WidgetTester tester,
+    ) async {
       // Setup desktop size
       tester.view.physicalSize = const Size(1200, 800);
       tester.view.devicePixelRatio = 1.0;
@@ -139,13 +150,14 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
-          overrides: [
-            assetLoaderProvider.overrideWithValue(fileLoader),
-          ],
+          overrides: [assetLoaderProvider.overrideWithValue(fileLoader)],
           child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: FacilityDetailPage(facilityId: 'a1', parkId: 'p1'), // Flight of Passage
+            home: FacilityDetailPage(
+              facilityId: 'a1',
+              parkId: 'p1',
+            ), // Flight of Passage
           ),
         ),
       );
@@ -169,16 +181,19 @@ void main() {
       expect(find.text('Wait Time Analytics'), findsOneWidget);
     });
 
-    testWidgets('Renders fallback text when facility ID is non-existent', (WidgetTester tester) async {
+    testWidgets('Renders fallback text when facility ID is non-existent', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         ProviderScope(
-          overrides: [
-            assetLoaderProvider.overrideWithValue(fileLoader),
-          ],
+          overrides: [assetLoaderProvider.overrideWithValue(fileLoader)],
           child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: FacilityDetailPage(facilityId: 'invalid_id_999', parkId: 'p1'),
+            home: FacilityDetailPage(
+              facilityId: 'invalid_id_999',
+              parkId: 'p1',
+            ),
           ),
         ),
       );
@@ -194,7 +209,9 @@ void main() {
       expect(find.text('Facility not found.'), findsOneWidget);
     });
 
-    testWidgets('Tapping Directions button opens Navigation Map dialog', (WidgetTester tester) async {
+    testWidgets('Tapping Directions button opens Navigation Map dialog', (
+      WidgetTester tester,
+    ) async {
       tester.view.physicalSize = const Size(400, 800);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(() {
@@ -204,9 +221,7 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
-          overrides: [
-            assetLoaderProvider.overrideWithValue(fileLoader),
-          ],
+          overrides: [assetLoaderProvider.overrideWithValue(fileLoader)],
           child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,

@@ -29,7 +29,8 @@ void main() {
     final raw = File('assets/data/parks.json').readAsStringSync();
     final map = json.decode(raw) as Map<String, dynamic>;
     final data = map['data'] as Map<String, dynamic>? ?? {};
-    final parks = data['parks'] as List? ?? map['parks'] as List;
+    final parks = (data['parks'] as List? ?? map['parks'] as List)
+        .cast<Map<String, dynamic>>();
     final p1Map = parks.firstWhere((e) => e['id'] == 'p1');
     final detail = ParkDetail.fromJson({'park': p1Map});
     expect(detail.name, isNotEmpty);

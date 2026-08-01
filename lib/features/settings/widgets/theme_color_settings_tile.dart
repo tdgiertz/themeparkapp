@@ -10,7 +10,8 @@ class ThemeColorSettingsTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentColor = ref.watch(themeSeedColorProvider) ?? AppTheme.primaryAccent;
+    final currentColor =
+        ref.watch(themeSeedColorProvider) ?? AppTheme.primaryAccent;
 
     return ListTile(
       title: const Text('Theme Color'),

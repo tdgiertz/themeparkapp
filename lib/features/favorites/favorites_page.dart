@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:themeparkapp/core/logging/logger.dart';
 import 'package:themeparkapp/core/providers.dart';
 
 /// Full page showing the user's favorites.
@@ -23,7 +24,10 @@ class FavoritesPage extends ConsumerWidget {
               final status = f.currentWait?['status']?.toString() ?? 'n/a';
               final waitMinutes = f.currentWait?['waitMinutes'];
               return ListTile(
-                leading: Icon(Icons.favorite, color: Theme.of(context).colorScheme.primary),
+                leading: Icon(
+                  Icons.favorite,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
                 title: Text(f.name),
                 subtitle: Text(f.parkName),
                 trailing: Row(
@@ -42,7 +46,40 @@ class FavoritesPage extends ConsumerWidget {
             },
           ),
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (_, __) => const Center(child: Text('Error loading favorites')),
+          error: (err, st) {
+            talker.handle(err, st);
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).clearSnackBars();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Error loading favorites: $err'),
+                    behavior: SnackBarBehavior.floating,
+                    action: SnackBarAction(
+                      label: 'RETRY',
+                      onPressed: () {
+                        ref.invalidate(favoritesProvider);
+                      },
+                    ),
+                  ),
+                );
+              }
+            });
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('Error loading favorites: $err'),
+                  const SizedBox(height: 8),
+                  OutlinedButton.icon(
+                    onPressed: () => ref.invalidate(favoritesProvider),
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Retry loading favorites'),
+                  ),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );

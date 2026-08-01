@@ -54,7 +54,8 @@ class _ResponsiveScaffoldShellState
             // Sidebar
             Container(
               width: _collapsed ? 72 : 260,
-              color: Theme.of(context).drawerTheme.backgroundColor ??
+              color:
+                  Theme.of(context).drawerTheme.backgroundColor ??
                   Theme.of(context).colorScheme.surface,
               child: SafeArea(
                 child: Column(
@@ -72,9 +73,14 @@ class _ResponsiveScaffoldShellState
                               ),
                             ),
                           IconButton(
-                            tooltip: _collapsed ? loc.nav_home : loc.nav_home, 
-                            icon: Icon(_collapsed ? Icons.chevron_right : Icons.chevron_left),
-                            onPressed: () => setState(() => _collapsed = !_collapsed),
+                            tooltip: _collapsed ? loc.nav_home : loc.nav_home,
+                            icon: Icon(
+                              _collapsed
+                                  ? Icons.chevron_right
+                                  : Icons.chevron_left,
+                            ),
+                            onPressed: () =>
+                                setState(() => _collapsed = !_collapsed),
                           ),
                         ],
                       ),
@@ -120,7 +126,11 @@ class _ResponsiveScaffoldShellState
                     if (!_collapsed) ...[
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Divider(color: Theme.of(context).dividerColor.withValues(alpha: 0.5)),
+                        child: Divider(
+                          color: Theme.of(
+                            context,
+                          ).dividerColor.withValues(alpha: 0.5),
+                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(16),
@@ -148,13 +158,22 @@ class _ResponsiveScaffoldShellState
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Icon(Icons.wb_sunny, color: Theme.of(context).colorScheme.onPrimaryContainer, size: 24),
+                                  Icon(
+                                    Icons.wb_sunny,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onPrimaryContainer,
+                                    size: 24,
+                                  ),
                                   Text(
                                     '14 Days Left',
                                     style: TextStyle(
-                                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onPrimaryContainer,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 14,
                                     ),
@@ -165,7 +184,10 @@ class _ResponsiveScaffoldShellState
                               Text(
                                 'Orlando, FL',
                                 style: TextStyle(
-                                  color: Theme.of(context).colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onPrimaryContainer
+                                      .withValues(alpha: 0.8),
                                   fontSize: 12,
                                 ),
                               ),
@@ -173,7 +195,9 @@ class _ResponsiveScaffoldShellState
                               Text(
                                 '84°F • Sunny',
                                 style: TextStyle(
-                                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onPrimaryContainer,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
                                 ),
@@ -183,8 +207,13 @@ class _ResponsiveScaffoldShellState
                                 borderRadius: BorderRadius.circular(4),
                                 child: LinearProgressIndicator(
                                   value: 0.75,
-                                  backgroundColor: Theme.of(context).colorScheme.onPrimaryContainer.withValues(alpha: 0.2),
-                                  valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.primary),
+                                  backgroundColor: Theme.of(context)
+                                      .colorScheme
+                                      .onPrimaryContainer
+                                      .withValues(alpha: 0.2),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Theme.of(context).colorScheme.primary,
+                                  ),
                                   minHeight: 6,
                                 ),
                               ),
@@ -194,13 +223,25 @@ class _ResponsiveScaffoldShellState
                       ),
                     ] else ...[
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 16,
+                          horizontal: 12,
+                        ),
                         child: Tooltip(
-                          message: '14 Days until Arrival | Orlando: 84°F Sunny',
+                          message:
+                              '14 Days until Arrival | Orlando: 84°F Sunny',
                           child: CircleAvatar(
                             radius: 20,
-                            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                            child: Icon(Icons.wb_sunny, color: Theme.of(context).colorScheme.onPrimaryContainer, size: 20),
+                            backgroundColor: Theme.of(
+                              context,
+                            ).colorScheme.primaryContainer,
+                            child: Icon(
+                              Icons.wb_sunny,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onPrimaryContainer,
+                              size: 20,
+                            ),
                           ),
                         ),
                       ),

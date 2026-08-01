@@ -7,8 +7,8 @@ part 'live_data_models.g.dart';
 abstract class RideWaitTime with _$RideWaitTime {
   const factory RideWaitTime({
     required String rideId,
-    @Default('') String name,
     required int waitMinutes,
+    @Default('') String name,
   }) = _RideWaitTime;
 
   factory RideWaitTime.fromJson(Map<String, dynamic> json) =>

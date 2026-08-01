@@ -16,28 +16,35 @@ void main() {
     const customColor = Colors.purple;
     final themeDefault = AppTheme.darkTheme();
     final themeCustom = AppTheme.darkTheme(customColor);
-    expect(themeCustom.colorScheme.primary, isNot(equals(themeDefault.colorScheme.primary)));
+    expect(
+      themeCustom.colorScheme.primary,
+      isNot(equals(themeDefault.colorScheme.primary)),
+    );
   });
 
   test('AppTheme.lightTheme uses seed color when provided', () {
     const customColor = Colors.green;
     final themeDefault = AppTheme.lightTheme();
     final themeCustom = AppTheme.lightTheme(customColor);
-    expect(themeCustom.colorScheme.primary, isNot(equals(themeDefault.colorScheme.primary)));
+    expect(
+      themeCustom.colorScheme.primary,
+      isNot(equals(themeDefault.colorScheme.primary)),
+    );
   });
 
-  testWidgets('ThemeColorSettingsTile renders and shows color indicator', (tester) async {
+  testWidgets('ThemeColorSettingsTile renders and shows color indicator', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       const ProviderScope(
-        child: MaterialApp(
-          home: Scaffold(
-            body: ThemeColorSettingsTile(),
-          ),
-        ),
+        child: MaterialApp(home: Scaffold(body: ThemeColorSettingsTile())),
       ),
     );
 
     expect(find.text('Theme Color'), findsOneWidget);
-    expect(find.text('Customize application accent & seed color'), findsOneWidget);
+    expect(
+      find.text('Customize application accent & seed color'),
+      findsOneWidget,
+    );
   });
 }

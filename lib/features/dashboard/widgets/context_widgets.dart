@@ -23,7 +23,9 @@ class WeatherWidget extends StatelessWidget {
         color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.3),
+          color: Theme.of(
+            context,
+          ).colorScheme.outlineVariant.withValues(alpha: 0.3),
         ),
       ),
       child: Row(
@@ -139,7 +141,8 @@ class DynamicBackgroundGradient extends StatelessWidget {
   }
 
   LinearGradient _getGradientForTimeAndWeather(int hour, String condition) {
-    if (condition.toLowerCase() == 'stormy' || condition.toLowerCase() == 'storm') {
+    if (condition.toLowerCase() == 'stormy' ||
+        condition.toLowerCase() == 'storm') {
       return const LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,

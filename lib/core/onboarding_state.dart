@@ -5,8 +5,8 @@ const _kOnboardingCompletedKey = 'onboarding_completed';
 
 final onboardingCompletedProvider =
     StateNotifierProvider<OnboardingNotifier, bool>((ref) {
-  return OnboardingNotifier();
-});
+      return OnboardingNotifier();
+    });
 
 class OnboardingNotifier extends StateNotifier<bool> {
   OnboardingNotifier() : super(false) {

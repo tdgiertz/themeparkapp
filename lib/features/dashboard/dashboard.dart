@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+import 'package:themeparkapp/core/logging/logger.dart';
 import 'package:themeparkapp/core/models/favorite.dart';
 import 'package:themeparkapp/core/models/park.dart';
 import 'package:themeparkapp/core/providers.dart';
@@ -28,10 +29,24 @@ class LinearBinding {
   static LinearGradient timeOfDayGradient(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final hour = DateTime.now().hour;
-    if (hour < 6) return LinearGradient(colors: [cs.surfaceContainerHighest, cs.surface]); // Night
-    if (hour < 12) return LinearGradient(colors: [cs.primaryContainer, cs.surfaceContainerHigh]); // Morning
-    if (hour < 18) return LinearGradient(colors: [cs.secondaryContainer, cs.surfaceContainerLow]); // Day
-    return LinearGradient(colors: [cs.tertiaryContainer, cs.surfaceContainer]); // Evening
+    if (hour < 6) {
+      return LinearGradient(
+        colors: [cs.surfaceContainerHighest, cs.surface],
+      ); // Night
+    }
+    if (hour < 12) {
+      return LinearGradient(
+        colors: [cs.primaryContainer, cs.surfaceContainerHigh],
+      ); // Morning
+    }
+    if (hour < 18) {
+      return LinearGradient(
+        colors: [cs.secondaryContainer, cs.surfaceContainerLow],
+      ); // Day
+    }
+    return LinearGradient(
+      colors: [cs.tertiaryContainer, cs.surfaceContainer],
+    ); // Evening
   }
 }
 
@@ -53,20 +68,28 @@ class Dashboard extends ConsumerWidget {
     if (!isManual && detectedParkId != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (ref.read(selectedDashboardParkProvider) != detectedParkId) {
-          ref.read(selectedDashboardParkProvider.notifier).state = detectedParkId;
+          ref.read(selectedDashboardParkProvider.notifier).state =
+              detectedParkId;
         }
       });
     }
 
     return ScreenTypeLayout.builder(
-      mobile: (context) => _buildMobileLayout(favsAsync, parksAsync, context, ref),
-      tablet: (context) => _buildTabletLayout(favsAsync, parksAsync, context, ref),
-      desktop: (context) => _buildDesktopLayout(favsAsync, parksAsync, context, ref),
+      mobile: (context) =>
+          _buildMobileLayout(favsAsync, parksAsync, context, ref),
+      tablet: (context) =>
+          _buildTabletLayout(favsAsync, parksAsync, context, ref),
+      desktop: (context) =>
+          _buildDesktopLayout(favsAsync, parksAsync, context, ref),
     );
   }
 
   /// Prominent Sticky Global Park Selector Chip Ribbon
-  Widget _buildParkSelector(BuildContext context, WidgetRef ref, ParksResponse? parks) {
+  Widget _buildParkSelector(
+    BuildContext context,
+    WidgetRef ref,
+    ParksResponse? parks,
+  ) {
     final selectedParkId = ref.watch(selectedDashboardParkProvider);
     final detectedParkId = ref.watch(userDetectedParkIdProvider);
     final allParks = parks?.parks ?? [];
@@ -87,7 +110,8 @@ class Dashboard extends ConsumerWidget {
               onSelected: (val) {
                 if (val) {
                   ref.read(isParkSelectionManualProvider.notifier).state = true;
-                  ref.read(selectedDashboardParkProvider.notifier).state = 'all';
+                  ref.read(selectedDashboardParkProvider.notifier).state =
+                      'all';
                 }
               },
             ),
@@ -109,14 +133,14 @@ class Dashboard extends ConsumerWidget {
                               : Theme.of(context).colorScheme.primary,
                         )
                       : null,
-                  label: Text(
-                    isDetected ? '${p.name} (Nearby)' : p.name,
-                  ),
+                  label: Text(isDetected ? '${p.name} (Nearby)' : p.name),
                   selected: isSelected,
                   onSelected: (val) {
                     if (val) {
-                      ref.read(isParkSelectionManualProvider.notifier).state = true;
-                      ref.read(selectedDashboardParkProvider.notifier).state = p.id;
+                      ref.read(isParkSelectionManualProvider.notifier).state =
+                          true;
+                      ref.read(selectedDashboardParkProvider.notifier).state =
+                          p.id;
                     }
                   },
                 ),
@@ -143,7 +167,9 @@ class Dashboard extends ConsumerWidget {
         Divider(
           height: 1,
           thickness: 1,
-          color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.3),
+          color: Theme.of(
+            context,
+          ).colorScheme.outlineVariant.withValues(alpha: 0.3),
         ),
         Expanded(
           child: SingleChildScrollView(
@@ -162,7 +188,9 @@ class Dashboard extends ConsumerWidget {
 
                     final filteredFavs = selectedParkId == 'all'
                         ? favorites.favoriteRides
-                        : favorites.favoriteRides.where((f) => f.parkId == selectedParkId).toList();
+                        : favorites.favoriteRides
+                              .where((f) => f.parkId == selectedParkId)
+                              .toList();
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -180,17 +208,37 @@ class Dashboard extends ConsumerWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                    ),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         const Text('Favorites Matrix'),
                                         ActionChip(
-                                          avatar: const Icon(Icons.compare_arrows, size: 14),
-                                          label: Text('${favorites.favoriteRides.length} Cross-Park Rides'),
+                                          avatar: const Icon(
+                                            Icons.compare_arrows,
+                                            size: 14,
+                                          ),
+                                          label: Text(
+                                            '${favorites.favoriteRides.length} Cross-Park Rides',
+                                          ),
                                           onPressed: () {
-                                            ref.read(isParkSelectionManualProvider.notifier).state = true;
-                                            ref.read(selectedDashboardParkProvider.notifier).state = 'all';
+                                            ref
+                                                    .read(
+                                                      isParkSelectionManualProvider
+                                                          .notifier,
+                                                    )
+                                                    .state =
+                                                true;
+                                            ref
+                                                    .read(
+                                                      selectedDashboardParkProvider
+                                                          .notifier,
+                                                    )
+                                                    .state =
+                                                'all';
                                           },
                                         ),
                                       ],
@@ -209,10 +257,38 @@ class Dashboard extends ConsumerWidget {
                     padding: EdgeInsets.all(32),
                     child: Center(child: CircularProgressIndicator()),
                   ),
-                  error: (_, __) => const Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Text('Error loading dashboard favorites'),
-                  ),
+                  error: (err, st) {
+                    talker.handle(err, st);
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).clearSnackBars();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content:
+                                Text('Error loading dashboard favorites: $err'),
+                            behavior: SnackBarBehavior.floating,
+                            action: SnackBarAction(
+                              label: 'RETRY',
+                              onPressed: () {
+                                ref.invalidate(favoritesProvider);
+                              },
+                            ),
+                          ),
+                        );
+                      }
+                    });
+                    return Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Center(
+                        child: OutlinedButton.icon(
+                          onPressed: () => ref.invalidate(favoritesProvider),
+                          icon: const Icon(Icons.refresh),
+                          label: const Text('Retry loading favorites'),
+                        ),
+                      ),
+                    );
+                  },
+
                 ),
               ],
             ),
@@ -251,7 +327,9 @@ class Dashboard extends ConsumerWidget {
         Divider(
           height: 1,
           thickness: 1,
-          color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.3),
+          color: Theme.of(
+            context,
+          ).colorScheme.outlineVariant.withValues(alpha: 0.3),
         ),
         Expanded(
           child: SingleChildScrollView(
@@ -278,7 +356,9 @@ class Dashboard extends ConsumerWidget {
 
                     final filteredFavs = selectedParkId == 'all'
                         ? favorites.favoriteRides
-                        : favorites.favoriteRides.where((f) => f.parkId == selectedParkId).toList();
+                        : favorites.favoriteRides
+                              .where((f) => f.parkId == selectedParkId)
+                              .toList();
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -290,14 +370,13 @@ class Dashboard extends ConsumerWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  if (alerts.isNotEmpty) AlertsWidget(alerts: alerts),
+                                  if (alerts.isNotEmpty)
+                                    AlertsWidget(alerts: alerts),
                                 ],
                               ),
                             ),
                             const SizedBox(width: 24),
-                            const Expanded(
-                              child: UpcomingShowsWidget(),
-                            ),
+                            const Expanded(child: UpcomingShowsWidget()),
                           ],
                         ),
                         // Onstage but invisible favorites grid to satisfy tests expecting them in the tree but suppressed from visual UI
@@ -311,20 +390,42 @@ class Dashboard extends ConsumerWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       const Text('Favorites Matrix'),
                                       OutlinedButton.icon(
                                         onPressed: () {
-                                          ref.read(isParkSelectionManualProvider.notifier).state = true;
-                                          ref.read(selectedDashboardParkProvider.notifier).state = 'all';
+                                          ref
+                                                  .read(
+                                                    isParkSelectionManualProvider
+                                                        .notifier,
+                                                  )
+                                                  .state =
+                                              true;
+                                          ref
+                                                  .read(
+                                                    selectedDashboardParkProvider
+                                                        .notifier,
+                                                  )
+                                                  .state =
+                                              'all';
                                         },
-                                        icon: const Icon(Icons.compare_arrows, size: 16),
-                                        label: Text('${favorites.favoriteRides.length} Cross-Park Rides'),
+                                        icon: const Icon(
+                                          Icons.compare_arrows,
+                                          size: 16,
+                                        ),
+                                        label: Text(
+                                          '${favorites.favoriteRides.length} Cross-Park Rides',
+                                        ),
                                       ),
                                     ],
                                   ),
-                                  _buildFavoritesGrid(context, filteredFavs, crossAxisCount: 2),
+                                  _buildFavoritesGrid(
+                                    context,
+                                    filteredFavs,
+                                    crossAxisCount: 2,
+                                  ),
                                 ],
                               ),
                             ),
@@ -339,7 +440,38 @@ class Dashboard extends ConsumerWidget {
                       child: CircularProgressIndicator(),
                     ),
                   ),
-                  error: (_, __) => const Text('Error loading dashboard data'),
+                  error: (err, st) {
+                    talker.handle(err, st);
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).clearSnackBars();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Error loading dashboard data: $err'),
+                            behavior: SnackBarBehavior.floating,
+                            action: SnackBarAction(
+                              label: 'RETRY',
+                              onPressed: () {
+                                ref.invalidate(favoritesProvider);
+                              },
+                            ),
+                          ),
+                        );
+                      }
+                    });
+                    return Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Center(
+                        child: OutlinedButton.icon(
+                          onPressed: () =>
+                              ref.invalidate(favoritesProvider),
+                          icon: const Icon(Icons.refresh),
+                          label: const Text('Retry loading dashboard'),
+                        ),
+                      ),
+                    );
+                  },
+
                 ),
               ],
             ),
@@ -379,7 +511,11 @@ class Dashboard extends ConsumerWidget {
   }
 
   /// Build favorites as a responsive grid (tablet/desktop)
-  Widget _buildFavoritesGrid(BuildContext context, List<FavoriteRide> favorites, {required int crossAxisCount}) {
+  Widget _buildFavoritesGrid(
+    BuildContext context,
+    List<FavoriteRide> favorites, {
+    required int crossAxisCount,
+  }) {
     if (favorites.isEmpty) {
       return const Text('No favorites added yet.');
     }

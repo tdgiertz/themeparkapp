@@ -39,9 +39,9 @@ class MockParkRepository implements ParkRepository {
                 heightRequirementInches: 0,
               ),
             ],
-          )
+          ),
         ],
-      )
+      ),
     ];
   }
 }
@@ -51,7 +51,11 @@ class MockWaitTimesRepository implements WaitTimesRepository {
   Future<List<RideWaitTime>> fetchWaitTimes() async {
     return [
       const RideWaitTime(rideId: 'ride1', name: 'Magic Ride', waitMinutes: 15),
-      const RideWaitTime(rideId: 'ride2', name: 'Unknown Ride', waitMinutes: 30),
+      const RideWaitTime(
+        rideId: 'ride2',
+        name: 'Unknown Ride',
+        waitMinutes: 30,
+      ),
     ];
   }
 }
@@ -94,7 +98,9 @@ void main() {
     test('allWaitTimesProvider fetches wait times', () async {
       final container = ProviderContainer(
         overrides: [
-          waitTimesRepositoryProvider.overrideWithValue(MockWaitTimesRepository()),
+          waitTimesRepositoryProvider.overrideWithValue(
+            MockWaitTimesRepository(),
+          ),
         ],
       );
       addTearDown(container.dispose);
@@ -103,58 +109,85 @@ void main() {
       expect(waitTimes.length, 2);
     });
 
-    test('allShowtimesProvider correlates schedules with facility names', () async {
-      final container = ProviderContainer(
-        overrides: [
-          parkRepositoryProvider.overrideWithValue(MockParkRepository()),
-          showtimesRepositoryProvider.overrideWithValue(MockShowtimesRepository()),
-        ],
-      );
-      addTearDown(container.dispose);
+    test(
+      'allShowtimesProvider correlates schedules with facility names',
+      () async {
+        final container = ProviderContainer(
+          overrides: [
+            parkRepositoryProvider.overrideWithValue(MockParkRepository()),
+            showtimesRepositoryProvider.overrideWithValue(
+              MockShowtimesRepository(),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
 
-      final showtimes = await container.read(allShowtimesProvider.future);
-      expect(showtimes.length, 2); // 2 times for show1
-      expect(showtimes[0].showId, 'show1');
-      expect(showtimes[0].name, 'Magic Show');
-      expect(showtimes[0].time, '10:00');
-    });
+        final showtimes = await container.read(allShowtimesProvider.future);
+        expect(showtimes.length, 2); // 2 times for show1
+        expect(showtimes[0].showId, 'show1');
+        expect(showtimes[0].name, 'Magic Show');
+        expect(showtimes[0].time, '10:00');
+      },
+    );
 
-    test('derivedFavoritesProvider builds UI models with wait times and park info', () async {
-      final container = ProviderContainer(
-        overrides: [
-          parkRepositoryProvider.overrideWithValue(MockParkRepository()),
-          waitTimesRepositoryProvider.overrideWithValue(MockWaitTimesRepository()),
-          favoritesRepositoryProvider.overrideWithValue(MockFavoritesRepository()),
-        ],
-      );
-      addTearDown(container.dispose);
+    test(
+      'derivedFavoritesProvider builds UI models with wait times and park info',
+      () async {
+        final container = ProviderContainer(
+          overrides: [
+            parkRepositoryProvider.overrideWithValue(MockParkRepository()),
+            waitTimesRepositoryProvider.overrideWithValue(
+              MockWaitTimesRepository(),
+            ),
+            favoritesRepositoryProvider.overrideWithValue(
+              MockFavoritesRepository(),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
 
-      final favorites = await container.read(derivedFavoritesProvider.future);
-      expect(favorites.length, 1);
-      expect(favorites.first.rideId, 'ride1');
-      expect(favorites.first.name, 'Magic Ride');
-      expect(favorites.first.parkId, 'park1');
-      expect(favorites.first.currentWait?['waitMinutes'], 15);
-    });
+        final favorites = await container.read(derivedFavoritesProvider.future);
+        expect(favorites.length, 1);
+        expect(favorites.first.rideId, 'ride1');
+        expect(favorites.first.name, 'Magic Ride');
+        expect(favorites.first.parkId, 'park1');
+        expect(favorites.first.currentWait?['waitMinutes'], 15);
+      },
+    );
 
-    test('parkHighlightsProvider sorts and filters wait times and showtimes for a park', () async {
-      final container = ProviderContainer(
-        overrides: [
-          parkRepositoryProvider.overrideWithValue(MockParkRepository()),
-          waitTimesRepositoryProvider.overrideWithValue(MockWaitTimesRepository()),
-          showtimesRepositoryProvider.overrideWithValue(MockShowtimesRepository()),
-        ],
-      );
-      addTearDown(container.dispose);
+    test(
+      'parkHighlightsProvider sorts and filters wait times and showtimes for a park',
+      () async {
+        final container = ProviderContainer(
+          overrides: [
+            parkRepositoryProvider.overrideWithValue(MockParkRepository()),
+            waitTimesRepositoryProvider.overrideWithValue(
+              MockWaitTimesRepository(),
+            ),
+            showtimesRepositoryProvider.overrideWithValue(
+              MockShowtimesRepository(),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
 
-      final highlights = await container.read(parkHighlightsProvider('park1').future);
-      
-      expect(highlights.shortestWaitTimes.length, 1); // Only ride1 is in park1
-      expect(highlights.shortestWaitTimes.first.rideId, 'ride1');
-      expect(highlights.shortestWaitTimes.first.waitMinutes, 15);
+        final highlights = await container.read(
+          parkHighlightsProvider('park1').future,
+        );
 
-      expect(highlights.nextShowtimes.length, 1); // We only pick the first showtime for the highlight
-      expect(highlights.nextShowtimes.first.showId, 'show1');
-    });
+        expect(
+          highlights.shortestWaitTimes.length,
+          1,
+        ); // Only ride1 is in park1
+        expect(highlights.shortestWaitTimes.first.rideId, 'ride1');
+        expect(highlights.shortestWaitTimes.first.waitMinutes, 15);
+
+        expect(
+          highlights.nextShowtimes.length,
+          1,
+        ); // We only pick the first showtime for the highlight
+        expect(highlights.nextShowtimes.first.showId, 'show1');
+      },
+    );
   });
 }

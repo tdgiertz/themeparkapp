@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 
 /// A widget that draws a small glowing dot that pulses using a subtle opacity animation.
 class PulseDot extends StatefulWidget {
-  const PulseDot({
-    required this.color,
-    this.size = 8.0,
-    super.key,
-  });
+  const PulseDot({required this.color, this.size = 8.0, super.key});
 
   final Color color;
   final double size;
@@ -15,7 +11,8 @@ class PulseDot extends StatefulWidget {
   State<PulseDot> createState() => _PulseDotState();
 }
 
-class _PulseDotState extends State<PulseDot> with SingleTickerProviderStateMixin {
+class _PulseDotState extends State<PulseDot>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _opacityAnimation;
 
@@ -26,13 +23,11 @@ class _PulseDotState extends State<PulseDot> with SingleTickerProviderStateMixin
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     )..repeat(reverse: true);
-    
-    _opacityAnimation = Tween<double>(begin: 0.25, end: 1).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeInOut,
-      ),
-    );
+
+    _opacityAnimation = Tween<double>(
+      begin: 0.25,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override

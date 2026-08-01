@@ -10,10 +10,10 @@ class Facility {
   });
 
   factory Facility.fromJson(Map<String, dynamic> json) => Facility(
-    id: json['id'] as String,
-    type: json['type'] as String,
-    category: json['category'] as String,
-    name: json['name'] as String,
+    id: json['id'] as String? ?? '',
+    type: json['type'] as String? ?? '',
+    category: json['category'] as String? ?? json['type'] as String? ?? 'Ride',
+    name: json['name'] as String? ?? '',
     thrillLevel: json['thrillLevel'] as String?,
     heightRequirementInches: json['heightRequirementInches'] as int?,
   );
@@ -35,11 +35,11 @@ class Land {
   });
 
   factory Land.fromJson(Map<String, dynamic> json) => Land(
-    id: json['id'] as String,
-    type: json['type'] as String,
-    name: json['name'] as String,
+    id: json['id'] as String? ?? '',
+    type: json['type'] as String? ?? '',
+    name: json['name'] as String? ?? '',
     children: (json['children'] as List? ?? [])
-        .map((e) => Facility.fromJson(e as Map<String, dynamic>))
+        .map((e) => Facility.fromJson(Map<String, dynamic>.from(e as Map)))
         .toList(),
   );
   final String id;
@@ -58,7 +58,7 @@ class ParkDetail {
   });
 
   factory ParkDetail.fromJson(Map<String, dynamic> json) {
-    final park = json['park'] as Map<String, dynamic>? ?? {};
+    final park = json.containsKey('park') ? (json['park'] as Map<String, dynamic>? ?? {}) : json;
     return ParkDetail(
       id: park['id'] as String? ?? '',
       type: park['type'] as String? ?? '',

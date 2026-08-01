@@ -8,13 +8,15 @@ void mockAsset(String path, String content) {
   rootBundle.evict(path);
   TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
       .setMockMessageHandler('flutter/assets', (ByteData? message) async {
-    final key = utf8.decode(message!.buffer.asUint8List());
-    if (key == path) {
-      final data = ByteData.view(Uint8List.fromList(utf8.encode(content)).buffer);
-      return data;
-    }
-    return null;
-  });
+        final key = utf8.decode(message!.buffer.asUint8List());
+        if (key == path) {
+          final data = ByteData.view(
+            Uint8List.fromList(utf8.encode(content)).buffer,
+          );
+          return data;
+        }
+        return null;
+      });
 }
 
 void main() {
@@ -27,20 +29,23 @@ void main() {
 
   group('FakeParkRepository', () {
     test('fetchParks returns successfully with valid JSON', () async {
-      mockAsset('assets/data/parks.json', json.encode({
-        'data': {
-          'parks': [
-            {
-              'id': 'park1',
-              'type': 'ThemePark',
-              'name': 'Test Park',
-              'operatingHours': {'open': '09:00', 'close': '21:00'},
-              'crowdLevel': 'Moderate',
-              'children': <Map<String, dynamic>>[]
-            }
-          ]
-        }
-      }));
+      mockAsset(
+        'assets/data/parks.json',
+        json.encode({
+          'data': {
+            'parks': [
+              {
+                'id': 'park1',
+                'type': 'ThemePark',
+                'name': 'Test Park',
+                'operatingHours': {'open': '09:00', 'close': '21:00'},
+                'crowdLevel': 'Moderate',
+                'children': <Map<String, dynamic>>[],
+              },
+            ],
+          },
+        }),
+      );
 
       final repo = FakeParkRepository();
       final parks = await repo.fetchParks();
@@ -60,15 +65,14 @@ void main() {
 
   group('FakeWaitTimesRepository', () {
     test('fetchWaitTimes returns successfully with valid JSON', () async {
-      mockAsset('assets/data/wait_times.json', json.encode({
-        'waitTimes': [
-          {
-            'rideId': 'ride1',
-            'name': 'Test Ride',
-            'waitMinutes': 45
-          }
-        ]
-      }));
+      mockAsset(
+        'assets/data/wait_times.json',
+        json.encode({
+          'waitTimes': [
+            {'rideId': 'ride1', 'name': 'Test Ride', 'waitMinutes': 45},
+          ],
+        }),
+      );
 
       final repo = FakeWaitTimesRepository();
       final waitTimes = await repo.fetchWaitTimes();
@@ -79,14 +83,17 @@ void main() {
     });
 
     test('fetchWaitTimes throws error on missing keys', () async {
-      mockAsset('assets/data/wait_times.json', json.encode({
-        'waitTimes': [
-          {
-            // Missing rideId
-            'waitMinutes': 45
-          }
-        ]
-      }));
+      mockAsset(
+        'assets/data/wait_times.json',
+        json.encode({
+          'waitTimes': [
+            {
+              // Missing rideId
+              'waitMinutes': 45,
+            },
+          ],
+        }),
+      );
 
       final repo = FakeWaitTimesRepository();
       expect(repo.fetchWaitTimes, throwsA(isA<TypeError>()));

@@ -21,61 +21,67 @@ void main() {
       );
     }
 
-    testWidgets('AreaChartWidget renders empty state message when data is empty', (tester) async {
-      await tester.pumpWidget(
-        buildTestWidget(
-          const AreaChartWidget(
-            data: [],
-            lineColor: Colors.blue,
+    testWidgets(
+      'AreaChartWidget renders empty state message when data is empty',
+      (tester) async {
+        await tester.pumpWidget(
+          buildTestWidget(
+            const AreaChartWidget(data: [], lineColor: Colors.blue),
           ),
-        ),
-      );
+        );
 
-      expect(find.text('No historical data available'), findsOneWidget);
-    });
+        expect(find.text('No historical data available'), findsOneWidget);
+      },
+    );
 
-    testWidgets('AreaChartWidget Golden Test - Light Theme with wait time trend data', (tester) async {
-      await tester.pumpWidget(
-        buildTestWidget(
-          const SizedBox(
-            width: 320,
-            height: 160,
-            child: AreaChartWidget(
-              data: [15, 25, 45, 30, 60, 50, 40],
-              lineColor: Colors.orange,
+    testWidgets(
+      'AreaChartWidget Golden Test - Light Theme with wait time trend data',
+      (tester) async {
+        await tester.pumpWidget(
+          buildTestWidget(
+            const SizedBox(
+              width: 320,
+              height: 160,
+              child: AreaChartWidget(
+                data: [15, 25, 45, 30, 60, 50, 40],
+                lineColor: Colors.orange,
+              ),
             ),
+            theme: AppTheme.lightTheme(),
           ),
-          theme: AppTheme.lightTheme(),
-        ),
-      );
+        );
 
-      await tester.pumpAndSettle();
-      await expectLater(
-        find.byType(AreaChartWidget),
-        matchesGoldenFile('goldens/area_chart_light.png'),
-      );
-    });
+        await tester.pumpAndSettle();
+        await expectLater(
+          find.byType(AreaChartWidget),
+          matchesGoldenFile('goldens/area_chart_light.png'),
+        );
+      },
+    );
 
-    testWidgets('AreaChartWidget Golden Test - Dark Theme with low wait time data', (tester) async {
-      await tester.pumpWidget(
-        buildTestWidget(
-          const SizedBox(
-            width: 320,
-            height: 160,
-            child: AreaChartWidget(
-              data: [5, 10, 15, 10, 5, 20, 15],
-              lineColor: Colors.green,
+    testWidgets(
+      'AreaChartWidget Golden Test - Dark Theme with low wait time data',
+      (tester) async {
+        await tester.pumpWidget(
+          buildTestWidget(
+            const SizedBox(
+              width: 320,
+              height: 160,
+              child: AreaChartWidget(
+                data: [5, 10, 15, 10, 5, 20, 15],
+                lineColor: Colors.green,
+              ),
             ),
+            theme: AppTheme.darkTheme(),
           ),
-          theme: AppTheme.darkTheme(),
-        ),
-      );
+        );
 
-      await tester.pumpAndSettle();
-      await expectLater(
-        find.byType(AreaChartWidget),
-        matchesGoldenFile('goldens/area_chart_dark.png'),
-      );
-    });
+        await tester.pumpAndSettle();
+        await expectLater(
+          find.byType(AreaChartWidget),
+          matchesGoldenFile('goldens/area_chart_dark.png'),
+        );
+      },
+    );
   });
 }

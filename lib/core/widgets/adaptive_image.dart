@@ -6,7 +6,9 @@ import 'package:themeparkapp/core/environment_providers.dart';
 /// `mediaQualityProvider` indicates low quality.
 class AdaptiveNetworkImage extends ConsumerWidget {
   const AdaptiveNetworkImage({
-    required this.highResUrl, required this.lowResUrl, super.key,
+    required this.highResUrl,
+    required this.lowResUrl,
+    super.key,
     this.width,
     this.height,
     this.fit,
@@ -28,7 +30,10 @@ class AdaptiveNetworkImage extends ConsumerWidget {
       return SizedBox(
         width: width,
         height: height,
-        child: Icon(Icons.image_not_supported, size: (width ?? height ?? 48) / 2),
+        child: Icon(
+          Icons.image_not_supported,
+          size: (width ?? height ?? 48) / 2,
+        ),
       );
     }
 

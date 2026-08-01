@@ -48,8 +48,8 @@ class ThemeSeedColorNotifier extends StateNotifier<Color?> {
 
 final themeSeedColorProvider =
     StateNotifierProvider<ThemeSeedColorNotifier, Color?>((ref) {
-  return ThemeSeedColorNotifier();
-});
+      return ThemeSeedColorNotifier();
+    });
 
 /// Example async provider that simulates fetching details
 final detailsProvider = FutureProvider<String>((ref) async {
@@ -113,7 +113,6 @@ final parksProvider =
       return ParksNotifier(ref);
     });
 
-
 /// ---------------------- Favorites (FutureProvider) ----------------------
 final favoritesProvider = FutureProvider<FavoritesResponse>((ref) async {
   final rides = await ref.watch(derivedFavoritesProvider.future);
@@ -147,15 +146,16 @@ class ParkDetailNotifier extends StateNotifier<AsyncValue<ParkDetail>> {
       final decoded = json.decode(raw) as Map<String, dynamic>;
       final data = decoded['data'] as Map<String, dynamic>? ?? {};
       final parks = data['parks'] as List? ?? decoded['parks'] as List? ?? [];
-      final parkData = parks.firstWhere(
-        (e) => (e as Map<String, dynamic>)['id'] == parkId,
-        orElse: () => null,
-      );
+      Map<String, dynamic>? parkData;
+      for (final p in parks) {
+        if (p is Map && p['id'] == parkId) {
+          parkData = Map<String, dynamic>.from(p);
+          break;
+        }
+      }
       if (mounted) {
         if (parkData != null) {
-          state = AsyncValue.data(
-            ParkDetail.fromJson({'park': parkData}),
-          );
+          state = AsyncValue.data(ParkDetail.fromJson({'park': parkData}));
         } else {
           state = AsyncValue.data(ParkDetail.fromJson(<String, dynamic>{}));
         }
@@ -223,7 +223,8 @@ class WaitTimesNotifier extends StateNotifier<AsyncValue<WaitTimesResponse>> {
         json.decode(raw) as Map<String, dynamic>,
       );
 
-      final baseResponse = currentResponse ??
+      final baseResponse =
+          currentResponse ??
           WaitTimesResponse.fromJson(
             json.decode(await loader('assets/data/wait_times.json'))
                 as Map<String, dynamic>,

@@ -29,7 +29,11 @@ void main() {
       // Tap 'All Parks' in the dashboard selector
       final allParksSelector = find.byKey(const ValueKey('park_selector_all'));
       if (allParksSelector.evaluate().isNotEmpty) {
-        await tester.scrollUntilVisible(allParksSelector, 100, scrollable: find.byType(Scrollable).first);
+        await tester.scrollUntilVisible(
+          allParksSelector,
+          100,
+          scrollable: find.byType(Scrollable).first,
+        );
         await tester.tap(allParksSelector);
         await tester.pumpAndSettle();
       }
@@ -40,12 +44,21 @@ void main() {
       await tester.pumpAndSettle();
 
       // The search text field might be mobile or desktop
-      final searchMobile = find.byKey(const ValueKey('search_textfield_mobile'));
-      final searchDesktop = find.byKey(const ValueKey('search_textfield_desktop'));
-      final searchField = searchMobile.evaluate().isNotEmpty ? searchMobile : searchDesktop;
-      
+      final searchMobile = find.byKey(
+        const ValueKey('search_textfield_mobile'),
+      );
+      final searchDesktop = find.byKey(
+        const ValueKey('search_textfield_desktop'),
+      );
+      final searchField = searchMobile.evaluate().isNotEmpty
+          ? searchMobile
+          : searchDesktop;
+
       expect(searchField, findsOneWidget);
-      await tester.enterText(searchField, 'Help me plan my day at Magic Kingdom');
+      await tester.enterText(
+        searchField,
+        'Help me plan my day at Magic Kingdom',
+      );
       await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pumpAndSettle();
 
@@ -55,27 +68,39 @@ void main() {
       await tester.pumpAndSettle();
 
       // Find the park card for Magic Kingdom (p2)
-      final parkCardBtn = find.byKey(const ValueKey('park_card_explorer_btn_p2'));
+      final parkCardBtn = find.byKey(
+        const ValueKey('park_card_explorer_btn_p2'),
+      );
       // Scroll to it if it's in a scrollable list
       if (parkCardBtn.evaluate().isNotEmpty) {
         // It might be off-screen
-        await tester.scrollUntilVisible(parkCardBtn, 200, scrollable: find.byType(Scrollable).first);
+        await tester.scrollUntilVisible(
+          parkCardBtn,
+          200,
+          scrollable: find.byType(Scrollable).first,
+        );
         await tester.tap(parkCardBtn);
         await tester.pumpAndSettle();
-        
-        // Tap a facility item (e.g. p2_f1)
-        final facilityItem = find.byKey(const ValueKey('facility_list_item_p2_f1'));
-        if (facilityItem.evaluate().isNotEmpty) {
-           await tester.scrollUntilVisible(facilityItem, 200, scrollable: find.byType(Scrollable).first);
-           await tester.tap(facilityItem);
-           await tester.pumpAndSettle();
 
-           // Navigate back
-           final backButton = find.byTooltip('Back');
-           if (backButton.evaluate().isNotEmpty) {
-             await tester.tap(backButton);
-             await tester.pumpAndSettle();
-           }
+        // Tap a facility item (e.g. p2_f1)
+        final facilityItem = find.byKey(
+          const ValueKey('facility_list_item_p2_f1'),
+        );
+        if (facilityItem.evaluate().isNotEmpty) {
+          await tester.scrollUntilVisible(
+            facilityItem,
+            200,
+            scrollable: find.byType(Scrollable).first,
+          );
+          await tester.tap(facilityItem);
+          await tester.pumpAndSettle();
+
+          // Navigate back
+          final backButton = find.byTooltip('Back');
+          if (backButton.evaluate().isNotEmpty) {
+            await tester.tap(backButton);
+            await tester.pumpAndSettle();
+          }
         }
       }
 
@@ -83,7 +108,7 @@ void main() {
       final navFavorites = find.byKey(const ValueKey('nav_favorites'));
       await tester.tap(navFavorites);
       await tester.pumpAndSettle();
-      
+
       // Verify we are on favorites page by looking for the "Favorites" text
       expect(find.text('Favorites'), findsWidgets);
     });

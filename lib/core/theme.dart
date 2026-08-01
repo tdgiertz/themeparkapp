@@ -69,8 +69,16 @@ class StatusColors extends ThemeExtension<StatusColors> {
       return this;
     }
     return StatusColors(
-      offlineCardSurface: Color.lerp(offlineCardSurface, other.offlineCardSurface, t)!,
-      offlineStripeColor: Color.lerp(offlineStripeColor, other.offlineStripeColor, t)!,
+      offlineCardSurface: Color.lerp(
+        offlineCardSurface,
+        other.offlineCardSurface,
+        t,
+      )!,
+      offlineStripeColor: Color.lerp(
+        offlineStripeColor,
+        other.offlineStripeColor,
+        t,
+      )!,
       chartAmber: Color.lerp(chartAmber, other.chartAmber, t)!,
       statusOpen: Color.lerp(statusOpen, other.statusOpen, t)!,
       statusWarning: Color.lerp(statusWarning, other.statusWarning, t)!,
@@ -98,11 +106,7 @@ class AppTheme {
       keyColors: const FlexKeyColors(),
       surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
       subThemesData: const FlexSubThemesData(cardElevation: 4, cardRadius: 12),
-    ).copyWith(
-      extensions: <ThemeExtension<dynamic>>[
-        StatusColors.dark,
-      ],
-    );
+    ).copyWith(extensions: <ThemeExtension<dynamic>>[StatusColors.dark]);
   }
 
   /// Light Theme Definition
@@ -112,10 +116,6 @@ class AppTheme {
       keyColors: const FlexKeyColors(),
       surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
       subThemesData: const FlexSubThemesData(cardElevation: 4, cardRadius: 12),
-    ).copyWith(
-      extensions: <ThemeExtension<dynamic>>[
-        StatusColors.light,
-      ],
-    );
+    ).copyWith(extensions: <ThemeExtension<dynamic>>[StatusColors.light]);
   }
 }

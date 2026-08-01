@@ -85,7 +85,8 @@ String? detectParkFromCoordinates(double lat, double lng) {
 /// Provider that monitors user location and returns the detected park ID (or null if outside all parks).
 final userDetectedParkIdProvider = Provider<String?>((ref) {
   final perm = ref.watch(locationPermissionProvider);
-  if (perm != LocationPermission.always && perm != LocationPermission.whileInUse) {
+  if (perm != LocationPermission.always &&
+      perm != LocationPermission.whileInUse) {
     return null;
   }
   final coords = ref.watch(userLocationProvider('p2'));

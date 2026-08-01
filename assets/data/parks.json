@@ -127,6 +127,13 @@
                 "name": "Zootopia: Better Zoogether!",
                 "thrillLevel": "Moderate",
                 "heightRequirementInches": 0
+              },
+              {
+                "id": "show_6",
+                "type": "Show",
+                "name": "Finding Nemo: The Big Blue... and Beyond!",
+                "thrillLevel": "Low",
+                "heightRequirementInches": 0
               }
             ]
           }
@@ -450,6 +457,20 @@
                 "name": "Walt Disney's Enchanted Tiki Room",
                 "thrillLevel": "Moderate",
                 "heightRequirementInches": 0
+              },
+              {
+                "id": "show_1",
+                "type": "Show",
+                "name": "Festival of Fantasy Parade",
+                "thrillLevel": "Low",
+                "heightRequirementInches": 0
+              },
+              {
+                "id": "show_5",
+                "type": "Show",
+                "name": "Happily Ever After",
+                "thrillLevel": "Low",
+                "heightRequirementInches": 0
               }
             ]
           }
@@ -589,6 +610,13 @@
                 "name": "Turtle Talk With Crush",
                 "thrillLevel": "Moderate",
                 "heightRequirementInches": 0
+              },
+              {
+                "id": "show_3",
+                "type": "Show",
+                "name": "Luminous: The Symphony of Us",
+                "thrillLevel": "Low",
+                "heightRequirementInches": 0
               }
             ]
           }
@@ -711,6 +739,13 @@
                 "category": "Ride",
                 "name": "Vacation Fun - An Original Animated Short with Mickey & Minnie",
                 "thrillLevel": "Moderate",
+                "heightRequirementInches": 0
+              },
+              {
+                "id": "show_4",
+                "type": "Show",
+                "name": "Fantasmic!",
+                "thrillLevel": "Low",
                 "heightRequirementInches": 0
               }
             ]

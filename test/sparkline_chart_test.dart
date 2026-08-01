@@ -5,14 +5,11 @@ import 'package:themeparkapp/features/park/widgets/sparkline_chart.dart';
 void main() {
   testWidgets('SparklineChart renders and paints', (WidgetTester tester) async {
     final data = [10, 20, 15, 30, 25];
-    
+
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          body: SparklineChart(
-            data: data,
-            lineColor: Colors.red,
-          ),
+          body: SparklineChart(data: data, lineColor: Colors.red),
         ),
       ),
     );
@@ -27,14 +24,12 @@ void main() {
     );
   });
 
-  testWidgets('SparklineChart renders empty box when data is empty', (WidgetTester tester) async {
+  testWidgets('SparklineChart renders empty box when data is empty', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(
       const MaterialApp(
-        home: Scaffold(
-          body: SparklineChart(
-            data: [],
-          ),
-        ),
+        home: Scaffold(body: SparklineChart(data: [])),
       ),
     );
 

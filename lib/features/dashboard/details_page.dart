@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:themeparkapp/core/environment_providers.dart';
+import 'package:themeparkapp/core/logging/logger.dart';
 import 'package:themeparkapp/core/providers.dart';
 import 'package:themeparkapp/core/widgets/adaptive_image.dart';
 import 'package:themeparkapp/l10n/app_localizations.dart';
@@ -17,16 +18,36 @@ class DetailsPage extends ConsumerWidget {
     final async = ref.watch(detailsProvider);
     final mediaQuality = ref.watch(mediaQualityProvider);
     final loc = AppLocalizations.of(context)!;
+    ref.listen<MediaQuality>(mediaQualityProvider, (previous, next) {
+      if (next == MediaQuality.low) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Low network or battery — using lighter media'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    });
+
+    if (mediaQuality == MediaQuality.low) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Low network or battery — using lighter media'),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      });
+    }
 
     return Scaffold(
       appBar: AppBar(title: Text(loc.details_title)),
       body: Column(
         children: [
-          if (mediaQuality == MediaQuality.low)
-            const MaterialBanner(
-              content: Text('Low network or battery — using lighter media'),
-              actions: [],
-            ),
           Expanded(
             child: ScreenTypeLayout.builder(
               mobile: (context) => Center(
@@ -56,17 +77,20 @@ class DetailsPage extends ConsumerWidget {
                     ],
                   ),
                   loading: () => const CircularProgressIndicator(),
-                  error: (err, st) => Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text('Error: $err'),
-                      const SizedBox(height: 8),
-                      ElevatedButton(
-                        onPressed: () => ref.refresh(detailsProvider),
-                        child: Text(loc.retry),
-                      ),
-                    ],
-                  ),
+                  error: (err, st) {
+                    talker.handle(err, st);
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text('Error: $err'),
+                        const SizedBox(height: 8),
+                        ElevatedButton(
+                          onPressed: () => ref.refresh(detailsProvider),
+                          child: Text(loc.retry),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
               tablet: (context) => Center(
@@ -110,17 +134,20 @@ class DetailsPage extends ConsumerWidget {
                         ),
                         loading: () =>
                             const Center(child: CircularProgressIndicator()),
-                        error: (err, st) => Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text('Error: $err'),
-                            const SizedBox(height: 8),
-                            ElevatedButton(
-                              onPressed: () => ref.refresh(detailsProvider),
-                              child: Text(loc.retry),
-                            ),
-                          ],
-                        ),
+                        error: (err, st) {
+                          talker.handle(err, st);
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text('Error: $err'),
+                              const SizedBox(height: 8),
+                              ElevatedButton(
+                                onPressed: () => ref.refresh(detailsProvider),
+                                child: Text(loc.retry),
+                              ),
+                            ],
+                          );
+                        },
                       ),
                     ),
                   ),
@@ -167,17 +194,20 @@ class DetailsPage extends ConsumerWidget {
                         ),
                         loading: () =>
                             const Center(child: CircularProgressIndicator()),
-                        error: (err, st) => Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text('Error: $err'),
-                            const SizedBox(height: 8),
-                            ElevatedButton(
-                              onPressed: () => ref.refresh(detailsProvider),
-                              child: Text(loc.retry),
-                            ),
-                          ],
-                        ),
+                        error: (err, st) {
+                          talker.handle(err, st);
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text('Error: $err'),
+                              const SizedBox(height: 8),
+                              ElevatedButton(
+                                onPressed: () => ref.refresh(detailsProvider),
+                                child: Text(loc.retry),
+                              ),
+                            ],
+                          );
+                        },
                       ),
                     ),
                   ),

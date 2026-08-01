@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:io';
 
 void main() {
@@ -6,15 +8,15 @@ void main() {
     print('No lcov.info found');
     return;
   }
-  
+
   final lines = lcovFile.readAsLinesSync();
   var currentFile = '';
   var totalFound = 0;
   var totalHit = 0;
-  
+
   final fileCoverage = <String, double>{};
   final fileMissed = <String, int>{};
-  
+
   for (final line in lines) {
     if (line.startsWith('SF:')) {
       currentFile = line.substring(3);
@@ -37,14 +39,16 @@ void main() {
       }
     }
   }
-  
+
   final entries = fileCoverage.entries.toList()
     ..sort((a, b) => a.value.compareTo(b.value));
-    
+
   print('Coverage by File (Lowest First):');
   for (final entry in entries) {
     final pct = (entry.value * 100).toStringAsFixed(1);
     final missed = fileMissed[entry.key];
-    print('${pct.padLeft(5)}% | Missed: ${missed.toString().padRight(3)} | ${entry.key}');
+    print(
+      '${pct.padLeft(5)}% | Missed: ${missed.toString().padRight(3)} | ${entry.key}',
+    );
   }
 }

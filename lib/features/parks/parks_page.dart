@@ -4,30 +4,49 @@ import 'package:themeparkapp/core/models/park.dart';
 import 'package:themeparkapp/core/models/park_detail.dart';
 import 'package:themeparkapp/core/models/wait_time.dart';
 import 'package:themeparkapp/core/providers.dart';
+import 'package:themeparkapp/features/park/facility_detail_page.dart';
 import 'package:themeparkapp/features/park/park_page.dart';
 import 'package:themeparkapp/features/park/widgets/park_map.dart';
 import 'package:themeparkapp/features/park/widgets/sparkline_chart.dart';
 
 /// Mapping of beautiful Unsplash hero images for each park.
 const Map<String, String> parkImages = {
-  'p1': 'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=600&auto=format&fit=crop&q=80', // Animal Kingdom (Safari)
-  'p2': 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&auto=format&fit=crop&q=80', // Magic Kingdom (Castle)
-  'p3': 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&auto=format&fit=crop&q=80', // Epcot (Spaceship Earth Sphere)
-  'p4': 'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=600&auto=format&fit=crop&q=80', // Hollywood Studios (Cinema)
-  'p5': 'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=600&auto=format&fit=crop&q=80', // Universal Studios (Globe)
-  'p6': 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=600&auto=format&fit=crop&q=80', // Islands of Adventure (Water)
-  'p7': 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&auto=format&fit=crop&q=80', // Epic Universe (Celestial)
+  'p1':
+      'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=600&auto=format&fit=crop&q=80', // Animal Kingdom (Safari)
+  'p2':
+      'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&auto=format&fit=crop&q=80', // Magic Kingdom (Castle)
+  'p3':
+      'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&auto=format&fit=crop&q=80', // Epcot (Spaceship Earth Sphere)
+  'p4':
+      'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=600&auto=format&fit=crop&q=80', // Hollywood Studios (Cinema)
+  'p5':
+      'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=600&auto=format&fit=crop&q=80', // Universal Studios (Globe)
+  'p6':
+      'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=600&auto=format&fit=crop&q=80', // Islands of Adventure (Water)
+  'p7':
+      'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&auto=format&fit=crop&q=80', // Epic Universe (Celestial)
 };
 
 /// Downsampled wait time data provider simulating TimescaleDB continuous aggregates.
-final parkWaitTimeTrendProvider = Provider.family<List<int>, String>((ref, parkId) {
+final parkWaitTimeTrendProvider = Provider.family<List<int>, String>((
+  ref,
+  parkId,
+) {
   final waitTimesAsync = ref.watch(waitTimesProvider(parkId));
   final waitTimes = waitTimesAsync.valueOrNull?.waitTimes ?? [];
-  final openRides = waitTimes.where((w) => w.status == 'Open' && w.waitMinutes != null).toList();
+  final openRides = waitTimes
+      .where((w) => w.status == 'Open' && w.waitMinutes != null)
+      .toList();
 
   final currentAvg = openRides.isEmpty
-      ? (parkId == 'p1' ? 30 : (parkId == 'p2' ? 45 : (parkId == 'p3' ? 25 : (parkId == 'p4' ? 55 : 35))))
-      : (openRides.map((w) => w.waitMinutes!).reduce((a, b) => a + b) / openRides.length).round();
+      ? (parkId == 'p1'
+            ? 30
+            : (parkId == 'p2'
+                  ? 45
+                  : (parkId == 'p3' ? 25 : (parkId == 'p4' ? 55 : 35))))
+      : (openRides.map((w) => w.waitMinutes!).reduce((a, b) => a + b) /
+                openRides.length)
+            .round();
 
   // Stable deterministic trends using parkId and current average
   final list = <int>[];
@@ -59,7 +78,9 @@ class ParkFilters {
   int get activeCount => ageGroups.length + types.length + statuses.length;
 }
 
-final globalParkFilterProvider = StateProvider<ParkFilters>((ref) => ParkFilters());
+final globalParkFilterProvider = StateProvider<ParkFilters>(
+  (ref) => ParkFilters(),
+);
 final parkWaitTimeSortProvider = StateProvider<String>((ref) => 'Name (A-Z)');
 final parkFilterDrawerOpenProvider = StateProvider<bool>((ref) => false);
 
@@ -89,12 +110,14 @@ class ParksPage extends ConsumerWidget {
 
                 if (isLargeScreen) {
                   // Tablet/Desktop Layout: Top horizontal tab ribbon + 2/3 Map & 1/3 Wait Times split
-                  final activeParkId = selectedParkId ?? parksResp.parks.first.id;
-                  
+                  final activeParkId =
+                      selectedParkId ?? parksResp.parks.first.id;
+
                   // Safe initialization of selected park
                   if (selectedParkId == null) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
-                      ref.read(selectedParkIdProvider.notifier).state = activeParkId;
+                      ref.read(selectedParkIdProvider.notifier).state =
+                          activeParkId;
                     });
                   }
 
@@ -115,9 +138,7 @@ class ParksPage extends ConsumerWidget {
                       ),
                       const SizedBox(height: 12),
                       // Main Content Area: Left 2/3 Map, Right 1/3 Urgent Wait Times
-                      Expanded(
-                        child: DesktopParkDashboard(park: selectedPark),
-                      ),
+                      Expanded(child: DesktopParkDashboard(park: selectedPark)),
                     ],
                   );
                 } else {
@@ -131,9 +152,12 @@ class ParksPage extends ConsumerWidget {
                       return ParkHeroCard(
                         park: p,
                         isSelected: false,
-                        onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(
-                          builder: (_) => ParkPage(parkId: p.id, parkName: p.name),
-                        )),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) =>
+                                ParkPage(parkId: p.id, parkName: p.name),
+                          ),
+                        ),
                       );
                     },
                   );
@@ -186,7 +210,8 @@ class ParkNavigationRibbon extends ConsumerWidget {
               itemBuilder: (context, index) {
                 final park = parks[index];
                 final isSelected = park.id == selectedParkId;
-                final imageUrl = parkImages[park.id] ??
+                final imageUrl =
+                    parkImages[park.id] ??
                     'https://images.unsplash.com/photo-1597466765990-64ad1c35dafc?w=500&q=80';
 
                 final trendData = ref.watch(parkWaitTimeTrendProvider(park.id));
@@ -199,22 +224,31 @@ class ParkNavigationRibbon extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(12),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: isSelected
                             ? colorScheme.primaryContainer
-                            : colorScheme.surfaceContainerHigh.withValues(alpha: 0.6),
+                            : colorScheme.surfaceContainerHigh.withValues(
+                                alpha: 0.6,
+                              ),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: isSelected
                               ? colorScheme.primary
-                              : colorScheme.outlineVariant.withValues(alpha: 0.3),
+                              : colorScheme.outlineVariant.withValues(
+                                  alpha: 0.3,
+                                ),
                           width: isSelected ? 2 : 1,
                         ),
                         boxShadow: isSelected
                             ? [
                                 BoxShadow(
-                                  color: colorScheme.primary.withValues(alpha: 0.15),
+                                  color: colorScheme.primary.withValues(
+                                    alpha: 0.15,
+                                  ),
                                   blurRadius: 6,
                                   offset: const Offset(0, 2),
                                 ),
@@ -231,18 +265,19 @@ class ParkNavigationRibbon extends ConsumerWidget {
                               width: 32,
                               height: 32,
                               fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) => Container(
-                                width: 32,
-                                height: 32,
-                                color: colorScheme.surfaceContainerHighest,
-                                child: Icon(
-                                  Icons.park,
-                                  size: 18,
-                                  color: isSelected
-                                      ? colorScheme.onPrimaryContainer
-                                      : colorScheme.onSurfaceVariant,
-                                ),
-                              ),
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Container(
+                                    width: 32,
+                                    height: 32,
+                                    color: colorScheme.surfaceContainerHighest,
+                                    child: Icon(
+                                      Icons.park,
+                                      size: 18,
+                                      color: isSelected
+                                          ? colorScheme.onPrimaryContainer
+                                          : colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -254,7 +289,9 @@ class ParkNavigationRibbon extends ConsumerWidget {
                                 park.name,
                                 style: TextStyle(
                                   fontSize: 13,
-                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.w600,
                                   color: isSelected
                                       ? colorScheme.onPrimaryContainer
                                       : colorScheme.onSurface,
@@ -281,7 +318,8 @@ class ParkNavigationRibbon extends ConsumerWidget {
                                       fontSize: 11,
                                       fontWeight: FontWeight.w500,
                                       color: isSelected
-                                          ? colorScheme.onPrimaryContainer.withValues(alpha: 0.85)
+                                          ? colorScheme.onPrimaryContainer
+                                                .withValues(alpha: 0.85)
                                           : colorScheme.onSurfaceVariant,
                                     ),
                                   ),
@@ -326,16 +364,22 @@ class ParkNavigationRibbon extends ConsumerWidget {
           color: Colors.transparent,
           child: InkWell(
             onTap: () {
-              ref.read(parkFilterDrawerOpenProvider.notifier).update((state) => !state);
+              ref
+                  .read(parkFilterDrawerOpenProvider.notifier)
+                  .update((state) => !state);
             },
             borderRadius: BorderRadius.circular(12),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: isActive ? colorScheme.primaryContainer : colorScheme.surfaceContainerHigh.withValues(alpha: 0.6),
+                color: isActive
+                    ? colorScheme.primaryContainer
+                    : colorScheme.surfaceContainerHigh.withValues(alpha: 0.6),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: isActive ? colorScheme.primary : colorScheme.outlineVariant.withValues(alpha: 0.4),
+                  color: isActive
+                      ? colorScheme.primary
+                      : colorScheme.outlineVariant.withValues(alpha: 0.4),
                 ),
               ),
               child: Row(
@@ -343,7 +387,9 @@ class ParkNavigationRibbon extends ConsumerWidget {
                   Icon(
                     Icons.tune_rounded,
                     size: 20,
-                    color: isActive ? colorScheme.onPrimaryContainer : colorScheme.onSurfaceVariant,
+                    color: isActive
+                        ? colorScheme.onPrimaryContainer
+                        : colorScheme.onSurfaceVariant,
                   ),
                   const SizedBox(width: 8),
                   Text(
@@ -351,7 +397,9 @@ class ParkNavigationRibbon extends ConsumerWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 13,
-                      color: isActive ? colorScheme.onPrimaryContainer : colorScheme.onSurfaceVariant,
+                      color: isActive
+                          ? colorScheme.onPrimaryContainer
+                          : colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -410,14 +458,24 @@ class _ParkHeroCardState extends ConsumerState<ParkHeroCard> {
   Widget build(BuildContext context) {
     final park = widget.park;
     final trendData = ref.watch(parkWaitTimeTrendProvider(park.id));
-    final imageUrl = parkImages[park.id] ?? 'https://images.unsplash.com/photo-1597466765990-64ad1c35dafc?w=500&q=80';
+    final imageUrl =
+        parkImages[park.id] ??
+        'https://images.unsplash.com/photo-1597466765990-64ad1c35dafc?w=500&q=80';
 
     final waitTimesAsync = ref.watch(waitTimesProvider(park.id));
     final waitTimes = waitTimesAsync.valueOrNull?.waitTimes ?? [];
-    final openRides = waitTimes.where((w) => w.status == 'Open' && w.waitMinutes != null).toList();
+    final openRides = waitTimes
+        .where((w) => w.status == 'Open' && w.waitMinutes != null)
+        .toList();
     final currentAvg = openRides.isEmpty
-        ? (park.id == 'p1' ? 30 : (park.id == 'p2' ? 45 : (park.id == 'p3' ? 25 : (park.id == 'p4' ? 55 : 35))))
-        : (openRides.map((w) => w.waitMinutes!).reduce((a, b) => a + b) / openRides.length).round();
+        ? (park.id == 'p1'
+              ? 30
+              : (park.id == 'p2'
+                    ? 45
+                    : (park.id == 'p3' ? 25 : (park.id == 'p4' ? 55 : 35))))
+        : (openRides.map((w) => w.waitMinutes!).reduce((a, b) => a + b) /
+                  openRides.length)
+              .round();
 
     final openTime = park.operatingHours?['open'] ?? '08:00';
     final closeTime = park.operatingHours?['close'] ?? '20:00';
@@ -436,7 +494,9 @@ class _ParkHeroCardState extends ConsumerState<ParkHeroCard> {
         borderRadius: BorderRadius.circular(16),
         side: widget.isSelected
             ? BorderSide(color: colorScheme.primary, width: 2.5)
-            : BorderSide(color: colorScheme.outlineVariant.withValues(alpha: 0.5)),
+            : BorderSide(
+                color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+              ),
       ),
       elevation: widget.isSelected ? 4 : 1,
       color: colorScheme.surfaceContainerLow,
@@ -471,12 +531,16 @@ class _ParkHeroCardState extends ConsumerState<ParkHeroCard> {
                             width: 84,
                             height: 84,
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) => Container(
-                              width: 84,
-                              height: 84,
-                              color: colorScheme.surfaceContainerHighest,
-                              child: Icon(Icons.park, color: colorScheme.onSurfaceVariant),
-                            ),
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                                  width: 84,
+                                  height: 84,
+                                  color: colorScheme.surfaceContainerHighest,
+                                  child: Icon(
+                                    Icons.park,
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -515,7 +579,10 @@ class _ParkHeroCardState extends ConsumerState<ParkHeroCard> {
                                 runSpacing: 6,
                                 children: [
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: colorScheme.primaryContainer,
                                       borderRadius: BorderRadius.circular(8),
@@ -530,12 +597,16 @@ class _ParkHeroCardState extends ConsumerState<ParkHeroCard> {
                                     ),
                                   ),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: colorScheme.surfaceContainerHigh,
                                       borderRadius: BorderRadius.circular(8),
                                       border: Border.all(
-                                        color: colorScheme.outlineVariant.withValues(alpha: 0.4),
+                                        color: colorScheme.outlineVariant
+                                            .withValues(alpha: 0.4),
                                       ),
                                     ),
                                     child: Row(
@@ -605,7 +676,10 @@ class _ParkHeroCardState extends ConsumerState<ParkHeroCard> {
                         ),
                         const SizedBox(width: 8),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             color: colorScheme.tertiaryContainer,
                             borderRadius: BorderRadius.circular(6),
@@ -651,7 +725,10 @@ class _ParkHeroCardState extends ConsumerState<ParkHeroCard> {
                                   ),
                                 ),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 2,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: (w.waitMinutes ?? 0) > 45
                                         ? colorScheme.errorContainer
@@ -691,7 +768,10 @@ class _ParkHeroCardState extends ConsumerState<ParkHeroCard> {
                         icon: const Icon(Icons.map_rounded, size: 16),
                         label: const Text(
                           'Open Full Park Explorer & Map',
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
@@ -708,40 +788,71 @@ class _ParkHeroCardState extends ConsumerState<ParkHeroCard> {
 
 bool _matchesGlobalFilter(Facility f, WaitTime? w, ParkFilters filters) {
   if (filters.activeCount == 0) return true;
-  
+
   var matchesAge = true;
   if (filters.ageGroups.isNotEmpty) {
     matchesAge = false;
     final isThrill = f.thrillLevel == 'High' || f.thrillLevel == 'Moderate';
-    final isLowThrill = f.thrillLevel == 'Low' || (f.heightRequirementInches ?? 0) == 0;
-    
-    if (filters.ageGroups.contains('All Ages') && isLowThrill) matchesAge = true;
-    if (filters.ageGroups.contains('Preschool') && f.thrillLevel == 'Low') matchesAge = true;
-    if (filters.ageGroups.contains('Kids') && (f.thrillLevel == 'Low' || f.thrillLevel == 'Moderate')) matchesAge = true;
+    final isLowThrill =
+        f.thrillLevel == 'Low' || (f.heightRequirementInches ?? 0) == 0;
+
+    if (filters.ageGroups.contains('All Ages') && isLowThrill) {
+      matchesAge = true;
+    }
+    if (filters.ageGroups.contains('Preschool') && f.thrillLevel == 'Low') {
+      matchesAge = true;
+    }
+    if (filters.ageGroups.contains('Kids') &&
+        (f.thrillLevel == 'Low' || f.thrillLevel == 'Moderate')) {
+      matchesAge = true;
+    }
     if (filters.ageGroups.contains('Tweens') && isThrill) matchesAge = true;
     if (filters.ageGroups.contains('Teens') && isThrill) matchesAge = true;
     if (filters.ageGroups.contains('Adults') && isThrill) matchesAge = true;
   }
-  
+
   var matchesType = true;
   if (filters.types.isNotEmpty) {
     matchesType = false;
     if (filters.types.contains('Rides') && f.type == 'Ride') matchesType = true;
-    if (filters.types.contains('Shows') && (f.type == 'Show' || f.category == 'Entertainment')) matchesType = true;
-    if (filters.types.contains('Dining / Restaurants') && (f.type == 'Restaurant' || f.category == 'Dining' || f.name.toLowerCase().contains('cafe'))) matchesType = true;
-    if (filters.types.contains('Character Experiences') && (f.type == 'Character' || f.name.toLowerCase().contains('meet'))) matchesType = true;
-    if (filters.types.contains('Walkthroughs / Play Areas') && (f.type == 'PlayArea' || f.name.toLowerCase().contains('play'))) matchesType = true;
+    if (filters.types.contains('Shows') &&
+        (f.type == 'Show' || f.category == 'Entertainment')) {
+      matchesType = true;
+    }
+    if (filters.types.contains('Dining / Restaurants') &&
+        (f.type == 'Restaurant' ||
+            f.category == 'Dining' ||
+            f.name.toLowerCase().contains('cafe'))) {
+      matchesType = true;
+    }
+    if (filters.types.contains('Character Experiences') &&
+        (f.type == 'Character' || f.name.toLowerCase().contains('meet'))) {
+      matchesType = true;
+    }
+    if (filters.types.contains('Walkthroughs / Play Areas') &&
+        (f.type == 'PlayArea' || f.name.toLowerCase().contains('play'))) {
+      matchesType = true;
+    }
   }
 
   var matchesStatus = true;
   if (filters.statuses.isNotEmpty) {
     matchesStatus = false;
-    final stat = w?.status ?? 'Closed'; // default to Closed if no wait time object
-    if (filters.statuses.contains('Operating') && stat == 'Open') matchesStatus = true;
-    if (filters.statuses.contains('Temporarily Closed / Down') && stat == 'Closed') matchesStatus = true;
-    if (filters.statuses.contains('Under Refurbishment') && stat == 'Refurbishment') matchesStatus = true;
+    final stat =
+        w?.status ?? 'Closed'; // default to Closed if no wait time object
+    if (filters.statuses.contains('Operating') && stat == 'Open') {
+      matchesStatus = true;
+    }
+    if (filters.statuses.contains('Temporarily Closed / Down') &&
+        stat == 'Closed') {
+      matchesStatus = true;
+    }
+    if (filters.statuses.contains('Under Refurbishment') &&
+        stat == 'Refurbishment') {
+      matchesStatus = true;
+    }
   }
-  
+
   return matchesAge && matchesType && matchesStatus;
 }
 
@@ -771,7 +882,9 @@ class DesktopParkDashboard extends ConsumerWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
               side: BorderSide(
-                color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.4),
+                color: Theme.of(
+                  context,
+                ).colorScheme.outlineVariant.withValues(alpha: 0.4),
               ),
             ),
             elevation: 2,
@@ -780,9 +893,13 @@ class DesktopParkDashboard extends ConsumerWidget {
                 detailAsync.when(
                   data: (detail) => waitsAsync.when(
                     data: (waits) {
-                      final allFacilities = detail.children.expand((l) => l.children).toList();
+                      final allFacilities = detail.children
+                          .expand((l) => l.children)
+                          .toList();
                       final filteredFacilities = allFacilities.where((f) {
-                        final w = waits.waitTimes.where((wt) => wt.rideId == f.id).firstOrNull;
+                        final w = waits.waitTimes
+                            .where((wt) => wt.rideId == f.id)
+                            .firstOrNull;
                         return _matchesGlobalFilter(f, w, filters);
                       }).toList();
 
@@ -803,9 +920,13 @@ class DesktopParkDashboard extends ConsumerWidget {
                                   Text('Type: ${facility.type}'),
                                   Text('Category: ${facility.category}'),
                                   if (facility.thrillLevel != null)
-                                    Text('Thrill Level: ${facility.thrillLevel}'),
+                                    Text(
+                                      'Thrill Level: ${facility.thrillLevel}',
+                                    ),
                                   if (facility.heightRequirementInches != null)
-                                    Text('Height Req: ${facility.heightRequirementInches}"'),
+                                    Text(
+                                      'Height Req: ${facility.heightRequirementInches}"',
+                                    ),
                                 ],
                               ),
                               actions: [
@@ -813,26 +934,49 @@ class DesktopParkDashboard extends ConsumerWidget {
                                   onPressed: () => Navigator.pop(context),
                                   child: const Text('Close'),
                                 ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute<void>(
+                                        builder: (_) => FacilityDetailPage(
+                                          facilityId: facility.id,
+                                          parkId: park.id,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: const Text('View Details'),
+                                ),
                               ],
                             ),
                           );
                         },
                       );
                     },
-                    loading: () => const Center(child: CircularProgressIndicator()),
-                    error: (err, st) => Center(child: Text('Error loading wait times: $err')),
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
+                    error: (err, st) =>
+                        Center(child: Text('Error loading wait times: $err')),
                   ),
-                  loading: () => const Center(child: CircularProgressIndicator()),
-                  error: (err, st) => Center(child: Text('Error loading park details: $err')),
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
+                  error: (err, st) =>
+                      Center(child: Text('Error loading park details: $err')),
                 ),
                 // Overlay header banner on top left of map
                 Positioned(
                   top: 12,
                   left: 12,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainerHigh.withValues(alpha: 0.9),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHigh.withValues(alpha: 0.9),
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
@@ -853,15 +997,19 @@ class DesktopParkDashboard extends ConsumerWidget {
                         const SizedBox(width: 8),
                         Text(
                           park.name,
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                          style: Theme.of(context).textTheme.titleSmall
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(width: 12),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.primaryContainer,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.primaryContainer,
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -869,7 +1017,9 @@ class DesktopParkDashboard extends ConsumerWidget {
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
-                              color: Theme.of(context).colorScheme.onPrimaryContainer,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onPrimaryContainer,
                             ),
                           ),
                         ),
@@ -891,7 +1041,9 @@ class DesktopParkDashboard extends ConsumerWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                   side: BorderSide(
-                    color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.4),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.outlineVariant.withValues(alpha: 0.4),
                   ),
                 ),
                 elevation: 2,
@@ -917,9 +1069,10 @@ class DesktopParkDashboard extends ConsumerWidget {
                                   child: Text(
                                     'Wait Times',
                                     overflow: TextOverflow.ellipsis,
-                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(fontWeight: FontWeight.bold),
                                   ),
                                 ),
                               ],
@@ -930,21 +1083,41 @@ class DesktopParkDashboard extends ConsumerWidget {
                               value: sortOrder,
                               focusColor: Colors.transparent,
                               icon: const Icon(Icons.arrow_drop_down, size: 20),
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                  ),
                               onChanged: (String? newValue) {
                                 if (newValue != null) {
-                                  ref.read(parkWaitTimeSortProvider.notifier).state = newValue;
+                                  ref
+                                          .read(
+                                            parkWaitTimeSortProvider.notifier,
+                                          )
+                                          .state =
+                                      newValue;
                                   FocusManager.instance.primaryFocus?.unfocus();
                                 }
                               },
                               items: const [
-                                DropdownMenuItem(value: 'Name (A-Z)', child: Text('Sort: A-Z')),
-                                DropdownMenuItem(value: 'Name (Z-A)', child: Text('Sort: Z-A')),
-                                DropdownMenuItem(value: 'Wait Time (High to Low)', child: Text('Sort: Wait (High)')),
-                                DropdownMenuItem(value: 'Wait Time (Low to High)', child: Text('Sort: Wait (Low)')),
+                                DropdownMenuItem(
+                                  value: 'Name (A-Z)',
+                                  child: Text('Sort: A-Z'),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'Name (Z-A)',
+                                  child: Text('Sort: Z-A'),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'Wait Time (High to Low)',
+                                  child: Text('Sort: Wait (High)'),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'Wait Time (Low to High)',
+                                  child: Text('Sort: Wait (Low)'),
+                                ),
                               ],
                             ),
                           ),
@@ -955,9 +1128,14 @@ class DesktopParkDashboard extends ConsumerWidget {
                       Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.tertiaryContainer,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.tertiaryContainer,
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
@@ -965,7 +1143,9 @@ class DesktopParkDashboard extends ConsumerWidget {
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.onTertiaryContainer,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onTertiaryContainer,
                               ),
                             ),
                           ),
@@ -976,7 +1156,9 @@ class DesktopParkDashboard extends ConsumerWidget {
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontSize: 10,
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
                               ),
                             ),
                           ),
@@ -990,33 +1172,51 @@ class DesktopParkDashboard extends ConsumerWidget {
                         child: detailAsync.when(
                           data: (detail) => waitsAsync.when(
                             data: (waits) {
-                              final allFacilities = detail.children.expand((l) => l.children).toList();
-                              
-                              // First filter based on global filters
-                              final displayItems = allFacilities.map((f) {
-                                final w = waits.waitTimes.where((wt) => wt.rideId == f.id).firstOrNull;
-                                return (facility: f, wait: w);
-                              }).where((item) => _matchesGlobalFilter(item.facility, item.wait, filters)).toList()
-                              ..sort((a, b) {
-                                final wA = a.wait?.waitMinutes ?? 0;
-                                final wB = b.wait?.waitMinutes ?? 0;
-                                final nameA = a.facility.name;
-                                final nameB = b.facility.name;
+                              final allFacilities = detail.children
+                                  .expand((l) => l.children)
+                                  .toList();
 
-                                switch (sortOrder) {
-                                  case 'Name (Z-A)':
-                                    return nameB.compareTo(nameA);
-                                  case 'Wait Time (High to Low)':
-                                    if (wA == wB) return nameA.compareTo(nameB);
-                                    return wB.compareTo(wA);
-                                  case 'Wait Time (Low to High)':
-                                    if (wA == wB) return nameA.compareTo(nameB);
-                                    return wA.compareTo(wB);
-                                  case 'Name (A-Z)':
-                                  default:
-                                    return nameA.compareTo(nameB);
-                                }
-                              });
+                              // First filter based on global filters
+                              final displayItems =
+                                  allFacilities
+                                      .map((f) {
+                                        final w = waits.waitTimes
+                                            .where((wt) => wt.rideId == f.id)
+                                            .firstOrNull;
+                                        return (facility: f, wait: w);
+                                      })
+                                      .where(
+                                        (item) => _matchesGlobalFilter(
+                                          item.facility,
+                                          item.wait,
+                                          filters,
+                                        ),
+                                      )
+                                      .toList()
+                                    ..sort((a, b) {
+                                      final wA = a.wait?.waitMinutes ?? 0;
+                                      final wB = b.wait?.waitMinutes ?? 0;
+                                      final nameA = a.facility.name;
+                                      final nameB = b.facility.name;
+
+                                      switch (sortOrder) {
+                                        case 'Name (Z-A)':
+                                          return nameB.compareTo(nameA);
+                                        case 'Wait Time (High to Low)':
+                                          if (wA == wB) {
+                                            return nameA.compareTo(nameB);
+                                          }
+                                          return wB.compareTo(wA);
+                                        case 'Wait Time (Low to High)':
+                                          if (wA == wB) {
+                                            return nameA.compareTo(nameB);
+                                          }
+                                          return wA.compareTo(wB);
+                                        case 'Name (A-Z)':
+                                        default:
+                                          return nameA.compareTo(nameB);
+                                      }
+                                    });
 
                               if (displayItems.isEmpty) {
                                 return const Center(
@@ -1029,7 +1229,8 @@ class DesktopParkDashboard extends ConsumerWidget {
 
                               return ListView.separated(
                                 itemCount: displayItems.length,
-                                separatorBuilder: (_, __) => const SizedBox(height: 8),
+                                separatorBuilder: (_, __) =>
+                                    const SizedBox(height: 8),
                                 itemBuilder: (context, index) {
                                   final item = displayItems[index];
                                   final fac = item.facility;
@@ -1038,109 +1239,146 @@ class DesktopParkDashboard extends ConsumerWidget {
                                   final cs = Theme.of(context).colorScheme;
                                   final waitBg = w?.waitMinutes != null
                                       ? (w!.waitMinutes! <= 20
-                                          ? cs.primaryContainer
-                                          : (w.waitMinutes! <= 50
-                                              ? cs.tertiaryContainer
-                                              : cs.errorContainer))
+                                            ? cs.primaryContainer
+                                            : (w.waitMinutes! <= 50
+                                                  ? cs.tertiaryContainer
+                                                  : cs.errorContainer))
                                       : cs.surfaceContainerHigh;
                                   final waitFg = w?.waitMinutes != null
                                       ? (w!.waitMinutes! <= 20
-                                          ? cs.onPrimaryContainer
-                                          : (w.waitMinutes! <= 50
-                                              ? cs.onTertiaryContainer
-                                              : cs.onErrorContainer))
+                                            ? cs.onPrimaryContainer
+                                            : (w.waitMinutes! <= 50
+                                                  ? cs.onTertiaryContainer
+                                                  : cs.onErrorContainer))
                                       : cs.onSurfaceVariant;
 
-                              return Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: cs.surfaceContainerLow,
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: cs.outlineVariant.withValues(alpha: 0.4),
-                                  ),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // Stack attraction name and badge vertically if horizontal space is tight
-                                    Text(
-                                      fac.name,
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.bold,
-                                        color: cs.onSurface,
-                                      ),
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Icon(
-                                              Icons.attractions_rounded,
-                                              size: 14,
-                                              color: cs.onSurfaceVariant,
+                                  return Material(
+                                    color: Colors.transparent,
+                                    child: InkWell(
+                                      borderRadius: BorderRadius.circular(12),
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute<void>(
+                                            builder: (_) => FacilityDetailPage(
+                                              facilityId: fac.id,
+                                              parkId: park.id,
                                             ),
-                                            const SizedBox(width: 4),
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          color: cs.surfaceContainerLow,
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          border: Border.all(
+                                            color: cs.outlineVariant.withValues(
+                                              alpha: 0.4,
+                                            ),
+                                          ),
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            // Stack attraction name and badge vertically if horizontal space is tight
                                             Text(
-                                              fac.category,
+                                              fac.name,
                                               style: TextStyle(
-                                                fontSize: 11,
-                                                color: cs.onSurfaceVariant,
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.bold,
+                                                color: cs.onSurface,
                                               ),
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            const SizedBox(height: 6),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.attractions_rounded,
+                                                      size: 14,
+                                                      color:
+                                                          cs.onSurfaceVariant,
+                                                    ),
+                                                    const SizedBox(width: 4),
+                                                    Text(
+                                                      fac.category,
+                                                      style: TextStyle(
+                                                        fontSize: 11,
+                                                        color:
+                                                            cs.onSurfaceVariant,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Container(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 8,
+                                                        vertical: 3,
+                                                      ),
+                                                  decoration: BoxDecoration(
+                                                    color: waitBg,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          8,
+                                                        ),
+                                                  ),
+                                                  child: Text(
+                                                    w?.waitMinutes != null
+                                                        ? '${w!.waitMinutes} min'
+                                                        : 'Closed',
+                                                    style: TextStyle(
+                                                      color: waitFg,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 11,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ],
                                         ),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 8,
-                                            vertical: 3,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: waitBg,
-                                            borderRadius: BorderRadius.circular(8),
-                                          ),
-                                          child: Text(
-                                            w?.waitMinutes != null ? '${w!.waitMinutes} min' : 'Closed',
-                                            style: TextStyle(
-                                              color: waitFg,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 11,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
+                                      ),
                                     ),
-                                  ],
-                                ),
+                                  );
+                                },
                               );
                             },
-                          );
-                        },
-                        loading: () => const Center(child: CircularProgressIndicator()),
-                        error: (err, st) => Center(child: Text('Error loading wait times: $err')),
+                            loading: () => const Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                            error: (err, st) => Center(
+                              child: Text('Error loading wait times: $err'),
+                            ),
+                          ),
+                          loading: () =>
+                              const Center(child: CircularProgressIndicator()),
+                          error: (err, st) => Center(
+                            child: Text('Error loading park detail: $err'),
+                          ),
+                        ),
                       ),
-                      loading: () => const Center(child: CircularProgressIndicator()),
-                      error: (err, st) => Center(child: Text('Error loading park detail: $err')),
-                    ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
+              if (isDrawerOpen)
+                const Positioned.fill(child: DesktopFilterDrawer()),
+            ],
           ),
-          if (isDrawerOpen)
-            const Positioned.fill(
-              child: DesktopFilterDrawer(),
-            ),
-        ],
-      ),
-    ),
-  ],
-);
+        ),
+      ],
+    );
   }
 }
 
@@ -1148,7 +1386,8 @@ class DesktopFilterDrawer extends ConsumerStatefulWidget {
   const DesktopFilterDrawer({super.key});
 
   @override
-  ConsumerState<DesktopFilterDrawer> createState() => _DesktopFilterDrawerState();
+  ConsumerState<DesktopFilterDrawer> createState() =>
+      _DesktopFilterDrawerState();
 }
 
 class _DesktopFilterDrawerState extends ConsumerState<DesktopFilterDrawer> {
@@ -1215,22 +1454,35 @@ class _DesktopFilterDrawerState extends ConsumerState<DesktopFilterDrawer> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              border: Border(bottom: BorderSide(color: colorScheme.outlineVariant.withValues(alpha: 0.2))),
+              border: Border(
+                bottom: BorderSide(
+                  color: colorScheme.outlineVariant.withValues(alpha: 0.2),
+                ),
+              ),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Filters', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                const Text(
+                  'Filters',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     TextButton(
                       onPressed: _clearAll,
                       style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         minimumSize: Size.zero,
                       ),
-                      child: const Text('Clear All', style: TextStyle(fontSize: 12)),
+                      child: const Text(
+                        'Clear All',
+                        style: TextStyle(fontSize: 12),
+                      ),
                     ),
                     const SizedBox(width: 8),
                     IconButton(
@@ -1239,7 +1491,8 @@ class _DesktopFilterDrawerState extends ConsumerState<DesktopFilterDrawer> {
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                       onPressed: () {
-                        ref.read(parkFilterDrawerOpenProvider.notifier).state = false;
+                        ref.read(parkFilterDrawerOpenProvider.notifier).state =
+                            false;
                       },
                     ),
                   ],
@@ -1258,26 +1511,42 @@ class _DesktopFilterDrawerState extends ConsumerState<DesktopFilterDrawer> {
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
-                    children: ['All Ages', 'Preschool', 'Kids', 'Tweens', 'Teens', 'Adults'].map((age) {
-                      final isSelected = _localAgeGroups.contains(age);
-                      return FilterChip(
-                        label: Text(age, style: const TextStyle(fontSize: 12)),
-                        selected: isSelected,
-                        onSelected: (selected) {
-                          setState(() {
-                            if (selected) {
-                              _localAgeGroups.add(age);
-                            } else {
-                              _localAgeGroups.remove(age);
-                            }
-                          });
-                        },
-                      );
-                    }).toList(),
+                    children:
+                        [
+                          'All Ages',
+                          'Preschool',
+                          'Kids',
+                          'Tweens',
+                          'Teens',
+                          'Adults',
+                        ].map((age) {
+                          final isSelected = _localAgeGroups.contains(age);
+                          return FilterChip(
+                            label: Text(
+                              age,
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                            selected: isSelected,
+                            onSelected: (selected) {
+                              setState(() {
+                                if (selected) {
+                                  _localAgeGroups.add(age);
+                                } else {
+                                  _localAgeGroups.remove(age);
+                                }
+                              });
+                            },
+                          );
+                        }).toList(),
                   ),
                   _buildSectionTitle('Type of Attraction'),
-                  ...['Rides', 'Shows', 'Dining / Restaurants', 'Character Experiences', 'Walkthroughs / Play Areas']
-                      .map((type) {
+                  ...[
+                    'Rides',
+                    'Shows',
+                    'Dining / Restaurants',
+                    'Character Experiences',
+                    'Walkthroughs / Play Areas',
+                  ].map((type) {
                     return CheckboxListTile(
                       title: Text(type, style: const TextStyle(fontSize: 13)),
                       value: _localTypes.contains(type),
@@ -1297,7 +1566,11 @@ class _DesktopFilterDrawerState extends ConsumerState<DesktopFilterDrawer> {
                     );
                   }),
                   _buildSectionTitle('Status'),
-                  ...['Operating', 'Temporarily Closed / Down', 'Under Refurbishment'].map((status) {
+                  ...[
+                    'Operating',
+                    'Temporarily Closed / Down',
+                    'Under Refurbishment',
+                  ].map((status) {
                     return CheckboxListTile(
                       title: Text(status, style: const TextStyle(fontSize: 13)),
                       value: _localStatuses.contains(status),
@@ -1325,8 +1598,15 @@ class _DesktopFilterDrawerState extends ConsumerState<DesktopFilterDrawer> {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: colorScheme.surfaceContainer,
-              border: Border(top: BorderSide(color: colorScheme.outlineVariant.withValues(alpha: 0.2))),
-              borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(16), bottomRight: Radius.circular(16)),
+              border: Border(
+                top: BorderSide(
+                  color: colorScheme.outlineVariant.withValues(alpha: 0.2),
+                ),
+              ),
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(16),
+                bottomRight: Radius.circular(16),
+              ),
             ),
             child: FilledButton(
               onPressed: _applyFilters,
@@ -1335,7 +1615,10 @@ class _DesktopFilterDrawerState extends ConsumerState<DesktopFilterDrawer> {
                 backgroundColor: colorScheme.primary,
                 foregroundColor: colorScheme.onPrimary,
               ),
-              child: const Text('Apply Filters', style: TextStyle(fontWeight: FontWeight.bold)),
+              child: const Text(
+                'Apply Filters',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
           ),
         ],

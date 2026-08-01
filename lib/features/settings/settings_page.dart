@@ -61,9 +61,7 @@ class SettingsPage extends ConsumerWidget {
                 ],
               ),
               const SizedBox(height: 8),
-              const Card(
-                child: ThemeColorSettingsTile(),
-              ),
+              const Card(child: ThemeColorSettingsTile()),
               const SizedBox(height: 8),
               ElevatedButton(
                 onPressed: () => context.pop(),

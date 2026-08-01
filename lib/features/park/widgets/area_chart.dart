@@ -22,7 +22,10 @@ class AreaChartWidget extends StatelessWidget {
         child: Center(
           child: Text(
             'No historical data available',
-            style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              fontSize: 12,
+            ),
           ),
         ),
       );
@@ -30,7 +33,12 @@ class AreaChartWidget extends StatelessWidget {
 
     return Container(
       height: height,
-      padding: const EdgeInsets.fromLTRB(28, 8, 12, 20), // Leave room for axes labels
+      padding: const EdgeInsets.fromLTRB(
+        28,
+        8,
+        12,
+        20,
+      ), // Leave room for axes labels
       child: CustomPaint(
         painter: _AreaChartPainter(
           data: data,
@@ -56,7 +64,9 @@ class _AreaChartPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final isDark = theme.brightness == Brightness.dark;
-    final textColor = theme.textTheme.bodySmall?.color ?? theme.colorScheme.onSurface.withValues(alpha: isDark ? 0.7 : 0.7);
+    final textColor =
+        theme.textTheme.bodySmall?.color ??
+        theme.colorScheme.onSurface.withValues(alpha: isDark ? 0.7 : 0.7);
     final textStyle = TextStyle(
       color: textColor,
       fontSize: 9,
@@ -69,14 +79,16 @@ class _AreaChartPainter extends CustomPainter {
 
     // Draw horizontal grid lines and Y-axis labels
     final gridPaint = Paint()
-      ..color = theme.colorScheme.onSurface.withValues(alpha: isDark ? 0.08 : 0.06)
+      ..color = theme.colorScheme.onSurface.withValues(
+        alpha: isDark ? 0.08 : 0.06,
+      )
       ..strokeWidth = 1.0;
 
     const gridLinesCount = 3;
     for (var i = 0; i <= gridLinesCount; i++) {
       final yVal = (maxVal / gridLinesCount) * i;
       final y = size.height - (yVal / maxVal) * size.height;
-      
+
       // Draw line
       canvas.drawLine(Offset(0, y), Offset(size.width, y), gridPaint);
 
@@ -152,15 +164,16 @@ class _AreaChartPainter extends CustomPainter {
     final dotPaint = Paint()
       ..color = lineColor
       ..style = PaintingStyle.fill;
-    
+
     final dotBorderPaint = Paint()
       ..color = theme.colorScheme.surface
       ..strokeWidth = 1.5
       ..style = PaintingStyle.stroke;
 
     for (var i = 0; i < points.length; i++) {
-      canvas.drawCircle(points[i], 4, dotPaint);
-      canvas.drawCircle(points[i], 4, dotBorderPaint);
+      canvas
+        ..drawCircle(points[i], 4, dotPaint)
+        ..drawCircle(points[i], 4, dotBorderPaint);
 
       // X-axis labels
       if (i == 0 || i == (points.length - 1) ~/ 2 || i == points.length - 1) {
@@ -177,7 +190,7 @@ class _AreaChartPainter extends CustomPainter {
           text: TextSpan(text: label, style: textStyle),
           textDirection: TextDirection.ltr,
         )..layout();
-        
+
         var xOffset = points[i].dx - xTextPainter.width / 2;
         if (i == 0) xOffset = 0;
         if (i == points.length - 1) xOffset = size.width - xTextPainter.width;

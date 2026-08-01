@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:responsive_builder/responsive_builder.dart';
 import 'package:go_router/go_router.dart';
+import 'package:responsive_builder/responsive_builder.dart';
+import 'package:themeparkapp/core/models/park_detail.dart';
 import 'package:themeparkapp/features/park/park_explorer_state.dart';
 import 'package:themeparkapp/features/search/search_state.dart';
-import 'package:themeparkapp/core/models/park_detail.dart';
 
 /// Interactive AI Assistant Search Dashboard Page.
 class SearchPage extends ConsumerStatefulWidget {
@@ -16,7 +17,8 @@ class SearchPage extends ConsumerStatefulWidget {
   ConsumerState<SearchPage> createState() => _SearchPageState();
 }
 
-class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStateMixin {
+class _SearchPageState extends ConsumerState<SearchPage>
+    with TickerProviderStateMixin {
   final TextEditingController _textController = TextEditingController();
   final ScrollController _chatScrollController = ScrollController();
   final FocusNode _inputFocusNode = FocusNode();
@@ -33,31 +35,36 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
     {
       'name': 'Grizzly Giant Burger',
       'price': 14.99,
-      'imageUrl': 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=200',
+      'imageUrl':
+          'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=200',
       'dietaryTags': ['Dairy', 'Gluten'],
     },
     {
       'name': 'Wilderness Salad',
       'price': 12.99,
-      'imageUrl': 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=200',
+      'imageUrl':
+          'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=200',
       'dietaryTags': ['Vegan', 'Gluten-Free', 'Vegetarian'],
     },
     {
       'name': 'Smoked Turkey Leg',
       'price': 15.49,
-      'imageUrl': 'https://images.unsplash.com/photo-1529692236671-f1f6e9473bfc?q=80&w=200',
+      'imageUrl':
+          'https://images.unsplash.com/photo-1529692236671-f1f6e9473bfc?q=80&w=200',
       'dietaryTags': ['Gluten-Free', 'Dairy-Free'],
     },
     {
       'name': 'Vegan Quinoa Bowl',
       'price': 13.99,
-      'imageUrl': 'https://images.unsplash.com/photo-1540420773420-3366772f4999?q=80&w=200',
+      'imageUrl':
+          'https://images.unsplash.com/photo-1540420773420-3366772f4999?q=80&w=200',
       'dietaryTags': ['Vegan', 'Gluten-Free', 'Vegetarian', 'Dairy-Free'],
     },
     {
       'name': 'Fresh Squeezed Lemonade',
       'price': 3.99,
-      'imageUrl': 'https://images.unsplash.com/photo-1534723328310-e82dad3ee43f?q=80&w=200',
+      'imageUrl':
+          'https://images.unsplash.com/photo-1534723328310-e82dad3ee43f?q=80&w=200',
       'dietaryTags': ['Vegan', 'Gluten-Free', 'Dairy-Free', 'Vegetarian'],
     },
   ];
@@ -69,7 +76,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
       vsync: this,
       duration: const Duration(milliseconds: 1000),
     )..repeat();
-    
+
     // Auto-focus input on Desktop for keyboard priority
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && MediaQuery.of(context).size.width > 1024) {
@@ -122,7 +129,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
       'Where is the nearest pretzel?',
       'Help me plan my day at Magic Kingdom',
       'Suggest dining near me',
-      'High thrill rides in Animal Kingdom'
+      'High thrill rides in Animal Kingdom',
     ];
     final selectedQuery = queries[math.Random().nextInt(queries.length)];
 
@@ -168,8 +175,10 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
         children: [
           ScreenTypeLayout.builder(
             mobile: (context) => _buildMobileLayout(searchState),
-            tablet: (context) => _buildDesktopLayout(searchState, isTablet: true),
-            desktop: (context) => _buildDesktopLayout(searchState, isTablet: false),
+            tablet: (context) =>
+                _buildDesktopLayout(searchState, isTablet: true),
+            desktop: (context) =>
+                _buildDesktopLayout(searchState, isTablet: false),
           ),
           if (_showVoiceOverlay) _buildVoiceOverlayWidget(),
         ],
@@ -179,7 +188,9 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
 
   // --- MOBILE LAYOUT ---
   Widget _buildMobileLayout(SearchState state) {
-    final userPos = ref.watch(userLocationProvider('p2')); // magic kingdom coords for mock
+    final userPos = ref.watch(
+      userLocationProvider('p2'),
+    ); // magic kingdom coords for mock
     return Column(
       children: [
         // Chat messages thread
@@ -203,12 +214,20 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.gps_fixed, size: 14, color: Theme.of(context).colorScheme.onPrimaryContainer),
+              Icon(
+                Icons.gps_fixed,
+                size: 14,
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
+              ),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
                   'Live Location: ${userPos.latitude.toStringAsFixed(4)}, ${userPos.longitude.toStringAsFixed(4)}',
-                  style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    fontWeight: FontWeight.bold,
+                  ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -221,7 +240,11 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
-            border: Border(top: BorderSide(color: Theme.of(context).dividerColor.withValues(alpha: 0.5))),
+            border: Border(
+              top: BorderSide(
+                color: Theme.of(context).dividerColor.withValues(alpha: 0.5),
+              ),
+            ),
           ),
           child: SafeArea(
             child: Row(
@@ -235,7 +258,10 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                       color: Theme.of(context).colorScheme.primary,
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(Icons.mic, color: Theme.of(context).colorScheme.onPrimary),
+                    child: Icon(
+                      Icons.mic,
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -251,15 +277,23 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                         borderSide: BorderSide.none,
                       ),
                       filled: true,
-                      fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      fillColor: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
                     ),
                     onSubmitted: _submitText,
                   ),
                 ),
                 const SizedBox(width: 8),
                 IconButton(
-                  icon: Icon(Icons.send, color: Theme.of(context).colorScheme.primary),
+                  icon: Icon(
+                    Icons.send,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                   onPressed: () => _submitText(_textController.text),
                 ),
               ],
@@ -278,7 +312,9 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
         Container(
           width: isTablet ? 300 : 380,
           decoration: BoxDecoration(
-            border: Border(right: BorderSide(color: Theme.of(context).dividerColor)),
+            border: Border(
+              right: BorderSide(color: Theme.of(context).dividerColor),
+            ),
           ),
           child: Column(
             children: [
@@ -287,9 +323,15 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                 padding: const EdgeInsets.all(12),
                 child: Row(
                   children: [
-                    Icon(Icons.chat_bubble_outline, color: Theme.of(context).colorScheme.primary),
+                    Icon(
+                      Icons.chat_bubble_outline,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                     const SizedBox(width: 8),
-                    Text('Chat History & Thread', style: Theme.of(context).textTheme.titleSmall),
+                    Text(
+                      'Chat History & Thread',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
                   ],
                 ),
               ),
@@ -325,9 +367,15 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
                               suffixIcon: IconButton(
-                                icon: Icon(Icons.mic, color: Theme.of(context).colorScheme.primary),
+                                icon: Icon(
+                                  Icons.mic,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
                                 tooltip: 'Simulate Voice Input',
                                 onPressed: _startVoiceInput,
                               ),
@@ -340,7 +388,10 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                     const SizedBox(height: 6),
                     Text(
                       'Keyboard priority: Type query and press Enter to search.',
-                      style: TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),
@@ -363,7 +414,9 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
           flex: 4,
           child: Container(
             decoration: BoxDecoration(
-              border: Border(left: BorderSide(color: Theme.of(context).dividerColor)),
+              border: Border(
+                left: BorderSide(color: Theme.of(context).dividerColor),
+              ),
             ),
             child: _buildMapPane(state),
           ),
@@ -379,7 +432,9 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Column(
-        crossAxisAlignment: msg.isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        crossAxisAlignment: msg.isUser
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
         children: [
           // GPS Implicit Info Banner
           if (msg.statusInfo != null && isMobile)
@@ -387,34 +442,51 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
               padding: const EdgeInsets.only(bottom: 4),
               child: Row(
                 children: [
-                  Icon(Icons.location_on, size: 10, color: theme.colorScheme.secondary),
+                  Icon(
+                    Icons.location_on,
+                    size: 10,
+                    color: theme.colorScheme.secondary,
+                  ),
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
                       msg.statusInfo!,
-                      style: TextStyle(fontSize: 10, color: theme.colorScheme.secondary, fontStyle: FontStyle.italic),
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: theme.colorScheme.secondary,
+                        fontStyle: FontStyle.italic,
+                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
               ),
             ),
-          
+
           // Main text bubble
           Row(
-            mainAxisAlignment: msg.isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+            mainAxisAlignment: msg.isUser
+                ? MainAxisAlignment.end
+                : MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (!msg.isUser)
                 CircleAvatar(
                   radius: 14,
                   backgroundColor: theme.colorScheme.secondaryContainer,
-                  child: Icon(Icons.support_agent, size: 16, color: theme.colorScheme.onSecondaryContainer),
+                  child: Icon(
+                    Icons.support_agent,
+                    size: 16,
+                    color: theme.colorScheme.onSecondaryContainer,
+                  ),
                 ),
               const SizedBox(width: 8),
               Flexible(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
                   decoration: BoxDecoration(
                     color: msg.isUser
                         ? theme.colorScheme.primaryContainer
@@ -436,7 +508,9 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                   child: Text(
                     msg.text,
                     style: TextStyle(
-                      color: msg.isUser ? theme.colorScheme.onPrimaryContainer : theme.colorScheme.onSurface,
+                      color: msg.isUser
+                          ? theme.colorScheme.onPrimaryContainer
+                          : theme.colorScheme.onSurface,
                       fontSize: 14,
                     ),
                   ),
@@ -446,8 +520,12 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
           ),
 
           // Universal Horizontal Scrolling Cards
-          if (msg.suggestedFacilities != null && msg.suggestedFacilities!.isNotEmpty)
-            _buildHorizontalSuggestedFacilities(msg.suggestedFacilities!, isMobile: isMobile),
+          if (msg.suggestedFacilities != null &&
+              msg.suggestedFacilities!.isNotEmpty)
+            _buildHorizontalSuggestedFacilities(
+              msg.suggestedFacilities!,
+              isMobile: isMobile,
+            ),
 
           // Generative Itinerary preview on mobile
           if (msg.itinerary != null && msg.itinerary!.isNotEmpty && isMobile)
@@ -458,7 +536,10 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
   }
 
   // --- HORIZONTAL SCROLL SUGGESTIONS WIDGET ---
-  Widget _buildHorizontalSuggestedFacilities(List<Facility> facilities, {required bool isMobile}) {
+  Widget _buildHorizontalSuggestedFacilities(
+    List<Facility> facilities, {
+    required bool isMobile,
+  }) {
     return Container(
       height: 155,
       margin: const EdgeInsets.only(top: 8, bottom: 4),
@@ -468,14 +549,18 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
         itemBuilder: (context, index) {
           final theme = Theme.of(context);
           final f = facilities[index];
-          final isDining = f.name.toLowerCase().contains(RegExp('pretzel|cafe|restaurant|grill|dining|eats|table|bakery'));
-          
+          final isDining = f.name.toLowerCase().contains(
+            RegExp('pretzel|cafe|restaurant|grill|dining|eats|table|bakery'),
+          );
+
           return Container(
             width: 220,
             margin: const EdgeInsets.only(right: 12),
             child: Card(
               clipBehavior: Clip.antiAlias,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               elevation: 2,
               child: Stack(
                 children: [
@@ -484,8 +569,14 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: isDining
-                              ? [theme.colorScheme.tertiaryContainer, theme.colorScheme.secondaryContainer]
-                              : [theme.colorScheme.primaryContainer, theme.colorScheme.secondaryContainer],
+                              ? [
+                                  theme.colorScheme.tertiaryContainer,
+                                  theme.colorScheme.secondaryContainer,
+                                ]
+                              : [
+                                  theme.colorScheme.primaryContainer,
+                                  theme.colorScheme.secondaryContainer,
+                                ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
@@ -521,14 +612,21 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                         const SizedBox(height: 6),
                         // Category tag
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
-                            color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.2),
+                            color: theme.colorScheme.onPrimaryContainer
+                                .withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
                             f.category,
-                            style: TextStyle(color: theme.colorScheme.onPrimaryContainer, fontSize: 10),
+                            style: TextStyle(
+                              color: theme.colorScheme.onPrimaryContainer,
+                              fontSize: 10,
+                            ),
                           ),
                         ),
                         const Spacer(),
@@ -537,24 +635,40 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                           children: [
                             Text(
                               'Open',
-                              style: TextStyle(color: theme.colorScheme.onPrimaryContainer, fontSize: 12, fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                color: theme.colorScheme.onPrimaryContainer,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: theme.colorScheme.surface,
                                 foregroundColor: theme.colorScheme.onSurface,
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
                                 minimumSize: const Size(60, 24),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
                               ),
-                              child: const Text('View', style: TextStyle(fontSize: 11)),
+                              child: const Text(
+                                'View',
+                                style: TextStyle(fontSize: 11),
+                              ),
                               onPressed: () {
                                 if (isMobile) {
                                   // Push details page on Mobile
-                                  context.push('/home/details?facilityId=${f.id}&parkId=p2');
+                                  context.push(
+                                    '/home/details?facilityId=${f.id}&parkId=p2',
+                                  );
                                 } else {
                                   // Display details in Pane 2 on Desktop
-                                  ref.read(searchProvider.notifier).selectFacility(f);
+                                  ref
+                                      .read(searchProvider.notifier)
+                                      .selectFacility(f);
                                 }
                               },
                             ),
@@ -587,11 +701,18 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
         children: [
           Row(
             children: [
-              Icon(Icons.event_note, color: Theme.of(context).colorScheme.primary, size: 18),
+              Icon(
+                Icons.event_note,
+                color: Theme.of(context).colorScheme.primary,
+                size: 18,
+              ),
               const SizedBox(width: 8),
               Text(
                 'Magic Kingdom Timeline (${itinerary.length} items)',
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
               ),
             ],
           ),
@@ -600,7 +721,11 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: itinerary.length,
-            separatorBuilder: (_, __) => Icon(Icons.arrow_downward, size: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
+            separatorBuilder: (_, __) => Icon(
+              Icons.arrow_downward,
+              size: 12,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
             itemBuilder: (context, index) {
               final item = itinerary[index];
               return Padding(
@@ -609,13 +734,20 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                   children: [
                     Text(
                       item.time,
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Theme.of(context).colorScheme.primary),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 11,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         item.title,
-                        style: const TextStyle(fontSize: 12, overflow: TextOverflow.ellipsis),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ),
                   ],
@@ -627,7 +759,11 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
           Center(
             child: Text(
               'Switch to Desktop dashboard to Drag & Drop and modify times!',
-              style: TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.onSurfaceVariant, fontStyle: FontStyle.italic),
+              style: TextStyle(
+                fontSize: 10,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontStyle: FontStyle.italic,
+              ),
             ),
           ),
         ],
@@ -637,7 +773,6 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
 
   // --- PANE 2: ACTIVE INTERACTIVE WIDGETS ---
   Widget _buildActiveWidgetsPane(SearchState state) {
-
     // Case 1: Selected Restaurant Details showing menu items and dietary filters
     if (state.selectedFacilityDetails != null) {
       final f = state.selectedFacilityDetails!;
@@ -651,19 +786,44 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
             width: double.infinity,
             child: Row(
               children: [
-                Icon(Icons.restaurant, color: Theme.of(context).colorScheme.onPrimaryContainer, size: 28),
+                Icon(
+                  Icons.restaurant,
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  size: 28,
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(f.name, style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer, fontSize: 18, fontWeight: FontWeight.bold)),
-                      Text('Dining Location • Magic Kingdom', style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer.withValues(alpha: 0.8), fontSize: 12)),
+                      Text(
+                        f.name,
+                        style: TextStyle(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onPrimaryContainer,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        'Dining Location • Magic Kingdom',
+                        style: TextStyle(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onPrimaryContainer
+                              .withValues(alpha: 0.8),
+                          fontSize: 12,
+                        ),
+                      ),
                     ],
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.close, color: Theme.of(context).colorScheme.onPrimaryContainer),
+                  icon: Icon(
+                    Icons.close,
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  ),
                   onPressed: () {
                     ref.read(searchProvider.notifier).selectFacility(null);
                   },
@@ -671,7 +831,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
               ],
             ),
           ),
-          
+
           // Dietary filter options
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -685,33 +845,40 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                 const SizedBox(height: 8),
                 Wrap(
                   spacing: 8,
-                  children: ['Vegan', 'Vegetarian', 'Gluten-Free', 'Dairy-Free'].map((filter) {
-                    final active = _activeDietaryFilters.contains(filter);
-                    return ChoiceChip(
-                      label: Text(filter, style: TextStyle(color: active ? Theme.of(context).colorScheme.onPrimary : null)),
-                      selected: active,
-                      selectedColor: Theme.of(context).colorScheme.primary,
-                      onSelected: (selected) {
-                        setState(() {
-                          if (selected) {
-                            _activeDietaryFilters.add(filter);
-                          } else {
-                            _activeDietaryFilters.remove(filter);
-                          }
-                        });
-                      },
-                    );
-                  }).toList(),
+                  children: ['Vegan', 'Vegetarian', 'Gluten-Free', 'Dairy-Free']
+                      .map((filter) {
+                        final active = _activeDietaryFilters.contains(filter);
+                        return ChoiceChip(
+                          label: Text(
+                            filter,
+                            style: TextStyle(
+                              color: active
+                                  ? Theme.of(context).colorScheme.onPrimary
+                                  : null,
+                            ),
+                          ),
+                          selected: active,
+                          selectedColor: Theme.of(context).colorScheme.primary,
+                          onSelected: (selected) {
+                            setState(() {
+                              if (selected) {
+                                _activeDietaryFilters.add(filter);
+                              } else {
+                                _activeDietaryFilters.remove(filter);
+                              }
+                            });
+                          },
+                        );
+                      })
+                      .toList(),
                 ),
               ],
             ),
           ),
           const Divider(height: 1),
-          
+
           // Menu Items grid
-          Expanded(
-            child: _buildFilteredMenuItemsGrid(),
-          ),
+          Expanded(child: _buildFilteredMenuItemsGrid()),
         ],
       );
     }
@@ -728,13 +895,32 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
             width: double.infinity,
             child: Row(
               children: [
-                Icon(Icons.timeline, color: Theme.of(context).colorScheme.onPrimaryContainer, size: 28),
+                Icon(
+                  Icons.timeline,
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  size: 28,
+                ),
                 const SizedBox(width: 12),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Generative Daily Itinerary Planner', style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer, fontSize: 16, fontWeight: FontWeight.bold)),
-                    Text('Drag and drop items to reorder and calculate path routes.', style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer.withValues(alpha: 0.8), fontSize: 12)),
+                    Text(
+                      'Generative Daily Itinerary Planner',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      'Drag and drop items to reorder and calculate path routes.',
+                      style: TextStyle(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
+                        fontSize: 12,
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -749,35 +935,86 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                 return Card(
                   key: ValueKey(item.id),
                   margin: const EdgeInsets.symmetric(vertical: 8),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   elevation: 2,
                   child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    leading: CircleAvatar(
-                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                      child: Text('${index + 1}', style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onPrimaryContainer)),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
                     ),
-                    title: Text(item.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                    leading: CircleAvatar(
+                      backgroundColor: Theme.of(
+                        context,
+                      ).colorScheme.primaryContainer,
+                      child: Text(
+                        '${index + 1}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onPrimaryContainer,
+                        ),
+                      ),
+                    ),
+                    title: Text(
+                      item.title,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
                     subtitle: Padding(
                       padding: const EdgeInsets.only(top: 4),
                       child: Row(
                         children: [
-                          Icon(Icons.access_time, size: 12, color: Theme.of(context).colorScheme.primary),
+                          Icon(
+                            Icons.access_time,
+                            size: 12,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
                           const SizedBox(width: 4),
-                          Text(item.time, style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 12)),
+                          Text(
+                            item.time,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
                           const SizedBox(width: 12),
-                          Icon(Icons.hourglass_empty, size: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                          Icon(
+                            Icons.hourglass_empty,
+                            size: 12,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
+                          ),
                           const SizedBox(width: 4),
-                          Text('${item.durationMinutes} min', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12)),
+                          Text(
+                            '${item.durationMinutes} min',
+                            style: TextStyle(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
+                              fontSize: 12,
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                    trailing: Icon(Icons.drag_handle, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    trailing: Icon(
+                      Icons.drag_handle,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 );
               },
-              onReorder: (oldIndex, newIndex) {
-                ref.read(searchProvider.notifier).reorderItinerary(oldIndex, newIndex);
+              onReorderItem: (oldIndex, newIndex) {
+                ref
+                    .read(searchProvider.notifier)
+                    .reorderItinerary(oldIndex, newIndex, isAdjusted: true);
               },
             ),
           ),
@@ -792,7 +1029,13 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.assistant, size: 80, color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5)),
+            Icon(
+              Icons.assistant,
+              size: 80,
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.5),
+            ),
             const SizedBox(height: 16),
             const Text(
               'Active Interactive Widget Panel',
@@ -802,7 +1045,9 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
             Text(
               'Interactive response details and drag-and-drop itinerary timelines will be displayed here when you ask planning questions.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
           ],
         ),
@@ -815,21 +1060,27 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
     final filteredItems = _mockMenuItems.where((item) {
       if (_activeDietaryFilters.isEmpty) return true;
       final tags = item['dietaryTags'] as List<String>;
-      
+
       // All active filters must be present in the item
       for (final filter in _activeDietaryFilters) {
-        if (filter == 'Gluten-Free' && !tags.contains('Gluten-Free')) return false;
+        if (filter == 'Gluten-Free' && !tags.contains('Gluten-Free')) {
+          return false;
+        }
         if (filter == 'Vegan' && !tags.contains('Vegan')) return false;
-        if (filter == 'Dairy-Free' && !tags.contains('Dairy-Free')) return false;
-        if (filter == 'Vegetarian' && !tags.contains('Vegetarian') && !tags.contains('Vegan')) return false;
+        if (filter == 'Dairy-Free' && !tags.contains('Dairy-Free')) {
+          return false;
+        }
+        if (filter == 'Vegetarian' &&
+            !tags.contains('Vegetarian') &&
+            !tags.contains('Vegan')) {
+          return false;
+        }
       }
       return true;
     }).toList();
 
     if (filteredItems.isEmpty) {
-      return const Center(
-        child: Text('No menu items match selected filters.'),
-      );
+      return const Center(child: Text('No menu items match selected filters.'));
     }
 
     return GridView.builder(
@@ -845,7 +1096,9 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
         final item = filteredItems[index];
         return Card(
           clipBehavior: Clip.antiAlias,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -856,7 +1109,8 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                   child: Image.network(
                     item['imageUrl'] as String,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => const Icon(Icons.restaurant_menu),
+                    errorBuilder: (_, __, ___) =>
+                        const Icon(Icons.restaurant_menu),
                   ),
                 ),
               ),
@@ -865,20 +1119,48 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(item['name'] as String, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    Text(
+                      item['name'] as String,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                     const SizedBox(height: 2),
-                    Text('\$${(item['price'] as double).toStringAsFixed(2)}', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 11)),
+                    Text(
+                      '\$${(item['price'] as double).toStringAsFixed(2)}',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 11,
+                      ),
+                    ),
                     const SizedBox(height: 4),
                     Wrap(
                       spacing: 4,
                       children: (item['dietaryTags'] as List<String>).map((t) {
                         return Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 1,
+                          ),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.secondaryContainer,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.secondaryContainer,
                             borderRadius: BorderRadius.circular(4),
                           ),
-                          child: Text(t, style: TextStyle(fontSize: 8, color: Theme.of(context).colorScheme.onSecondaryContainer)),
+                          child: Text(
+                            t,
+                            style: TextStyle(
+                              fontSize: 8,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSecondaryContainer,
+                            ),
+                          ),
                         );
                       }).toList(),
                     ),
@@ -894,8 +1176,10 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
 
   // --- PANE 3: VECTOR MAP DISPLAY ---
   Widget _buildMapPane(SearchState state) {
-    final userPos = ref.watch(userLocationProvider('p2')); // user live location (Orlando MK)
-    
+    final userPos = ref.watch(
+      userLocationProvider('p2'),
+    ); // user live location (Orlando MK)
+
     // Extract points to plot:
     // If itinerary is active, plot itinerary sequence.
     // If pretzel/dining search is active, plot suggested pins.
@@ -924,33 +1208,44 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
         final mapSize = Size(size, size);
 
         // Add user coordinate pin
-        final userOffset = getCanvasOffset(userPos.latitude, userPos.longitude, mapSize);
-        mapPins.add(MapPin(
-          offset: userOffset,
-          label: 'YOU',
-          isUser: true,
-        ));
+        final userOffset = getCanvasOffset(
+          userPos.latitude,
+          userPos.longitude,
+          mapSize,
+        );
+        mapPins.add(MapPin(offset: userOffset, label: 'YOU', isUser: true));
 
         // Add itinerary pins and compile route path lines
         if (state.currentItineraryItems != null) {
           final items = state.currentItineraryItems!;
           for (var i = 0; i < items.length; i++) {
             final item = items[i];
-            final pinOffset = getCanvasOffset(item.latitude, item.longitude, mapSize);
-            mapPins.add(MapPin(
-              offset: pinOffset,
-              label: '${i + 1}',
-              name: item.title,
-              isUser: false,
-            ));
+            final pinOffset = getCanvasOffset(
+              item.latitude,
+              item.longitude,
+              mapSize,
+            );
+            mapPins.add(
+              MapPin(
+                offset: pinOffset,
+                label: '${i + 1}',
+                name: item.title,
+                isUser: false,
+              ),
+            );
             routeLines.add(pinOffset);
           }
-        } 
+        }
         // Or if restaurant search cards are showing in the last assistant response
         else if (state.messages.isNotEmpty) {
           final lastMsg = state.messages.lastWhere(
             (m) => !m.isUser && m.suggestedFacilities != null,
-            orElse: () => ChatMessage(id: '', text: '', isUser: false, timestamp: DateTime.now()),
+            orElse: () => ChatMessage(
+              id: '',
+              text: '',
+              isUser: false,
+              timestamp: DateTime.now(),
+            ),
           );
           if (lastMsg.suggestedFacilities != null) {
             final pretCoordMap = {
@@ -962,14 +1257,20 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
               var coords = pretCoordMap[f.id];
               coords ??= SearchNotifier.knownCoords[f.id];
               if (coords != null) {
-                final pinOffset = getCanvasOffset(coords[0], coords[1], mapSize);
-                mapPins.add(MapPin(
-                  offset: pinOffset,
-                  label: 'S',
-                  name: f.name,
-                  isUser: false,
-                  isSnack: true,
-                ));
+                final pinOffset = getCanvasOffset(
+                  coords[0],
+                  coords[1],
+                  mapSize,
+                );
+                mapPins.add(
+                  MapPin(
+                    offset: pinOffset,
+                    label: 'S',
+                    name: f.name,
+                    isUser: false,
+                    isSnack: true,
+                  ),
+                );
               }
             }
           }
@@ -993,7 +1294,10 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                       userOffset: userOffset,
                       isDark: Theme.of(context).brightness == Brightness.dark,
                       gridColor: colorScheme.onSurface.withValues(
-                          alpha: Theme.of(context).brightness == Brightness.dark ? 0.10 : 0.04),
+                        alpha: Theme.of(context).brightness == Brightness.dark
+                            ? 0.10
+                            : 0.04,
+                      ),
                       accentColor: colorScheme.primary,
                       secondaryColor: colorScheme.secondary,
                     ),
@@ -1005,24 +1309,39 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                     left: pin.offset.dx - 12,
                     top: pin.offset.dy - 12,
                     child: Tooltip(
-                      message: pin.isUser ? 'Your GPS Location' : (pin.name ?? 'Location'),
+                      message: pin.isUser
+                          ? 'Your GPS Location'
+                          : (pin.name ?? 'Location'),
                       child: Container(
                         width: 24,
                         height: 24,
                         decoration: BoxDecoration(
                           color: pin.isUser
                               ? colorScheme.primary
-                              : (pin.isSnack ? colorScheme.tertiary : colorScheme.secondary),
+                              : (pin.isSnack
+                                    ? colorScheme.tertiary
+                                    : colorScheme.secondary),
                           shape: BoxShape.circle,
-                          border: Border.all(color: colorScheme.surface, width: 2),
+                          border: Border.all(
+                            color: colorScheme.surface,
+                            width: 2,
+                          ),
                           boxShadow: [
-                            BoxShadow(color: colorScheme.shadow, blurRadius: 4, offset: const Offset(0, 2)),
+                            BoxShadow(
+                              color: colorScheme.shadow,
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
                           ],
                         ),
                         child: Center(
                           child: Text(
                             pin.label,
-                            style: TextStyle(color: colorScheme.onPrimary, fontWeight: FontWeight.bold, fontSize: 10),
+                            style: TextStyle(
+                              color: colorScheme.onPrimary,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 10,
+                            ),
                           ),
                         ),
                       ),
@@ -1047,7 +1366,9 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
       child: Center(
         child: Card(
           color: theme.colorScheme.surfaceContainerHighest,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           child: Container(
             width: 300,
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
@@ -1058,13 +1379,22 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                 const SizedBox(height: 16),
                 Text(
                   'AI TRAVEL AGENT DICTATION',
-                  style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.5),
+                  style: TextStyle(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.5,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 Text(
                   _voiceStatusText,
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: theme.colorScheme.onSurface, fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: theme.colorScheme.onSurface,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 24),
                 // Audio Wave Visualizer
@@ -1087,7 +1417,10 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                     });
                     ref.read(searchProvider.notifier).setListening(false);
                   },
-                  child: Text('Cancel', style: TextStyle(color: theme.colorScheme.error)),
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(color: theme.colorScheme.error),
+                  ),
                 ),
               ],
             ),
@@ -1103,7 +1436,8 @@ class MapPin {
   MapPin({
     required this.offset,
     required this.label,
-    required this.isUser, this.name,
+    required this.isUser,
+    this.name,
     this.isSnack = false,
   });
 
@@ -1153,10 +1487,23 @@ class _AIHelperMapPainter extends CustomPainter {
     final zonePaint = Paint()
       ..color = secondaryColor.withValues(alpha: isDark ? 0.05 : 0.03)
       ..style = PaintingStyle.fill;
-    
-    canvas.drawCircle(Offset(size.width * 0.45, size.height * 0.45), size.width * 0.35, zonePaint);
-    canvas.drawCircle(Offset(size.width * 0.7, size.height * 0.3), size.width * 0.2, zonePaint);
-    canvas.drawCircle(Offset(size.width * 0.25, size.height * 0.65), size.width * 0.2, zonePaint);
+
+    canvas
+      ..drawCircle(
+        Offset(size.width * 0.45, size.height * 0.45),
+        size.width * 0.35,
+        zonePaint,
+      )
+      ..drawCircle(
+        Offset(size.width * 0.7, size.height * 0.3),
+        size.width * 0.2,
+        zonePaint,
+      )
+      ..drawCircle(
+        Offset(size.width * 0.25, size.height * 0.65),
+        size.width * 0.2,
+        zonePaint,
+      );
 
     // Draw route lines connecting the itinerary points in order
     if (route.length > 1) {
@@ -1181,13 +1528,13 @@ class _AIHelperMapPainter extends CustomPainter {
 
     final distance = (p2 - p1).distance;
     final dashCount = (distance / (dashWidth + dashSpace)).floor();
-    
+
     final direction = (p2 - p1) / distance;
-    
+
     for (var i = 0; i < dashCount; i++) {
       final startOffset = i * (dashWidth + dashSpace);
       final endOffset = startOffset + dashWidth;
-      
+
       canvas.drawLine(
         p1 + direction * startOffset.toDouble(),
         p1 + direction * endOffset.toDouble(),
@@ -1219,17 +1566,17 @@ class _VoiceWaveformPainter extends CustomPainter {
 
     const barCount = 20;
     final spacing = size.width / barCount;
-    
+
     for (var i = 0; i < barCount; i++) {
       // Calculate random wave heights influenced by animation value and bar position
       final phase = (i * 0.5) + (animationValue * 2.0 * math.pi);
       final heightScale = (math.sin(phase).abs() * 0.7) + 0.3;
       final barHeight = size.height * heightScale;
-      
+
       final x = (i * spacing) + (spacing / 2);
       final startY = (size.height - barHeight) / 2;
       final endY = startY + barHeight;
-      
+
       canvas.drawLine(Offset(x, startY), Offset(x, endY), wavePaint);
     }
   }
