@@ -1,7 +1,9 @@
 import 'dart:async';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:themeparkapp/core/permissions.dart';
+
+part 'park_explorer_state.g.dart';
 
 /// Coordinate representation for a location in the park.
 class ParkCoordinate {
@@ -12,37 +14,71 @@ class ParkCoordinate {
 
 /// Selected filter chips for a park.
 /// Allowed filters are: 'thrill', 'toddler', 'indoor', 'dining'
-final selectedFiltersProvider = StateProvider.family<Set<String>, String>((
-  ref,
-  parkId,
-) {
-  return <String>{};
-});
+@riverpod
+class SelectedFilters extends _$SelectedFilters {
+  @override
+  Set<String> build(String parkId) => const {};
+
+  void toggle(String filter) {
+    if (state.contains(filter)) {
+      state = {...state}..remove(filter);
+    } else {
+      state = {...state, filter};
+    }
+  }
+
+  void update(Set<String> newState) {
+    state = newState;
+  }
+}
 
 /// Track whether the heatmap overlay is active (Desktop).
-final heatmapEnabledProvider = StateProvider.family<bool, String>((
-  ref,
-  parkId,
-) {
-  return false;
-});
+@riverpod
+class HeatmapEnabled extends _$HeatmapEnabled {
+  @override
+  bool build(String parkId) => false;
+
+  void toggle() {
+    state = !state;
+  }
+
+  void update(bool enabled) {
+    state = enabled;
+  }
+}
 
 /// Track the hour offset for the historical crowd flow heatmap (0 = current, 3 = 3 hours ago).
-final historyHourOffsetProvider = StateProvider.family<int, String>((
-  ref,
-  parkId,
-) {
-  return 0;
-});
+@riverpod
+class HistoryHourOffset extends _$HistoryHourOffset {
+  @override
+  int build(String parkId) => 0;
+
+  void update(int offset) {
+    state = offset;
+  }
+}
 
 /// Manage the user's location, streaming real GPS if allowed, falling back to park center.
-class UserLocationNotifier extends StateNotifier<ParkCoordinate> {
-  UserLocationNotifier(this.ref, this.parkId) : super(_defaultCenter(parkId)) {
-    _init();
-  }
-  final Ref ref;
-  final String parkId;
+@riverpod
+class UserLocation extends _$UserLocation {
   StreamSubscription<Position>? _sub;
+
+  @override
+  ParkCoordinate build(String parkId) {
+    ref.onDispose(() {
+      _stopListening();
+    });
+
+    final perm = ref.watch(locationPermissionProvider);
+    if (perm == LocationPermission.always ||
+        perm == LocationPermission.whileInUse) {
+      _startListening();
+    } else {
+      _stopListening();
+    }
+
+    return _defaultCenter(parkId);
+  }
 
   static ParkCoordinate _defaultCenter(String parkId) {
     if (parkId == 'p2') {
@@ -51,35 +87,19 @@ class UserLocationNotifier extends StateNotifier<ParkCoordinate> {
     return const ParkCoordinate(28.3575, -81.5907); // Animal Kingdom center
   }
 
-  void _init() {
-    final perm = ref.read(locationPermissionProvider);
-    if (perm == LocationPermission.always ||
-        perm == LocationPermission.whileInUse) {
-      _startListening();
-    }
-
-    // Listen for permission updates
-    ref.listen<LocationPermission?>(locationPermissionProvider, (prev, next) {
-      if (next == LocationPermission.always ||
-          next == LocationPermission.whileInUse) {
-        _startListening();
-      } else {
-        _stopListening();
-      }
-    });
-  }
-
   void _startListening() {
     _sub?.cancel();
-    _sub =
-        Geolocator.getPositionStream(
-          locationSettings: const LocationSettings(
-            accuracy: LocationAccuracy.high,
-            distanceFilter: 5,
-          ),
-        ).listen((pos) {
-          state = ParkCoordinate(pos.latitude, pos.longitude);
-        }, onError: (_) {});
+    _sub = Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 5,
+      ),
+    ).listen(
+      (pos) {
+        state = ParkCoordinate(pos.latitude, pos.longitude);
+      },
+      onError: (_) {},
+    );
   }
 
   void _stopListening() {
@@ -91,18 +111,4 @@ class UserLocationNotifier extends StateNotifier<ParkCoordinate> {
   void setPosition(double lat, double lng) {
     state = ParkCoordinate(lat, lng);
   }
-
-  @override
-  void dispose() {
-    _stopListening();
-    super.dispose();
-  }
 }
-
-final userLocationProvider =
-    StateNotifierProvider.family<UserLocationNotifier, ParkCoordinate, String>((
-      ref,
-      parkId,
-    ) {
-      return UserLocationNotifier(ref, parkId);
-    });

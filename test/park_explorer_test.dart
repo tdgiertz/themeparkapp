@@ -31,10 +31,8 @@ void main() {
       final filters = container.read(selectedFiltersProvider('p1'));
       expect(filters, isEmpty);
 
-      container.read(selectedFiltersProvider('p1').notifier).state = {
-        'thrill',
-        'dining',
-      };
+      container.read(selectedFiltersProvider('p1').notifier).toggle('thrill');
+      container.read(selectedFiltersProvider('p1').notifier).toggle('dining');
       expect(
         container.read(selectedFiltersProvider('p1')),
         equals({'thrill', 'dining'}),
@@ -46,7 +44,7 @@ void main() {
       addTearDown(container.dispose);
 
       expect(container.read(heatmapEnabledProvider('p1')), isFalse);
-      container.read(heatmapEnabledProvider('p1').notifier).state = true;
+      container.read(heatmapEnabledProvider('p1').notifier).toggle();
       expect(container.read(heatmapEnabledProvider('p1')), isTrue);
     });
   });
@@ -67,11 +65,11 @@ void main() {
           overrides: [
             assetLoaderProvider.overrideWithValue(fileLoader),
             locationPermissionProvider.overrideWith(
-              (ref) => MockLocationPermissionNotifier(),
+              MockLocationPermissionNotifier.new,
             ),
             userLocationProvider(
               'p1',
-            ).overrideWith(MockUserLocationNotifier.new),
+            ).overrideWith(() => MockUserLocationNotifier()),
           ],
           child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -113,11 +111,11 @@ void main() {
             overrides: [
               assetLoaderProvider.overrideWithValue(fileLoader),
               locationPermissionProvider.overrideWith(
-                (ref) => MockLocationPermissionNotifier(),
+                MockLocationPermissionNotifier.new,
               ),
               userLocationProvider(
                 'p1',
-              ).overrideWith(MockUserLocationNotifier.new),
+              ).overrideWith(() => MockUserLocationNotifier()),
             ],
             child: const MaterialApp(
               localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -159,11 +157,11 @@ void main() {
             overrides: [
               assetLoaderProvider.overrideWithValue(fileLoader),
               locationPermissionProvider.overrideWith(
-                (ref) => MockLocationPermissionNotifier(),
+                MockLocationPermissionNotifier.new,
               ),
               userLocationProvider(
                 'p1',
-              ).overrideWith(MockUserLocationNotifier.new),
+              ).overrideWith(() => MockUserLocationNotifier()),
             ],
             child: const MaterialApp(
               localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -208,11 +206,11 @@ void main() {
           overrides: [
             assetLoaderProvider.overrideWithValue(fileLoader),
             locationPermissionProvider.overrideWith(
-              (ref) => MockLocationPermissionNotifier(),
+              MockLocationPermissionNotifier.new,
             ),
             userLocationProvider(
               'p1',
-            ).overrideWith(MockUserLocationNotifier.new),
+            ).overrideWith(() => MockUserLocationNotifier()),
           ],
           child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -252,11 +250,11 @@ void main() {
             overrides: [
               assetLoaderProvider.overrideWithValue(fileLoader),
               locationPermissionProvider.overrideWith(
-                (ref) => MockLocationPermissionNotifier(),
+                MockLocationPermissionNotifier.new,
               ),
               userLocationProvider(
                 'p1',
-              ).overrideWith(MockUserLocationNotifier.new),
+              ).overrideWith(() => MockUserLocationNotifier()),
             ],
             child: const MaterialApp(
               localizationsDelegates: AppLocalizations.localizationsDelegates,

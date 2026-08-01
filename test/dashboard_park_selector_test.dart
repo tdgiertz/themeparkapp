@@ -11,10 +11,15 @@ import 'package:themeparkapp/features/dashboard/widgets/upcoming_shows_widget.da
 import 'package:themeparkapp/features/park/park_explorer_state.dart';
 import 'package:themeparkapp/features/parks/providers/park_providers.dart';
 
+class MockUserLocationNotifier extends UserLocation {
+  MockUserLocationNotifier() : super();
+  @override
+  ParkCoordinate build(String parkId) => const ParkCoordinate(28.4200, -81.5812);
+}
+
 class FakeLocationPermissionNotifier extends LocationPermissionNotifier {
-  FakeLocationPermissionNotifier(LocationPermission permission) {
-    state = permission;
-  }
+  @override
+  LocationPermission? build() => state;
 
   @override
   Future<LocationPermission> check() async =>
@@ -196,11 +201,10 @@ void main() {
             return '{}';
           }),
           locationPermissionProvider.overrideWith(
-            (ref) =>
-                FakeLocationPermissionNotifier(LocationPermission.whileInUse),
+            FakeLocationPermissionNotifier.new,
           ),
           userLocationProvider('p2').overrideWith(
-            (ref) => UserLocationNotifier(ref, 'p2')..setPosition(28.4200, -81.5812),
+            MockUserLocationNotifier.new,
           ),
         ],
         child: const MaterialApp(home: Scaffold(body: Dashboard())),

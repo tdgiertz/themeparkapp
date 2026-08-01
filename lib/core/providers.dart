@@ -204,7 +204,7 @@ class WaitTimes extends _$WaitTimes {
   }
 
   Future<void> refresh() async {
-    final currentResponse = state.valueOrNull;
+    final currentResponse = state.value;
 
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
@@ -228,7 +228,7 @@ class WaitTimes extends _$WaitTimes {
 
       final newResponse = WaitTimesResponse(
         meta: updateResponse.meta ?? baseResponse.meta,
-        waitTimes: mergedMap.values.toList(),
+        waitTimes: mergedMap.values.cast<WaitTime>().toList(),
       );
       
       lastLoaded = DateTime.now();

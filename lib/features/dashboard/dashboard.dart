@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:themeparkapp/core/logging/logger.dart';
 import 'package:themeparkapp/core/models/favorite.dart';
@@ -10,6 +11,8 @@ import 'package:themeparkapp/features/dashboard/widgets/alerts_widget.dart';
 import 'package:themeparkapp/features/dashboard/widgets/context_widgets.dart';
 import 'package:themeparkapp/features/dashboard/widgets/favorite_card_expanded.dart';
 import 'package:themeparkapp/features/dashboard/widgets/upcoming_shows_widget.dart';
+
+part 'dashboard.g.dart';
 
 Color crowdColor(BuildContext context, String? crowd) {
   final cs = Theme.of(context).colorScheme;
@@ -51,7 +54,15 @@ class LinearBinding {
 }
 
 /// Track whether user has manually modified the dashboard park selection
-final isParkSelectionManualProvider = StateProvider<bool>((ref) => false);
+@riverpod
+class IsParkSelectionManual extends _$IsParkSelectionManual {
+  @override
+  bool build() => false;
+
+  void setManual(bool value) {
+    state = value;
+  }
+}
 
 /// Dashboard main screen showing parks and user favorites with enhanced layout.
 class Dashboard extends ConsumerWidget {
@@ -68,8 +79,7 @@ class Dashboard extends ConsumerWidget {
     if (!isManual && detectedParkId != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (ref.read(selectedDashboardParkProvider) != detectedParkId) {
-          ref.read(selectedDashboardParkProvider.notifier).state =
-              detectedParkId;
+          ref.read(selectedDashboardParkProvider.notifier).setPark(detectedParkId);
         }
       });
     }
@@ -109,9 +119,8 @@ class Dashboard extends ConsumerWidget {
               selected: selectedParkId == 'all',
               onSelected: (val) {
                 if (val) {
-                  ref.read(isParkSelectionManualProvider.notifier).state = true;
-                  ref.read(selectedDashboardParkProvider.notifier).state =
-                      'all';
+                  ref.read(isParkSelectionManualProvider.notifier).setManual(true);
+                  ref.read(selectedDashboardParkProvider.notifier).setPark('all');
                 }
               },
             ),
@@ -137,10 +146,8 @@ class Dashboard extends ConsumerWidget {
                   selected: isSelected,
                   onSelected: (val) {
                     if (val) {
-                      ref.read(isParkSelectionManualProvider.notifier).state =
-                          true;
-                      ref.read(selectedDashboardParkProvider.notifier).state =
-                          p.id;
+                      ref.read(isParkSelectionManualProvider.notifier).setManual(true);
+                      ref.read(selectedDashboardParkProvider.notifier).setPark(p.id);
                     }
                   },
                 ),
@@ -163,7 +170,7 @@ class Dashboard extends ConsumerWidget {
 
     return Column(
       children: [
-        _buildParkSelector(context, ref, parksAsync.valueOrNull),
+        _buildParkSelector(context, ref, parksAsync.value),
         Divider(
           height: 1,
           thickness: 1,
@@ -323,7 +330,7 @@ class Dashboard extends ConsumerWidget {
 
     return Column(
       children: [
-        _buildParkSelector(context, ref, parksAsync.valueOrNull),
+        _buildParkSelector(context, ref, parksAsync.value),
         Divider(
           height: 1,
           thickness: 1,

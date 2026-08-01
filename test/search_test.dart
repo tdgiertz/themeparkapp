@@ -24,6 +24,7 @@ void main() {
     );
     addTearDown(container.dispose);
 
+    container.listen(searchProvider, (_, __) {});
     final notifier = container.read(searchProvider.notifier);
     await notifier.submitQuery('Hello agent');
 
@@ -46,6 +47,7 @@ void main() {
     );
     addTearDown(container.dispose);
 
+    container.listen(searchProvider, (_, __) {});
     final notifier = container.read(searchProvider.notifier);
     await notifier.submitQuery('Where is the nearest pretzel?');
 
@@ -65,6 +67,7 @@ void main() {
     );
     addTearDown(container.dispose);
 
+    container.listen(searchProvider, (_, __) {});
     final notifier = container.read(searchProvider.notifier);
     // Submit plan request
     await notifier.submitQuery('Help me plan my day at Magic Kingdom');

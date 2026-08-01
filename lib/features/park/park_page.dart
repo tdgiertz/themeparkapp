@@ -1204,14 +1204,9 @@ class _ParkPageState extends ConsumerState<ParkPage> {
     ];
 
     void toggleFilter(String key) {
-      final notifier = ref.read(
+      ref.read(
         selectedFiltersProvider(widget.parkId).notifier,
-      );
-      if (activeFilters.contains(key)) {
-        notifier.state = activeFilters.where((f) => f != key).toSet();
-      } else {
-        notifier.state = {...activeFilters, key};
-      }
+      ).toggle(key);
     }
 
     return Container(

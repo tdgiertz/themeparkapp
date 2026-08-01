@@ -2,9 +2,13 @@ import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import 'package:themeparkapp/core/models/park_detail.dart';
 import 'package:themeparkapp/core/providers.dart';
 import 'package:themeparkapp/features/park/park_explorer_state.dart';
+
+part 'search_state.g.dart';
 
 /// Represents a single item in the drag-and-drop itinerary.
 class SearchItineraryItem {
@@ -96,27 +100,28 @@ class SearchState {
   }
 }
 
-/// StateNotifier that handles the assistant's behavior and conversational flow.
-class SearchNotifier extends StateNotifier<SearchState> {
-  SearchNotifier(this.ref)
-    : super(
-        SearchState(
-          messages: [
-            ChatMessage(
-              id: 'welcome',
-              text:
-                  'Welcome! I am your AI travel agent assistant. Ask me to:\n• "Find the nearest pretzel"\n• "Plan my day at Magic Kingdom"\n• "Suggest dining near me"',
-              isUser: false,
-              timestamp: DateTime.now(),
-            ),
-          ],
-          isListening: false,
-        ),
-      ) {
+@riverpod
+class SearchNotifier extends _$SearchNotifier {
+  bool _isMounted = true;
+
+  @override
+  SearchState build() {
+    ref.onDispose(() => _isMounted = false);
     _loadAllFacilities();
+    return SearchState(
+      messages: [
+        ChatMessage(
+          id: 'welcome',
+          text:
+              'Welcome! I am your AI travel agent assistant. Ask me to:\n• "Find the nearest pretzel"\n• "Plan my day at Magic Kingdom"\n• "Suggest dining near me"',
+          isUser: false,
+          timestamp: DateTime.now(),
+        ),
+      ],
+      isListening: false,
+    );
   }
 
-  final Ref ref;
   List<Facility> _allFacilities = [];
 
   // Helper mapping of known coordinates for facilities to draw pins and lines.
@@ -209,7 +214,8 @@ class SearchNotifier extends StateNotifier<SearchState> {
 
     // Simulate think delay
     await Future<void>.delayed(const Duration(milliseconds: 600));
-    if (!mounted) return;
+    // Check if the provider is still mounted safely
+    if (!_isMounted) return;
 
     final normalizedQuery = queryText.toLowerCase();
 
@@ -442,9 +448,3 @@ class SearchNotifier extends StateNotifier<SearchState> {
   }
 }
 
-/// Global provider for the search and AI Assistant state.
-final searchProvider = StateNotifierProvider<SearchNotifier, SearchState>((
-  ref,
-) {
-  return SearchNotifier(ref);
-});

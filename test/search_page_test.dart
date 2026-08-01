@@ -37,7 +37,7 @@ void main() {
           overrides: [
             assetLoaderProvider.overrideWithValue(fileLoader),
             locationPermissionProvider.overrideWith(
-              (ref) => MockLocationPermissionNotifier(),
+              MockLocationPermissionNotifier.new,
             ),
             userLocationProvider(
               'p2',
@@ -80,7 +80,7 @@ void main() {
           overrides: [
             assetLoaderProvider.overrideWithValue(fileLoader),
             locationPermissionProvider.overrideWith(
-              (ref) => MockLocationPermissionNotifier(),
+              MockLocationPermissionNotifier.new,
             ),
             userLocationProvider(
               'p2',
@@ -122,7 +122,7 @@ void main() {
             overrides: [
               assetLoaderProvider.overrideWithValue(fileLoader),
               locationPermissionProvider.overrideWith(
-                (ref) => MockLocationPermissionNotifier(),
+                MockLocationPermissionNotifier.new,
               ),
               userLocationProvider(
                 'p2',
@@ -164,7 +164,7 @@ void main() {
             overrides: [
               assetLoaderProvider.overrideWithValue(fileLoader),
               locationPermissionProvider.overrideWith(
-                (ref) => MockLocationPermissionNotifier(),
+                MockLocationPermissionNotifier.new,
               ),
               userLocationProvider(
                 'p2',
@@ -211,7 +211,7 @@ void main() {
             overrides: [
               assetLoaderProvider.overrideWithValue(fileLoader),
               locationPermissionProvider.overrideWith(
-                (ref) => MockLocationPermissionNotifier(),
+                MockLocationPermissionNotifier.new,
               ),
               userLocationProvider(
                 'p2',
@@ -277,7 +277,7 @@ void main() {
           overrides: [
             assetLoaderProvider.overrideWithValue(fileLoader),
             locationPermissionProvider.overrideWith(
-              (ref) => MockLocationPermissionNotifier(),
+              MockLocationPermissionNotifier.new,
             ),
             userLocationProvider(
               'p2',
@@ -418,7 +418,8 @@ class MockHttpClientResponse implements HttpClientResponse {
 }
 
 class MockLocationPermissionNotifier extends LocationPermissionNotifier {
-  MockLocationPermissionNotifier() : super();
+  @override
+  LocationPermission? build() => state;
 
   @override
   Future<LocationPermission> check() async {
@@ -427,6 +428,8 @@ class MockLocationPermissionNotifier extends LocationPermissionNotifier {
   }
 }
 
-class MockUserLocationNotifier extends UserLocationNotifier {
-  MockUserLocationNotifier(Ref ref) : super(ref, 'p2');
+class MockUserLocationNotifier extends UserLocation {
+  MockUserLocationNotifier() : super();
+  @override
+  ParkCoordinate build(String parkId) => const ParkCoordinate(28.4200, -81.5812);
 }

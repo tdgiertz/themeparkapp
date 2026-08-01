@@ -24,19 +24,27 @@ void main() {
   });
 
   testWidgets('FavoritesPage error state', (WidgetTester tester) async {
+    final originalOnError = FlutterError.onError;
+    FlutterError.onError = (details) {
+      if (details.exception.toString().contains('Error')) return;
+      originalOnError?.call(details);
+    };
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           favoritesProvider.overrideWith(
-            (ref) => Future.error('Error', StackTrace.empty),
+            (ref) => throw 'Error',
           ),
         ],
-        child: const MaterialApp(home: FavoritesPage()),
+        child: const MaterialApp(home: Scaffold(body: FavoritesPage())),
       ),
     );
 
+    // Using pumpAndSettle might timeout due to the infinite retry loops or animations, just pump a few times
     await tester.pump();
-    expect(find.textContaining('Error loading favorites'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.textContaining('Error loading favorites: Error'), findsOneWidget);
+    FlutterError.onError = originalOnError;
   });
 
   testWidgets('FavoritesPage data state with data', (

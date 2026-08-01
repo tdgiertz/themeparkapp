@@ -1,9 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:themeparkapp/features/park/facility_detail_page.dart';
 import 'package:themeparkapp/features/parks/providers/park_providers.dart';
 
-final selectedDashboardParkProvider = StateProvider<String>((ref) => 'all');
+part 'upcoming_shows_widget.g.dart';
+
+@riverpod
+class SelectedDashboardPark extends _$SelectedDashboardPark {
+  @override
+  String build() => 'all';
+
+  void setPark(String parkId) {
+    state = parkId;
+  }
+}
 
 class ShowEvent {
   const ShowEvent({

@@ -26,18 +26,23 @@ void main() {
       test(
         'Default state is AppTheme.primaryAccent when no prefs entry exists',
         () {
-          final notifier = ThemeSeedColor();
-          expect(notifier.state, AppTheme.primaryAccent);
+          final container = ProviderContainer();
+          addTearDown(container.dispose);
+          final color = container.read(themeSeedColorProvider);
+          expect(color, AppTheme.primaryAccent);
         },
       );
 
       test(
         'setColor() persists the correct int value to SharedPreferences',
         () async {
-          final notifier = ThemeSeedColor();
+          final container = ProviderContainer();
+          addTearDown(container.dispose);
+          final notifier = container.read(themeSeedColorProvider.notifier);
+          
           const testColor = Color(0xFF9C27B0);
           await notifier.setColor(testColor);
-          expect(notifier.state, testColor);
+          expect(container.read(themeSeedColorProvider), testColor);
 
           final prefs = await SharedPreferences.getInstance();
           expect(prefs.getInt('theme_seed_color'), testColor.toARGB32());
@@ -49,9 +54,12 @@ void main() {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setInt('theme_seed_color', testColor.toARGB32());
 
-        final notifier = ThemeSeedColor();
+        final container = ProviderContainer();
+        addTearDown(container.dispose);
+        
         await Future<void>.delayed(Duration.zero);
-        expect(notifier.state, testColor);
+        final color = container.read(themeSeedColorProvider);
+        expect(color, testColor);
       });
     });
 

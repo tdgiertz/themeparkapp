@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:themeparkapp/core/onboarding_state.dart';
@@ -10,16 +11,20 @@ void main() {
   });
 
   test('OnboardingNotifier initial state is false', () {
-    final notifier = OnboardingNotifier();
-    expect(notifier.state, isFalse);
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    final state = container.read(onboardingProvider);
+    expect(state, isFalse);
   });
 
   test(
     'OnboardingNotifier complete() sets state true and persists to SharedPreferences',
     () async {
-      final notifier = OnboardingNotifier();
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+      final notifier = container.read(onboardingProvider.notifier);
       await notifier.complete();
-      expect(notifier.state, isTrue);
+      expect(container.read(onboardingProvider), isTrue);
 
       final prefs = await SharedPreferences.getInstance();
       expect(prefs.getBool('onboarding_completed'), isTrue);
@@ -27,27 +32,31 @@ void main() {
   );
 
   test('OnboardingNotifier reset() clears prefs and resets to false', () async {
-    final notifier = OnboardingNotifier();
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    final notifier = container.read(onboardingProvider.notifier);
     await notifier.complete();
-    expect(notifier.state, isTrue);
+    expect(container.read(onboardingProvider), isTrue);
 
     await notifier.reset();
-    expect(notifier.state, isFalse);
+    expect(container.read(onboardingProvider), isFalse);
 
     final prefs = await SharedPreferences.getInstance();
     expect(prefs.getBool('onboarding_completed'), isNull);
   });
 
   test(
-    'OnboardingNotifier re-instantiation after complete() reads back true from prefs',
+    'Onboarding re-instantiation after complete() reads back true from prefs',
     () async {
-      final notifier1 = OnboardingNotifier();
-      await notifier1.complete();
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('onboarding_completed', true);
 
-      final notifier2 = OnboardingNotifier();
+      final container2 = ProviderContainer();
+      addTearDown(container2.dispose);
+      
       // Allow async _load to finish
       await Future<void>.delayed(Duration.zero);
-      expect(notifier2.state, isTrue);
+      expect(container2.read(onboardingProvider), isTrue);
     },
   );
 }

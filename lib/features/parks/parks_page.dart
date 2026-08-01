@@ -8,6 +8,9 @@ import 'package:themeparkapp/features/park/facility_detail_page.dart';
 import 'package:themeparkapp/features/park/park_page.dart';
 import 'package:themeparkapp/features/park/widgets/park_map.dart';
 import 'package:themeparkapp/features/park/widgets/sparkline_chart.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'parks_page.g.dart';
 
 /// Mapping of beautiful Unsplash hero images for each park.
 const Map<String, String> parkImages = {
@@ -33,7 +36,7 @@ final parkWaitTimeTrendProvider = Provider.family<List<int>, String>((
   parkId,
 ) {
   final waitTimesAsync = ref.watch(waitTimesProvider(parkId));
-  final waitTimes = waitTimesAsync.valueOrNull?.waitTimes ?? [];
+  final waitTimes = waitTimesAsync.value?.waitTimes ?? [];
   final openRides = waitTimes
       .where((w) => w.status == 'Open' && w.waitMinutes != null)
       .toList();
@@ -44,7 +47,7 @@ final parkWaitTimeTrendProvider = Provider.family<List<int>, String>((
             : (parkId == 'p2'
                   ? 45
                   : (parkId == 'p3' ? 25 : (parkId == 'p4' ? 55 : 35))))
-      : (openRides.map((w) => w.waitMinutes).reduce((a, b) => a + b) /
+      : (openRides.map((w) => w.waitMinutes!).reduce((a, b) => a + b) /
                 openRides.length)
             .round();
 
@@ -60,8 +63,13 @@ final parkWaitTimeTrendProvider = Provider.family<List<int>, String>((
   return list;
 });
 
-/// State provider for selected park on large screens
-final selectedParkIdProvider = StateProvider<String?>((ref) => null);
+@riverpod
+class SelectedParkId extends _$SelectedParkId {
+  @override
+  String? build() => null;
+
+  set state(String? value) => super.state = value;
+}
 
 /// Represents global filter selections for the park page.
 class ParkFilters {
@@ -78,11 +86,33 @@ class ParkFilters {
   int get activeCount => ageGroups.length + types.length + statuses.length;
 }
 
-final globalParkFilterProvider = StateProvider<ParkFilters>(
-  (ref) => ParkFilters(),
-);
-final parkWaitTimeSortProvider = StateProvider<String>((ref) => 'Name (A-Z)');
-final parkFilterDrawerOpenProvider = StateProvider<bool>((ref) => false);
+@riverpod
+class GlobalParkFilter extends _$GlobalParkFilter {
+  @override
+  ParkFilters build() => ParkFilters();
+
+  set state(ParkFilters value) => super.state = value;
+}
+
+@riverpod
+class ParkWaitTimeSort extends _$ParkWaitTimeSort {
+  @override
+  String build() => 'Name (A-Z)';
+
+  set state(String value) => super.state = value;
+}
+
+@riverpod
+class ParkFilterDrawerOpen extends _$ParkFilterDrawerOpen {
+  @override
+  bool build() => false;
+
+  void update(bool Function(bool) callback) {
+    state = callback(state);
+  }
+
+  set state(bool value) => super.state = value;
+}
 
 // Upgraded Parks Page supporting Master-Detail layout for desktop/tablet views.
 class ParksPage extends ConsumerWidget {
@@ -463,7 +493,7 @@ class _ParkHeroCardState extends ConsumerState<ParkHeroCard> {
         'https://images.unsplash.com/photo-1597466765990-64ad1c35dafc?w=500&q=80';
 
     final waitTimesAsync = ref.watch(waitTimesProvider(park.id));
-    final waitTimes = waitTimesAsync.valueOrNull?.waitTimes ?? [];
+    final waitTimes = waitTimesAsync.value?.waitTimes ?? [];
     final openRides = waitTimes
         .where((w) => w.status == 'Open' && w.waitMinutes != null)
         .toList();
@@ -473,7 +503,7 @@ class _ParkHeroCardState extends ConsumerState<ParkHeroCard> {
               : (park.id == 'p2'
                     ? 45
                     : (park.id == 'p3' ? 25 : (park.id == 'p4' ? 55 : 35))))
-        : (openRides.map((w) => w.waitMinutes).reduce((a, b) => a + b) /
+        : (openRides.map((w) => w.waitMinutes!).reduce((a, b) => a + b) /
                   openRides.length)
               .round();
 

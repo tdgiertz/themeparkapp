@@ -1,14 +1,19 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:themeparkapp/core/models/park.dart';
 import 'package:themeparkapp/core/providers.dart';
 import 'package:themeparkapp/features/dashboard/dashboard.dart';
 import 'package:themeparkapp/features/dashboard/widgets/context_widgets.dart';
 import 'package:themeparkapp/l10n/app_localizations.dart';
 
-class ErrorParksNotifier extends ParksNotifier {
-  ErrorParksNotifier(super.ref) {
-    state = const AsyncValue.error('Failed to load parks', StackTrace.empty);
+class ErrorParksNotifier extends Parks {
+  ErrorParksNotifier() : super();
+  
+  @override
+  FutureOr<ParksResponse> build() {
+    return Future.error('Failed to load parks', StackTrace.empty);
   }
 }
 

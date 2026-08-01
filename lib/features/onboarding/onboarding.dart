@@ -40,7 +40,7 @@ class OnboardingScreen extends ConsumerWidget {
                   onPressed: () async {
                     // Persist that the user skipped onboarding so we don't show it again.
                     await ref
-                        .read(onboardingCompletedProvider.notifier)
+                        .read(onboardingProvider.notifier)
                         .complete();
                     if (context.mounted) {
                       await Navigator.of(context).maybePop();
@@ -57,7 +57,7 @@ class OnboardingScreen extends ConsumerWidget {
                         .checkAndRequestIfNeeded();
                     // User tapped continue — persist onboarding as completed.
                     await ref
-                        .read(onboardingCompletedProvider.notifier)
+                        .read(onboardingProvider.notifier)
                         .complete();
                   },
                   child: Text(loc?.continueText ?? 'Continue'),

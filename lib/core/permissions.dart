@@ -55,7 +55,7 @@ class LocationPermissionRequestTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final perm = ref.watch(locationPermissionNotifierProvider);
+    final perm = ref.watch(locationPermissionProvider);
     final label = perm == null
         ? 'Permission: unknown'
         : perm == LocationPermission.always ||
@@ -72,7 +72,7 @@ class LocationPermissionRequestTile extends ConsumerWidget {
       ),
       trailing: ElevatedButton(
         onPressed: () => ref
-            .read(locationPermissionNotifierProvider.notifier)
+            .read(locationPermissionProvider.notifier)
             .checkAndRequestIfNeeded(),
         child: Text(loc?.onboarding_request_button ?? 'Request'),
       ),

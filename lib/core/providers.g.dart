@@ -520,7 +520,7 @@ final class WaitTimesProvider
   }
 }
 
-String _$waitTimesHash() => r'0a5960bcb76229263e8a8773edc95d1c1dc3b1b1';
+String _$waitTimesHash() => r'14c466e3ea37214229f225fa02e140f22733f413';
 
 /// ---------------------- WaitTimes (family StateNotifier) ----------------------
 

@@ -27,7 +27,8 @@ final deviceTypeProvider = Provider<DeviceType>((ref) {
 });
 
 /// Connectivity stream provider (online/offline + type).
-final connectivityStreamProvider = StreamProvider<ConnectivityResult>((ref) {
+final connectivityStreamProvider =
+    StreamProvider<List<ConnectivityResult>>((ref) {
   return Connectivity().onConnectivityChanged;
 });
 
