@@ -15,7 +15,7 @@ void main() {
     addTearDown(container.dispose);
 
     expect(container.read(counterProvider), 0);
-    container.read(counterProvider.notifier).state++;
+    container.read(counterProvider.notifier).increment();
     expect(container.read(counterProvider), 1);
   });
 
@@ -113,7 +113,7 @@ void main() {
       final notifier = container.read(waitTimesProvider('p1').notifier);
       await notifier.refresh();
 
-      final updatedResponse = container.read(waitTimesProvider('p1')).value!;
+      final updatedResponse = container.read(waitTimesProvider('p1')).value;
       // Verify ride a1 is updated to 75 mins
       final updatedA1 = updatedResponse.waitTimes.firstWhere(
         (e) => e.rideId == 'a1',

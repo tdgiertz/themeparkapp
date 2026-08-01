@@ -191,9 +191,9 @@ void main() {
         ProviderScope(
           overrides: [
             ...commonOverrides,
-            themeModeProvider.overrideWith((ref) => ThemeMode.dark),
+            themeModeProvider.overrideWith(() => ThemeModeNotifier()..setThemeMode(ThemeMode.dark)),
             themeSeedColorProvider.overrideWith(
-              (ref) => ThemeSeedColorNotifier()..setColor(Colors.purple),
+              (ref) => ThemeSeedColor()..setColor(Colors.purple),
             ),
             locationPermissionProvider.overrideWith(
               (ref) =>

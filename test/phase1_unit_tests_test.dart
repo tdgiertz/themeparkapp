@@ -18,7 +18,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Phase 1 Unit Tests', () {
-    group('B. ThemeSeedColorNotifier', () {
+    group('B. ThemeSeedColor', () {
       setUp(() {
         SharedPreferences.setMockInitialValues({});
       });
@@ -26,7 +26,7 @@ void main() {
       test(
         'Default state is AppTheme.primaryAccent when no prefs entry exists',
         () {
-          final notifier = ThemeSeedColorNotifier();
+          final notifier = ThemeSeedColor();
           expect(notifier.state, AppTheme.primaryAccent);
         },
       );
@@ -34,7 +34,7 @@ void main() {
       test(
         'setColor() persists the correct int value to SharedPreferences',
         () async {
-          final notifier = ThemeSeedColorNotifier();
+          final notifier = ThemeSeedColor();
           const testColor = Color(0xFF9C27B0);
           await notifier.setColor(testColor);
           expect(notifier.state, testColor);
@@ -49,7 +49,7 @@ void main() {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setInt('theme_seed_color', testColor.toARGB32());
 
-        final notifier = ThemeSeedColorNotifier();
+        final notifier = ThemeSeedColor();
         await Future<void>.delayed(Duration.zero);
         expect(notifier.state, testColor);
       });

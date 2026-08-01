@@ -44,7 +44,7 @@ final parkWaitTimeTrendProvider = Provider.family<List<int>, String>((
             : (parkId == 'p2'
                   ? 45
                   : (parkId == 'p3' ? 25 : (parkId == 'p4' ? 55 : 35))))
-      : (openRides.map((w) => w.waitMinutes!).reduce((a, b) => a + b) /
+      : (openRides.map((w) => w.waitMinutes).reduce((a, b) => a + b) /
                 openRides.length)
             .round();
 
@@ -473,7 +473,7 @@ class _ParkHeroCardState extends ConsumerState<ParkHeroCard> {
               : (park.id == 'p2'
                     ? 45
                     : (park.id == 'p3' ? 25 : (park.id == 'p4' ? 55 : 35))))
-        : (openRides.map((w) => w.waitMinutes!).reduce((a, b) => a + b) /
+        : (openRides.map((w) => w.waitMinutes).reduce((a, b) => a + b) /
                   openRides.length)
               .round();
 

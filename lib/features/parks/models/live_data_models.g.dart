@@ -1,5 +1,4 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// coverage:ignore-file
 
 part of 'live_data_models.dart';
 
@@ -10,15 +9,15 @@ part of 'live_data_models.dart';
 _RideWaitTime _$RideWaitTimeFromJson(Map<String, dynamic> json) =>
     _RideWaitTime(
       rideId: json['rideId'] as String,
-      name: (json['name'] as String?) ?? '',
       waitMinutes: (json['waitMinutes'] as num).toInt(),
+      name: json['name'] as String? ?? '',
     );
 
 Map<String, dynamic> _$RideWaitTimeToJson(_RideWaitTime instance) =>
     <String, dynamic>{
       'rideId': instance.rideId,
-      'name': instance.name,
       'waitMinutes': instance.waitMinutes,
+      'name': instance.name,
     };
 
 _Showtime _$ShowtimeFromJson(Map<String, dynamic> json) => _Showtime(

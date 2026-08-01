@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
+// ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'extra_models.dart';
@@ -9,7 +9,6 @@ part of 'extra_models.dart';
 // FreezedGenerator
 // **************************************************************************
 
-// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -67,7 +66,7 @@ class _$ShowScheduleCopyWithImpl<$Res>
 /// Create a copy of ShowSchedule
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? facilityId = null,Object? showtimes = null,}) {
-  return _then(ShowSchedule(
+  return _then(_self.copyWith(
 facilityId: null == facilityId ? _self.facilityId : facilityId // ignore: cast_nullable_to_non_nullable
 as String,showtimes: null == showtimes ? _self.showtimes : showtimes // ignore: cast_nullable_to_non_nullable
 as List<String>,
@@ -211,7 +210,7 @@ return $default(_that.facilityId,_that.showtimes);case _:
 @JsonSerializable()
 
 class _ShowSchedule implements ShowSchedule {
-  const _ShowSchedule({required this.facilityId, required  List<String> showtimes}): _showtimes = showtimes;
+  const _ShowSchedule({required this.facilityId, required final  List<String> showtimes}): _showtimes = showtimes;
   factory _ShowSchedule.fromJson(Map<String, dynamic> json) => _$ShowScheduleFromJson(json);
 
 @override final  String facilityId;
@@ -339,7 +338,7 @@ class _$RestaurantDataCopyWithImpl<$Res>
 /// Create a copy of RestaurantData
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? facilityId = null,Object? operatingHours = null,Object? cuisine = null,Object? priceRange = null,}) {
-  return _then(RestaurantData(
+  return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,facilityId: null == facilityId ? _self.facilityId : facilityId // ignore: cast_nullable_to_non_nullable
 as String,operatingHours: null == operatingHours ? _self.operatingHours : operatingHours // ignore: cast_nullable_to_non_nullable
@@ -632,7 +631,7 @@ class _$MenuDataCopyWithImpl<$Res>
 /// Create a copy of MenuData
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? restaurantId = null,Object? categories = null,}) {
-  return _then(MenuData(
+  return _then(_self.copyWith(
 restaurantId: null == restaurantId ? _self.restaurantId : restaurantId // ignore: cast_nullable_to_non_nullable
 as String,categories: null == categories ? _self.categories : categories // ignore: cast_nullable_to_non_nullable
 as List<MenuCategory>,
@@ -776,7 +775,7 @@ return $default(_that.restaurantId,_that.categories);case _:
 @JsonSerializable()
 
 class _MenuData implements MenuData {
-  const _MenuData({required this.restaurantId, required  List<MenuCategory> categories}): _categories = categories;
+  const _MenuData({required this.restaurantId, required final  List<MenuCategory> categories}): _categories = categories;
   factory _MenuData.fromJson(Map<String, dynamic> json) => _$MenuDataFromJson(json);
 
 @override final  String restaurantId;
@@ -904,7 +903,7 @@ class _$MenuCategoryCopyWithImpl<$Res>
 /// Create a copy of MenuCategory
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? items = null,}) {
-  return _then(MenuCategory(
+  return _then(_self.copyWith(
 name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
 as List<MenuItem>,
@@ -1048,7 +1047,7 @@ return $default(_that.name,_that.items);case _:
 @JsonSerializable()
 
 class _MenuCategory implements MenuCategory {
-  const _MenuCategory({required this.name, required  List<MenuItem> items}): _items = items;
+  const _MenuCategory({required this.name, required final  List<MenuItem> items}): _items = items;
   factory _MenuCategory.fromJson(Map<String, dynamic> json) => _$MenuCategoryFromJson(json);
 
 @override final  String name;
@@ -1176,7 +1175,7 @@ class _$MenuItemCopyWithImpl<$Res>
 /// Create a copy of MenuItem
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? price = null,Object? description = null,}) {
-  return _then(MenuItem(
+  return _then(_self.copyWith(
 name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,price: null == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
 as double,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
@@ -1445,7 +1444,7 @@ class _$FavoriteRideRefCopyWithImpl<$Res>
 /// Create a copy of FavoriteRideRef
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? rideId = null,}) {
-  return _then(FavoriteRideRef(
+  return _then(_self.copyWith(
 rideId: null == rideId ? _self.rideId : rideId // ignore: cast_nullable_to_non_nullable
 as String,
   ));
@@ -1708,7 +1707,7 @@ class _$UserFavoritesCopyWithImpl<$Res>
 /// Create a copy of UserFavorites
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? userId = null,Object? lastUpdated = null,Object? favoriteRides = null,}) {
-  return _then(UserFavorites(
+  return _then(_self.copyWith(
 userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as String,lastUpdated: null == lastUpdated ? _self.lastUpdated : lastUpdated // ignore: cast_nullable_to_non_nullable
 as String,favoriteRides: null == favoriteRides ? _self.favoriteRides : favoriteRides // ignore: cast_nullable_to_non_nullable
@@ -1853,7 +1852,7 @@ return $default(_that.userId,_that.lastUpdated,_that.favoriteRides);case _:
 @JsonSerializable()
 
 class _UserFavorites implements UserFavorites {
-  const _UserFavorites({required this.userId, required this.lastUpdated, required  List<FavoriteRideRef> favoriteRides}): _favoriteRides = favoriteRides;
+  const _UserFavorites({required this.userId, required this.lastUpdated, required final  List<FavoriteRideRef> favoriteRides}): _favoriteRides = favoriteRides;
   factory _UserFavorites.fromJson(Map<String, dynamic> json) => _$UserFavoritesFromJson(json);
 
 @override final  String userId;

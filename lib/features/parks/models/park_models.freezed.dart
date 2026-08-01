@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
+// ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'park_models.dart';
@@ -9,7 +9,6 @@ part of 'park_models.dart';
 // FreezedGenerator
 // **************************************************************************
 
-// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -67,7 +66,7 @@ class _$ParkCopyWithImpl<$Res>
 /// Create a copy of Park
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? type = null,Object? name = null,Object? operatingHours = null,Object? crowdLevel = null,Object? children = null,}) {
-  return _then(Park(
+  return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -224,7 +223,7 @@ return $default(_that.id,_that.type,_that.name,_that.operatingHours,_that.crowdL
 @JsonSerializable()
 
 class _Park implements Park {
-  const _Park({required this.id, required this.type, required this.name, required this.operatingHours, required this.crowdLevel,  List<ParkChild> children = const []}): _children = children;
+  const _Park({required this.id, required this.type, required this.name, required this.operatingHours, required this.crowdLevel, final  List<ParkChild> children = const []}): _children = children;
   factory _Park.fromJson(Map<String, dynamic> json) => _$ParkFromJson(json);
 
 @override final  String id;
@@ -369,7 +368,7 @@ class _$OperatingHoursCopyWithImpl<$Res>
 /// Create a copy of OperatingHours
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? open = null,Object? close = null,}) {
-  return _then(OperatingHours(
+  return _then(_self.copyWith(
 open: null == open ? _self.open : open // ignore: cast_nullable_to_non_nullable
 as String,close: null == close ? _self.close : close // ignore: cast_nullable_to_non_nullable
 as String,
@@ -584,7 +583,8 @@ as String,
 /// @nodoc
 mixin _$ParkChild {
 
- String get id; String get type; String get name; List<Facility> get children;
+ String get id; String get type; String get name;// We assume children of a Land are Facilities
+ List<Facility> get children;
 /// Create a copy of ParkChild
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -635,7 +635,7 @@ class _$ParkChildCopyWithImpl<$Res>
 /// Create a copy of ParkChild
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? type = null,Object? name = null,Object? children = null,}) {
-  return _then(ParkChild(
+  return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -781,13 +781,15 @@ return $default(_that.id,_that.type,_that.name,_that.children);case _:
 @JsonSerializable()
 
 class _ParkChild implements ParkChild {
-  const _ParkChild({required this.id, required this.type, required this.name,  List<Facility> children = const []}): _children = children;
+  const _ParkChild({required this.id, required this.type, required this.name, final  List<Facility> children = const []}): _children = children;
   factory _ParkChild.fromJson(Map<String, dynamic> json) => _$ParkChildFromJson(json);
 
 @override final  String id;
 @override final  String type;
 @override final  String name;
+// We assume children of a Land are Facilities
  final  List<Facility> _children;
+// We assume children of a Land are Facilities
 @override@JsonKey() List<Facility> get children {
   if (_children is EqualUnmodifiableListView) return _children;
   // ignore: implicit_dynamic_type
@@ -913,7 +915,7 @@ class _$FacilityCopyWithImpl<$Res>
 /// Create a copy of Facility
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? type = null,Object? category = null,Object? name = null,Object? thrillLevel = null,Object? heightRequirementInches = null,}) {
-  return _then(Facility(
+  return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String,category: null == category ? _self.category : category // ignore: cast_nullable_to_non_nullable

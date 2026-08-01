@@ -153,6 +153,11 @@ void main() {
         find.text('Hagrid Motorbike', skipOffstage: false),
         findsOneWidget,
       );
+
+      // Clean up async timers that persist past the test
+      await tester.pumpWidget(Container());
+      await tester.pump(const Duration(seconds: 10));
     },
+    // Adding timeout/pump to prevent lingering timers from tests due to upcomingShowsProvider using fetchShowtimes
   );
 }

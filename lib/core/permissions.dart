@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:themeparkapp/l10n/app_localizations.dart';
 
-/// Exposes and manages location permission state for the app.
-final locationPermissionProvider =
-    StateNotifierProvider<LocationPermissionNotifier, LocationPermission?>(
-      (ref) => LocationPermissionNotifier(),
-    );
+part 'permissions.g.dart';
 
-class LocationPermissionNotifier extends StateNotifier<LocationPermission?> {
-  LocationPermissionNotifier() : super(null) {
+/// Exposes and manages location permission state for the app.
+@riverpod
+class LocationPermissionNotifier extends _$LocationPermissionNotifier {
+  @override
+  LocationPermission? build() {
     _init();
+    return null;
   }
 
   Future<void> _init() async {
@@ -22,14 +23,10 @@ class LocationPermissionNotifier extends StateNotifier<LocationPermission?> {
   Future<LocationPermission> check() async {
     try {
       final p = await Geolocator.checkPermission();
-      if (mounted) {
-        state = p;
-      }
+      state = p;
       return p;
     } catch (_) {
-      if (mounted) {
-        state = LocationPermission.denied;
-      }
+      state = LocationPermission.denied;
       return LocationPermission.denied;
     }
   }
@@ -37,9 +34,7 @@ class LocationPermissionNotifier extends StateNotifier<LocationPermission?> {
   /// Requests permission from the user (may show native prompt).
   Future<LocationPermission> request() async {
     final p = await Geolocator.requestPermission();
-    if (mounted) {
-      state = p;
-    }
+    state = p;
     return p;
   }
 
@@ -60,7 +55,7 @@ class LocationPermissionRequestTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final perm = ref.watch(locationPermissionProvider);
+    final perm = ref.watch(locationPermissionNotifierProvider);
     final label = perm == null
         ? 'Permission: unknown'
         : perm == LocationPermission.always ||
@@ -77,7 +72,7 @@ class LocationPermissionRequestTile extends ConsumerWidget {
       ),
       trailing: ElevatedButton(
         onPressed: () => ref
-            .read(locationPermissionProvider.notifier)
+            .read(locationPermissionNotifierProvider.notifier)
             .checkAndRequestIfNeeded(),
         child: Text(loc?.onboarding_request_button ?? 'Request'),
       ),

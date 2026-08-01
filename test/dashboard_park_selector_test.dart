@@ -151,6 +151,10 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('PeopleMover', skipOffstage: false), findsNothing);
+
+      // Clean up async timers that persist past the test
+      await tester.pumpWidget(Container());
+      await tester.pump(const Duration(seconds: 10));
     },
   );
 
@@ -213,5 +217,9 @@ void main() {
     final context = tester.element(find.byType(Dashboard));
     final container = ProviderScope.containerOf(context);
     expect(container.read(selectedDashboardParkProvider), equals('p2'));
+
+    // Clean up async timers that persist past the test
+    await tester.pumpWidget(Container());
+    await tester.pump(const Duration(seconds: 10));
   });
 }

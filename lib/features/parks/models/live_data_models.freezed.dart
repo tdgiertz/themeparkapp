@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
+// ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'live_data_models.dart';
@@ -9,14 +9,13 @@ part of 'live_data_models.dart';
 // FreezedGenerator
 // **************************************************************************
 
-// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
 /// @nodoc
 mixin _$RideWaitTime {
 
- String get rideId; String get name; int get waitMinutes;
+ String get rideId; int get waitMinutes; String get name;
 /// Create a copy of RideWaitTime
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +28,16 @@ $RideWaitTimeCopyWith<RideWaitTime> get copyWith => _$RideWaitTimeCopyWithImpl<R
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RideWaitTime&&(identical(other.rideId, rideId) || other.rideId == rideId)&&(identical(other.name, name) || other.name == name)&&(identical(other.waitMinutes, waitMinutes) || other.waitMinutes == waitMinutes));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RideWaitTime&&(identical(other.rideId, rideId) || other.rideId == rideId)&&(identical(other.waitMinutes, waitMinutes) || other.waitMinutes == waitMinutes)&&(identical(other.name, name) || other.name == name));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,rideId,name,waitMinutes);
+int get hashCode => Object.hash(runtimeType,rideId,waitMinutes,name);
 
 @override
 String toString() {
-  return 'RideWaitTime(rideId: $rideId, name: $name, waitMinutes: $waitMinutes)';
+  return 'RideWaitTime(rideId: $rideId, waitMinutes: $waitMinutes, name: $name)';
 }
 
 
@@ -49,7 +48,7 @@ abstract mixin class $RideWaitTimeCopyWith<$Res>  {
   factory $RideWaitTimeCopyWith(RideWaitTime value, $Res Function(RideWaitTime) _then) = _$RideWaitTimeCopyWithImpl;
 @useResult
 $Res call({
- String rideId, String name, int waitMinutes
+ String rideId, int waitMinutes, String name
 });
 
 
@@ -66,12 +65,12 @@ class _$RideWaitTimeCopyWithImpl<$Res>
 
 /// Create a copy of RideWaitTime
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? rideId = null,Object? name = null,Object? waitMinutes = null,}) {
-  return _then(RideWaitTime(
+@pragma('vm:prefer-inline') @override $Res call({Object? rideId = null,Object? waitMinutes = null,Object? name = null,}) {
+  return _then(_self.copyWith(
 rideId: null == rideId ? _self.rideId : rideId // ignore: cast_nullable_to_non_nullable
-as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,waitMinutes: null == waitMinutes ? _self.waitMinutes : waitMinutes // ignore: cast_nullable_to_non_nullable
-as int,
+as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
@@ -156,10 +155,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String rideId,  String name,  int waitMinutes)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String rideId,  int waitMinutes,  String name)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RideWaitTime() when $default != null:
-return $default(_that.rideId,_that.name,_that.waitMinutes);case _:
+return $default(_that.rideId,_that.waitMinutes,_that.name);case _:
   return orElse();
 
 }
@@ -177,10 +176,10 @@ return $default(_that.rideId,_that.name,_that.waitMinutes);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String rideId,  String name,  int waitMinutes)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String rideId,  int waitMinutes,  String name)  $default,) {final _that = this;
 switch (_that) {
 case _RideWaitTime():
-return $default(_that.rideId,_that.name,_that.waitMinutes);case _:
+return $default(_that.rideId,_that.waitMinutes,_that.name);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -197,10 +196,10 @@ return $default(_that.rideId,_that.name,_that.waitMinutes);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String rideId,  String name,  int waitMinutes)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String rideId,  int waitMinutes,  String name)?  $default,) {final _that = this;
 switch (_that) {
 case _RideWaitTime() when $default != null:
-return $default(_that.rideId,_that.name,_that.waitMinutes);case _:
+return $default(_that.rideId,_that.waitMinutes,_that.name);case _:
   return null;
 
 }
@@ -212,12 +211,12 @@ return $default(_that.rideId,_that.name,_that.waitMinutes);case _:
 @JsonSerializable()
 
 class _RideWaitTime implements RideWaitTime {
-  const _RideWaitTime({required this.rideId, this.name = '', required this.waitMinutes});
+  const _RideWaitTime({required this.rideId, required this.waitMinutes, this.name = ''});
   factory _RideWaitTime.fromJson(Map<String, dynamic> json) => _$RideWaitTimeFromJson(json);
 
 @override final  String rideId;
-@override final  String name;
 @override final  int waitMinutes;
+@override@JsonKey() final  String name;
 
 /// Create a copy of RideWaitTime
 /// with the given fields replaced by the non-null parameter values.
@@ -232,16 +231,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RideWaitTime&&(identical(other.rideId, rideId) || other.rideId == rideId)&&(identical(other.name, name) || other.name == name)&&(identical(other.waitMinutes, waitMinutes) || other.waitMinutes == waitMinutes));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RideWaitTime&&(identical(other.rideId, rideId) || other.rideId == rideId)&&(identical(other.waitMinutes, waitMinutes) || other.waitMinutes == waitMinutes)&&(identical(other.name, name) || other.name == name));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,rideId,name,waitMinutes);
+int get hashCode => Object.hash(runtimeType,rideId,waitMinutes,name);
 
 @override
 String toString() {
-  return 'RideWaitTime(rideId: $rideId, name: $name, waitMinutes: $waitMinutes)';
+  return 'RideWaitTime(rideId: $rideId, waitMinutes: $waitMinutes, name: $name)';
 }
 
 
@@ -252,7 +251,7 @@ abstract mixin class _$RideWaitTimeCopyWith<$Res> implements $RideWaitTimeCopyWi
   factory _$RideWaitTimeCopyWith(_RideWaitTime value, $Res Function(_RideWaitTime) _then) = __$RideWaitTimeCopyWithImpl;
 @override @useResult
 $Res call({
- String rideId, String name, int waitMinutes
+ String rideId, int waitMinutes, String name
 });
 
 
@@ -269,12 +268,12 @@ class __$RideWaitTimeCopyWithImpl<$Res>
 
 /// Create a copy of RideWaitTime
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? rideId = null,Object? name = null,Object? waitMinutes = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? rideId = null,Object? waitMinutes = null,Object? name = null,}) {
   return _then(_RideWaitTime(
 rideId: null == rideId ? _self.rideId : rideId // ignore: cast_nullable_to_non_nullable
-as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,waitMinutes: null == waitMinutes ? _self.waitMinutes : waitMinutes // ignore: cast_nullable_to_non_nullable
-as int,
+as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
@@ -336,7 +335,7 @@ class _$ShowtimeCopyWithImpl<$Res>
 /// Create a copy of Showtime
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? showId = null,Object? name = null,Object? time = null,}) {
-  return _then(Showtime(
+  return _then(_self.copyWith(
 showId: null == showId ? _self.showId : showId // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,time: null == time ? _self.time : time // ignore: cast_nullable_to_non_nullable
@@ -605,7 +604,7 @@ class _$ParkHighlightsCopyWithImpl<$Res>
 /// Create a copy of ParkHighlights
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? shortestWaitTimes = null,Object? nextShowtimes = null,}) {
-  return _then(ParkHighlights(
+  return _then(_self.copyWith(
 shortestWaitTimes: null == shortestWaitTimes ? _self.shortestWaitTimes : shortestWaitTimes // ignore: cast_nullable_to_non_nullable
 as List<RideWaitTime>,nextShowtimes: null == nextShowtimes ? _self.nextShowtimes : nextShowtimes // ignore: cast_nullable_to_non_nullable
 as List<Showtime>,
@@ -749,7 +748,7 @@ return $default(_that.shortestWaitTimes,_that.nextShowtimes);case _:
 @JsonSerializable()
 
 class _ParkHighlights implements ParkHighlights {
-  const _ParkHighlights({ List<RideWaitTime> shortestWaitTimes = const [],  List<Showtime> nextShowtimes = const []}): _shortestWaitTimes = shortestWaitTimes,_nextShowtimes = nextShowtimes;
+  const _ParkHighlights({final  List<RideWaitTime> shortestWaitTimes = const [], final  List<Showtime> nextShowtimes = const []}): _shortestWaitTimes = shortestWaitTimes,_nextShowtimes = nextShowtimes;
   factory _ParkHighlights.fromJson(Map<String, dynamic> json) => _$ParkHighlightsFromJson(json);
 
  final  List<RideWaitTime> _shortestWaitTimes;

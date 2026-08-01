@@ -2,12 +2,21 @@ import 'package:battery_plus/battery_plus.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'environment_providers.g.dart';
 
 /// Represents broad device classes used for adaptive UI.
 enum DeviceType { mobile, tablet, desktop }
 
 /// Simple screen width holder for UI to write current width into.
-final screenWidthProvider = StateProvider<double>((_) => 0);
+@riverpod
+class ScreenWidth extends _$ScreenWidth {
+  @override
+  double build() => 0;
+
+  void setWidth(double width) => state = width;
+}
 
 /// Device type derived from `screenWidthProvider`.
 final deviceTypeProvider = Provider<DeviceType>((ref) {
