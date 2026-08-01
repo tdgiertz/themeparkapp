@@ -130,7 +130,8 @@
               },
               {
                 "id": "show_6",
-                "type": "Show",
+                "type": "Facility",
+                "category": "Show",
                 "name": "Finding Nemo: The Big Blue... and Beyond!",
                 "thrillLevel": "Low",
                 "heightRequirementInches": 0
@@ -460,14 +461,16 @@
               },
               {
                 "id": "show_1",
-                "type": "Show",
+                "type": "Facility",
+                "category": "Show",
                 "name": "Festival of Fantasy Parade",
                 "thrillLevel": "Low",
                 "heightRequirementInches": 0
               },
               {
                 "id": "show_5",
-                "type": "Show",
+                "type": "Facility",
+                "category": "Show",
                 "name": "Happily Ever After",
                 "thrillLevel": "Low",
                 "heightRequirementInches": 0
@@ -613,7 +616,8 @@
               },
               {
                 "id": "show_3",
-                "type": "Show",
+                "type": "Facility",
+                "category": "Show",
                 "name": "Luminous: The Symphony of Us",
                 "thrillLevel": "Low",
                 "heightRequirementInches": 0
@@ -743,7 +747,8 @@
               },
               {
                 "id": "show_4",
-                "type": "Show",
+                "type": "Facility",
+                "category": "Show",
                 "name": "Fantasmic!",
                 "thrillLevel": "Low",
                 "heightRequirementInches": 0
