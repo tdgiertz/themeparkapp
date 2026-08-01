@@ -3,9 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final selectedDashboardParkProvider = StateProvider<String>((ref) => 'all');
 
-// We redeclare ShowEvent here or keep the existing file's signature clean.
-// Let's rewrite upcoming_shows_widget.dart completely with the required logic.
-
 class ShowEvent {
   const ShowEvent({
     required this.id,
@@ -128,16 +125,13 @@ class UpcomingShowsWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedParkId = ref.watch(selectedDashboardParkProvider);
     
-    // We assume current time is 2026-07-31T14:40:30-05:00
     final currentTime = DateTime(2026, 7, 31, 14, 40, 30);
     const transitMinutes = 12;
 
-    // Filter by park first
     final parkShows = selectedParkId == 'all'
         ? mockUpcomingShows
         : mockUpcomingShows.where((s) => s.parkId == selectedParkId).toList();
 
-    // Calculate buffer and filter out negative buffers
     final validShows = <MapEntry<ShowEvent, int>>[];
     for (final show in parkShows) {
       final showTime = parseShowTime(show.startTime, currentTime);
@@ -149,7 +143,6 @@ class UpcomingShowsWidget extends ConsumerWidget {
       }
     }
 
-    // Sort: Exclusivity Boost first, then by buffer
     validShows.sort((a, b) {
       final pinA = a.key.isOnlyPerformanceToday;
       final pinB = b.key.isOnlyPerformanceToday;
@@ -245,8 +238,7 @@ class _ShowCard extends StatelessWidget {
                   ),
                   child: Text(
                     show.startTime,
-                    style: TextStyle(
-                      fontSize: 10,
+                    style: theme.textTheme.labelSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: cs.onPrimaryContainer,
                     ),
@@ -256,8 +248,7 @@ class _ShowCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     show.parkName,
-                    style: TextStyle(
-                      fontSize: 11,
+                    style: theme.textTheme.labelSmall?.copyWith(
                       fontWeight: FontWeight.w500,
                       color: cs.onSurfaceVariant,
                     ),
@@ -270,8 +261,7 @@ class _ShowCard extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               show.title,
-              style: TextStyle(
-                fontSize: 14,
+              style: theme.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: cs.onSurface,
               ),
@@ -281,13 +271,12 @@ class _ShowCard extends StatelessWidget {
             const SizedBox(height: 6),
             Row(
               children: [
-                Icon(Icons.place_outlined, size: 12, color: cs.onSurfaceVariant),
+                Icon(Icons.place_outlined, size: 14, color: cs.onSurfaceVariant),
                 const SizedBox(width: 3),
                 Expanded(
                   child: Text(
                     show.venue,
-                    style: TextStyle(
-                      fontSize: 11,
+                    style: theme.textTheme.labelSmall?.copyWith(
                       color: cs.onSurfaceVariant,
                     ),
                     maxLines: 1,
@@ -298,18 +287,18 @@ class _ShowCard extends StatelessWidget {
                   const SizedBox(width: 4),
                   Flexible(
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: Colors.orange.withValues(alpha: 0.12),
+                        color: cs.tertiaryContainer,
                         borderRadius: BorderRadius.circular(4),
-                        border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+                        border: Border.all(color: cs.tertiary.withValues(alpha: 0.3)),
                       ),
                       child: Text(
                         show.scarcityTag!,
-                        style: const TextStyle(
-                          fontSize: 8,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          fontSize: 9,
                           fontWeight: FontWeight.bold,
-                          color: Colors.orange,
+                          color: cs.onTertiaryContainer,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,

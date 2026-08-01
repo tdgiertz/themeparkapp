@@ -478,10 +478,9 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                     'Interactive 360° Preview Tour',
                     style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(height: 4),
-                  const Text(
+                  Text(
                     'Drag left or right to explore the location.',
-                    style: TextStyle(color: Colors.grey, fontSize: 12),
+                    style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                   ),
                   const SizedBox(height: 12),
                   Container(
@@ -491,7 +490,7 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                       border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5)),
                       boxShadow: [
                         BoxShadow(
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+                          color: theme.colorScheme.shadow.withValues(alpha: 0.1),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
@@ -520,9 +519,9 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                               ),
                             ),
                           ),
-                          // Dark Overlay for text legibility
+                          // Overlay for text legibility
                           Container(
-                            color: theme.colorScheme.onSurface.withValues(alpha: 0.15),
+                            color: theme.colorScheme.scrim.withValues(alpha: 0.25),
                           ),
                           // Compass UI Overlay
                           Positioned(
@@ -537,21 +536,21 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                               border: 1,
                               linearGradient: LinearGradient(
                                 colors: [
-                                  Colors.white.withValues(alpha: 0.2),
-                                  Colors.white.withValues(alpha: 0.05),
+                                  theme.colorScheme.surface.withValues(alpha: 0.4),
+                                  theme.colorScheme.surface.withValues(alpha: 0.1),
                                 ],
                               ),
                               borderGradient: LinearGradient(
                                 colors: [
-                                  Colors.white.withValues(alpha: 0.4),
-                                  Colors.white.withValues(alpha: 0.1),
+                                  theme.colorScheme.outline.withValues(alpha: 0.5),
+                                  theme.colorScheme.outline.withValues(alpha: 0.2),
                                 ],
                               ),
                               child: Transform.rotate(
                                 angle: _panOffset * 2.0 * math.pi,
-                                child: const Icon(
+                                child: Icon(
                                   Icons.explore,
-                                  color: Colors.tealAccent,
+                                  color: theme.colorScheme.tertiary,
                                   size: 36,
                                 ),
                               ),
@@ -562,20 +561,22 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                             bottom: 16,
                             left: 16,
                             child: Card(
-                              color: theme.cardColor,
+                              color: theme.colorScheme.surfaceContainerHigh,
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                 child: Row(
                                   children: [
                                     Icon(
                                       _isUserDragging ? Icons.pan_tool : Icons.swap_horizontal_circle_outlined,
-                                      color: Colors.tealAccent,
+                                      color: theme.colorScheme.tertiary,
                                       size: 16,
                                     ),
                                     const SizedBox(width: 8),
                                     Text(
                                       _isUserDragging ? 'Exploring...' : 'Drag Panorama to Look Around',
-                                      style: const TextStyle(color: Colors.white, fontSize: 12),
+                                      style: theme.textTheme.labelSmall?.copyWith(
+                                        color: theme.colorScheme.onSurfaceVariant,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -685,7 +686,7 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
           children: [
             if (_joinedQueue)
               Card(
-                color: Colors.teal.withValues(alpha: 0.15),
+                color: theme.colorScheme.tertiaryContainer,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Row(
@@ -693,11 +694,11 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                     children: [
                       Text(
                         'Virtual Queue: $_queueGroup',
-                        style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.teal),
+                        style: TextStyle(fontWeight: FontWeight.bold, color: theme.colorScheme.onTertiaryContainer),
                       ),
                       Text(
                         'Est. Entry: $_queueEstimate',
-                        style: const TextStyle(color: Colors.teal),
+                        style: TextStyle(color: theme.colorScheme.onTertiaryContainer),
                       ),
                     ],
                   ),
@@ -709,15 +710,15 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
                   child: ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      backgroundColor: Colors.teal,
-                      foregroundColor: Colors.white,
+                      backgroundColor: theme.colorScheme.tertiary,
+                      foregroundColor: theme.colorScheme.onTertiary,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                     icon: _isJoiningQueue
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 20,
                             height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                            child: CircularProgressIndicator(strokeWidth: 2, color: theme.colorScheme.onTertiary),
                           )
                         : const Icon(Icons.confirmation_num),
                     label: Text(

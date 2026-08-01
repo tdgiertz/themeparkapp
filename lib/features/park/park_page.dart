@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:go_router/go_router.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 import 'package:themeparkapp/core/providers.dart';
 import 'package:themeparkapp/features/park/facility_detail_page.dart';
 import 'package:themeparkapp/features/park/park_explorer_state.dart';
@@ -294,22 +295,15 @@ class _ParkPageState extends ConsumerState<ParkPage> {
       body: detailAsync.when(
         data: (ParkDetail detail) => waitsAsync.when(
           data: (WaitTimesResponse waits) {
-            return LayoutBuilder(
-              builder: (context, constraints) {
-                final isPortrait = MediaQuery.of(context).orientation == Orientation.portrait ||
-                    constraints.maxHeight >= constraints.maxWidth;
-
-                if (isPortrait) {
-                  // Portrait View: Vertical Split with Map on Top (~35% height) and List on Bottom
-                  return _buildMobileLayout(detail, waits, loc);
-                } else if (constraints.maxWidth > 1000) {
-                  // Wide Desktop Landscape View
-                  return _buildDesktopLayout(detail, waits, loc);
-                } else {
-                  // Tablet/Foldable Landscape View: Side-by-Side with Collapsible Side Panel
-                  return _buildTabletLayout(detail, waits, loc);
-                }
-              },
+            return ScreenTypeLayout.builder(
+              breakpoints: const ScreenBreakpoints(
+                desktop: 1001,
+                tablet: 600,
+                watch: 300,
+              ),
+              mobile: (context) => _buildMobileLayout(detail, waits, loc),
+              tablet: (context) => _buildTabletLayout(detail, waits, loc),
+              desktop: (context) => _buildDesktopLayout(detail, waits, loc),
             );
           },
           loading: () => const Center(child: CircularProgressIndicator()),
@@ -427,7 +421,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                               offset: const Offset(0, -4),
                             ),
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.3),
+                              color: theme.colorScheme.shadow.withValues(alpha: 0.3),
                               blurRadius: 12,
                               offset: const Offset(0, -2),
                             ),
