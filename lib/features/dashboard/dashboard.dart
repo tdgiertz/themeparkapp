@@ -107,54 +107,59 @@ class Dashboard extends ConsumerWidget {
 
     return Container(
       color: Theme.of(context).colorScheme.surface,
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: SizedBox(
-        height: 42,
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          children: [
-            ChoiceChip(
-              key: const ValueKey('park_selector_all'),
-              label: const Text('All Parks'),
-              selected: selectedParkId == 'all',
-              onSelected: (val) {
-                if (val) {
-                  ref.read(isParkSelectionManualProvider.notifier).updateManual(value: true);
-                  ref.read(selectedDashboardParkProvider.notifier).updatePark('all');
-                }
-              },
-            ),
-            const SizedBox(width: 8),
-            ...allParks.map((p) {
-              final isDetected = p.id == detectedParkId;
-              final isSelected = selectedParkId == p.id;
-
-              return Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: ChoiceChip(
-                  key: ValueKey('park_selector_${p.id}'),
-                  avatar: isDetected
-                      ? Icon(
-                          Icons.my_location,
-                          size: 16,
-                          color: isSelected
-                              ? Theme.of(context).colorScheme.onPrimary
-                              : Theme.of(context).colorScheme.primary,
-                        )
-                      : null,
-                  label: Text(isDetected ? '${p.name} (Nearby)' : p.name),
-                  selected: isSelected,
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: SizedBox(
+            height: 42,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              children: [
+                ChoiceChip(
+                  key: const ValueKey('park_selector_all'),
+                  label: const Text('All Parks'),
+                  selected: selectedParkId == 'all',
                   onSelected: (val) {
                     if (val) {
                       ref.read(isParkSelectionManualProvider.notifier).updateManual(value: true);
-                      ref.read(selectedDashboardParkProvider.notifier).updatePark(p.id);
+                      ref.read(selectedDashboardParkProvider.notifier).updatePark('all');
                     }
                   },
                 ),
-              );
-            }),
-          ],
+                const SizedBox(width: 8),
+                ...allParks.map((p) {
+                  final isDetected = p.id == detectedParkId;
+                  final isSelected = selectedParkId == p.id;
+
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: ChoiceChip(
+                      key: ValueKey('park_selector_${p.id}'),
+                      avatar: isDetected
+                          ? Icon(
+                              Icons.my_location,
+                              size: 16,
+                              color: isSelected
+                                  ? Theme.of(context).colorScheme.onPrimary
+                                  : Theme.of(context).colorScheme.primary,
+                            )
+                          : null,
+                      label: Text(isDetected ? '${p.name} (Nearby)' : p.name),
+                      selected: isSelected,
+                      onSelected: (val) {
+                        if (val) {
+                          ref.read(isParkSelectionManualProvider.notifier).updateManual(value: true);
+                          ref.read(selectedDashboardParkProvider.notifier).updatePark(p.id);
+                        }
+                      },
+                    ),
+                  );
+                }),
+              ],
+            ),
+          ),
         ),
       ),
     );
