@@ -24,27 +24,27 @@ void main() {
   });
 
   testWidgets('FavoritesPage error state', (WidgetTester tester) async {
-    final originalOnError = FlutterError.onError;
-    FlutterError.onError = (details) {
-      if (details.exception.toString().contains('Error')) return;
-      originalOnError?.call(details);
-    };
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           favoritesProvider.overrideWith(
-            (ref) => throw 'Error',
+            // Use a proper Exception object instead of a String. 
+            // Riverpod and Dart's async Zone handle these much better.
+            (ref) => Future.error(Exception('Error')),
           ),
         ],
         child: const MaterialApp(home: Scaffold(body: FavoritesPage())),
       ),
     );
 
-    // Using pumpAndSettle might timeout due to the infinite retry loops or animations, just pump a few times
-    await tester.pump();
-    await tester.pump(const Duration(seconds: 1));
-    expect(find.textContaining('Error loading favorites: Error'), findsOneWidget);
-    FlutterError.onError = originalOnError;
+    await tester.pumpAndSettle();
+    expect(
+      find.descendant(
+        of: find.byType(Column),
+        matching: find.textContaining('Error loading favorites'),
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('FavoritesPage data state with data', (
