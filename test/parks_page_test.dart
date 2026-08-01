@@ -56,8 +56,8 @@ void main() {
       // Desktop/Tablet dashboard pane should render
       expect(find.byType(DesktopParkDashboard), findsOneWidget);
 
-      // Most Urgent Wait Times header should render in 1/3 column
-      expect(find.text('Most Urgent Wait Times'), findsOneWidget);
+      // Wait Times header should render in 1/3 column
+      expect(find.text('Wait Times'), findsOneWidget);
       expect(find.text('TimescaleDB Aggregate'), findsOneWidget);
     });
 
@@ -96,6 +96,128 @@ void main() {
       // Mobile cards should render with sparkline chart and expand toggle
       expect(find.byType(ParkHeroCard), findsWidgets);
       expect(find.byType(SparklineChart), findsWidgets);
+    });
+
+    testWidgets('Tapping park tab in ribbon updates selected park on Desktop', (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1200, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            assetLoaderProvider.overrideWithValue(fileLoader),
+          ],
+          child: const MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: ParksPage(),
+          ),
+        ),
+      );
+
+      final context = tester.element(find.byType(ParksPage));
+      final container = ProviderScope.containerOf(context);
+      await tester.runAsync(() async {
+        await container.read(parksProvider.notifier).refresh();
+      });
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+
+      // Find second park tab in ribbon (e.g. Magic Kingdom / p2)
+      final secondParkTab = find.text('Magic Kingdom');
+      expect(secondParkTab, findsOneWidget);
+      await tester.tap(secondParkTab);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(container.read(selectedParkIdProvider), equals('p2'));
+    });
+
+    testWidgets('Tapping Filters button in ribbon toggles filter drawer state', (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1200, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            assetLoaderProvider.overrideWithValue(fileLoader),
+          ],
+          child: const MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: ParksPage(),
+          ),
+        ),
+      );
+
+      final context = tester.element(find.byType(ParksPage));
+      final container = ProviderScope.containerOf(context);
+      await tester.runAsync(() async {
+        await container.read(parksProvider.notifier).refresh();
+      });
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+
+      expect(container.read(parkFilterDrawerOpenProvider), isFalse);
+
+      final filterBtn = find.text('Filters');
+      expect(filterBtn, findsOneWidget);
+      await tester.tap(filterBtn);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+
+      expect(container.read(parkFilterDrawerOpenProvider), isTrue);
+    });
+
+    testWidgets('Tapping ParkHeroCard expands quick context accordion on Mobile', (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(400, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            assetLoaderProvider.overrideWithValue(fileLoader),
+          ],
+          child: const MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: ParksPage(),
+          ),
+        ),
+      );
+
+      final context = tester.element(find.byType(ParksPage));
+      final container = ProviderScope.containerOf(context);
+      await tester.runAsync(() async {
+        await container.read(parksProvider.notifier).refresh();
+        await container.read(waitTimesProvider('p1').notifier).refresh();
+      });
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+
+      expect(find.text('Quick Context (TimescaleDB Aggregate)'), findsNothing);
+
+      // Tap on the first park hero card header
+      final firstCardHeader = find.byKey(const ValueKey('park_card_inkwell_p1'));
+      expect(firstCardHeader, findsOneWidget);
+      await tester.tap(firstCardHeader);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(find.text('Quick Context (TimescaleDB Aggregate)'), findsOneWidget);
+      expect(find.text('Open Full Park Explorer & Map'), findsOneWidget);
     });
   });
 }

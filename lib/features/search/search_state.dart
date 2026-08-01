@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'dart:math' as math;
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:themeparkapp/core/models/park_detail.dart';
 import 'package:themeparkapp/core/providers.dart';
 import 'package:themeparkapp/features/park/park_explorer_state.dart';
-import 'package:themeparkapp/models/park_detail.dart';
 
 /// Represents a single item in the drag-and-drop itinerary.
 class SearchItineraryItem {
@@ -149,13 +150,14 @@ class SearchNotifier extends StateNotifier<SearchState> {
     'a28': [28.4178, -81.5814], // Mickey Town Square
   };
 
-  /// Loads all facilities from attractions.json asset.
+  /// Loads all facilities from parks.json asset.
   Future<void> _loadAllFacilities() async {
     try {
       final loader = ref.read(assetLoaderProvider);
-      final raw = await loader('assets/data/attractions.json');
+      final raw = await loader('assets/data/parks.json');
       final decoded = json.decode(raw) as Map<String, dynamic>;
-      final parksList = decoded['parks'] as List? ?? [];
+      final data = decoded['data'] as Map<String, dynamic>? ?? {};
+      final parksList = data['parks'] as List? ?? decoded['parks'] as List? ?? [];
       final facilities = <Facility>[];
       for (final parkMap in parksList) {
         final lands = parkMap['children'] as List? ?? [];
@@ -200,6 +202,7 @@ class SearchNotifier extends StateNotifier<SearchState> {
 
     // Simulate think delay
     await Future<void>.delayed(const Duration(milliseconds: 600));
+    if (!mounted) return;
 
     final normalizedQuery = queryText.toLowerCase();
 

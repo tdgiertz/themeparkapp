@@ -2,10 +2,10 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:themeparkapp/core/models/park_detail.dart';
+import 'package:themeparkapp/core/models/wait_time.dart';
 import 'package:themeparkapp/features/park/widgets/area_chart.dart';
 import 'package:themeparkapp/features/park/widgets/pulse_dot.dart';
-import 'package:themeparkapp/models/park_detail.dart';
-import 'package:themeparkapp/models/wait_time.dart';
 
 // Reusing MenuItem class structure from facility_detail_page.dart
 class LocalMenuItem {
@@ -386,6 +386,12 @@ class _FacilityDetailSheetContentState extends ConsumerState<FacilityDetailSheet
                                         width: 50,
                                         height: 50,
                                         fit: BoxFit.cover,
+                                        errorBuilder: (_, __, ___) => Container(
+                                          width: 50,
+                                          height: 50,
+                                          color: theme.colorScheme.surfaceContainerHigh,
+                                          child: Icon(Icons.fastfood, size: 24, color: theme.colorScheme.onSurfaceVariant),
+                                        ),
                                       ),
                                     ),
                                     const SizedBox(width: 12),

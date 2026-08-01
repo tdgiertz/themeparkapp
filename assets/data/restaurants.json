@@ -1,0 +1,14 @@
+{
+  "restaurants": [
+    {
+      "id": "r1",
+      "facilityId": "a10",
+      "operatingHours": {
+        "open": "11:00",
+        "close": "21:00"
+      },
+      "cuisine": "American",
+      "priceRange": "$$"
+    }
+  ]
+}

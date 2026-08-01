@@ -6,7 +6,7 @@ import 'package:responsive_builder/responsive_builder.dart';
 import 'package:go_router/go_router.dart';
 import 'package:themeparkapp/features/park/park_explorer_state.dart';
 import 'package:themeparkapp/features/search/search_state.dart';
-import 'package:themeparkapp/models/park_detail.dart';
+import 'package:themeparkapp/core/models/park_detail.dart';
 
 /// Interactive AI Assistant Search Dashboard Page.
 class SearchPage extends ConsumerStatefulWidget {
@@ -106,7 +106,7 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
     _textController.clear();
     _scrollToBottom();
     // Keep focus on desktop
-    if (MediaQuery.of(context).size.width > 1024) {
+    if (mounted && MediaQuery.of(context).size.width > 1024) {
       _inputFocusNode.requestFocus();
     }
   }
@@ -389,9 +389,12 @@ class _SearchPageState extends ConsumerState<SearchPage> with TickerProviderStat
                 children: [
                   Icon(Icons.location_on, size: 10, color: theme.colorScheme.secondary),
                   const SizedBox(width: 4),
-                  Text(
-                    msg.statusInfo!,
-                    style: TextStyle(fontSize: 10, color: theme.colorScheme.secondary, fontStyle: FontStyle.italic),
+                  Expanded(
+                    child: Text(
+                      msg.statusInfo!,
+                      style: TextStyle(fontSize: 10, color: theme.colorScheme.secondary, fontStyle: FontStyle.italic),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ],
               ),

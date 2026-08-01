@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:themeparkapp/features/onboarding/onboarding.dart';
-import 'package:themeparkapp/core/onboarding_state.dart';
-import 'package:themeparkapp/core/permissions.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:themeparkapp/core/permissions.dart';
+import 'package:themeparkapp/features/onboarding/onboarding.dart';
 
 class MockLocationPermissionNotifier extends LocationPermissionNotifier {
   MockLocationPermissionNotifier(LocationPermission? initial) {
     state = initial;
   }
+
   @override
-  Future<void> _init() async {}
+  Future<LocationPermission> check() async => state ?? LocationPermission.denied;
 }
 
 void main() {
@@ -41,9 +41,7 @@ void main() {
     // Check initial state of the location tile
     expect(find.text('Location: denied'), findsOneWidget); 
     
-    // Create a container to read providers manually
-    final container = ProviderContainer();
-    
+
     // Tap Skip button
     await tester.tap(find.byKey(const ValueKey('onboarding_skip')));
     

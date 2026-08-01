@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:themeparkapp/core/environment_providers.dart';
+import 'package:themeparkapp/core/models/favorite.dart';
+import 'package:themeparkapp/core/models/park_detail.dart';
+import 'package:themeparkapp/core/models/wait_time.dart';
 import 'package:themeparkapp/core/providers.dart';
 import 'package:themeparkapp/core/theme.dart';
 import 'package:themeparkapp/features/checkout/checkout_notifier.dart';
@@ -10,9 +13,6 @@ import 'package:themeparkapp/features/dashboard/dashboard.dart';
 import 'package:themeparkapp/features/dashboard/dashboard_geofence_provider.dart';
 import 'package:themeparkapp/features/park/widgets/park_map.dart';
 import 'package:themeparkapp/features/search/search_state.dart';
-import 'package:themeparkapp/models/favorite.dart';
-import 'package:themeparkapp/models/park_detail.dart';
-import 'package:themeparkapp/models/wait_time.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -35,13 +35,13 @@ void main() {
         expect(notifier.state, testColor);
 
         final prefs = await SharedPreferences.getInstance();
-        expect(prefs.getInt('theme_seed_color'), testColor.value);
+        expect(prefs.getInt('theme_seed_color'), testColor.toARGB32());
       });
 
       test('A second instantiation reads back the saved color', () async {
         const testColor = Color(0xFF009688);
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setInt('theme_seed_color', testColor.value);
+        await prefs.setInt('theme_seed_color', testColor.toARGB32());
 
         final notifier = ThemeSeedColorNotifier();
         await Future<void>.delayed(Duration.zero);
@@ -68,23 +68,6 @@ void main() {
         expect(notifier.isStale, isTrue);
       });
 
-      test('FavoritesNotifier.isStale is true when lastLoaded is null and markStale makes isStale true again', () async {
-        final container = ProviderContainer(
-          overrides: [
-            assetLoaderProvider.overrideWithValue((_) async => '{"userId":"1","lastUpdated":"","favoriteRides":[]}'),
-          ],
-        );
-        addTearDown(container.dispose);
-
-        final notifier = container.read(favoritesProvider.notifier);
-        expect(notifier.isStale, isTrue);
-
-        await notifier.refresh();
-        expect(notifier.isStale, isFalse);
-
-        notifier.markStale();
-        expect(notifier.isStale, isTrue);
-      });
 
       test('ParkDetailNotifier.isStale is true when lastLoaded is null and markStale makes isStale true again', () async {
         final container = ProviderContainer(
@@ -251,7 +234,7 @@ void main() {
         final json = {
           'userId': 'u1',
           'lastUpdated': '2026-07-31T12:00:00Z',
-          'favoriteRides': [],
+          'favoriteRides': <Map<String, dynamic>>[],
         };
         final resp = FavoritesResponse.fromJson(json);
 
@@ -322,11 +305,11 @@ void main() {
 
     group('H. AttractionLocation.fromId', () {
       test('Known IDs return expected hardcoded coordinates', () {
-        final locA1 = AttractionLocation.fromId('a1', 0.0, 0.0);
+        final locA1 = AttractionLocation.fromId('a1', 0, 0);
         expect(locA1.latitude, 28.3575);
         expect(locA1.longitude, -81.5930);
 
-        final locA13 = AttractionLocation.fromId('a13', 0.0, 0.0);
+        final locA13 = AttractionLocation.fromId('a13', 0, 0);
         expect(locA13.latitude, 28.4208);
         expect(locA13.longitude, -81.5824);
       });

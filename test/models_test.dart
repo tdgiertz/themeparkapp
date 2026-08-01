@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:themeparkapp/models/favorite.dart';
-import 'package:themeparkapp/models/park.dart';
-import 'package:themeparkapp/models/park_detail.dart';
-import 'package:themeparkapp/models/wait_time.dart';
+import 'package:themeparkapp/core/models/park.dart';
+import 'package:themeparkapp/core/models/park_detail.dart';
+import 'package:themeparkapp/core/models/wait_time.dart';
+import 'package:themeparkapp/features/parks/models/extra_models.dart';
 
 void main() {
   test('Park.fromJson parses parks.json', () {
@@ -21,14 +21,15 @@ void main() {
   test('Favorites.fromJson parses favorites.json', () {
     final raw = File('assets/data/favorites.json').readAsStringSync();
     final map = json.decode(raw) as Map<String, dynamic>;
-    final resp = FavoritesResponse.fromJson(map);
+    final resp = UserFavorites.fromJson(map);
     expect(resp.favoriteRides, isNotNull);
   });
 
-  test('ParkDetail.fromJson parses attractions.json', () {
-    final raw = File('assets/data/attractions.json').readAsStringSync();
+  test('ParkDetail.fromJson parses parks.json', () {
+    final raw = File('assets/data/parks.json').readAsStringSync();
     final map = json.decode(raw) as Map<String, dynamic>;
-    final parks = map['parks'] as List;
+    final data = map['data'] as Map<String, dynamic>? ?? {};
+    final parks = data['parks'] as List? ?? map['parks'] as List;
     final p1Map = parks.firstWhere((e) => e['id'] == 'p1');
     final detail = ParkDetail.fromJson({'park': p1Map});
     expect(detail.name, isNotEmpty);

@@ -5,11 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:themeparkapp/core/models/favorite.dart';
+import 'package:themeparkapp/core/models/park.dart';
+import 'package:themeparkapp/core/models/park_detail.dart';
+import 'package:themeparkapp/core/models/wait_time.dart';
 import 'package:themeparkapp/core/theme.dart';
-import 'package:themeparkapp/models/favorite.dart';
-import 'package:themeparkapp/models/park.dart';
-import 'package:themeparkapp/models/park_detail.dart';
-import 'package:themeparkapp/models/wait_time.dart';
+import 'package:themeparkapp/features/parks/providers/park_providers.dart';
 
 /// Application-wide Riverpod providers.
 /// Keep business logic decoupled from UI and expose state via providers.
@@ -40,7 +41,7 @@ class ThemeSeedColorNotifier extends StateNotifier<Color?> {
     state = color;
     try {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setInt(_key, color.value);
+      await prefs.setInt(_key, color.toARGB32());
     } catch (_) {}
   }
 }
@@ -112,47 +113,16 @@ final parksProvider =
       return ParksNotifier(ref);
     });
 
-/// ---------------------- Favorites (StateNotifier) ----------------------
-class FavoritesNotifier extends StateNotifier<AsyncValue<FavoritesResponse>> {
-  FavoritesNotifier(this.ref) : super(const AsyncValue.loading()) {
-    _load();
-  }
-  final Ref ref;
 
-  DateTime? lastLoaded;
-  static const Duration _staleDuration = Duration(minutes: 5);
-  bool get isStale =>
-      lastLoaded == null ||
-      DateTime.now().difference(lastLoaded!) > _staleDuration;
-  void markStale() => lastLoaded = null;
-
-  Future<void> _load() async {
-    try {
-      final loader = ref.read(assetLoaderProvider);
-      final raw = await loader('assets/data/favorites.json');
-      if (mounted) {
-        state = AsyncValue.data(
-          FavoritesResponse.fromJson(json.decode(raw) as Map<String, dynamic>),
-        );
-        lastLoaded = DateTime.now();
-      }
-    } catch (e, st) {
-      if (mounted) state = AsyncValue.error(e, st);
-    }
-  }
-
-  Future<void> refresh() async {
-    state = const AsyncValue.loading();
-    await _load();
-  }
-}
-
-final favoritesProvider =
-    StateNotifierProvider<FavoritesNotifier, AsyncValue<FavoritesResponse>>((
-      ref,
-    ) {
-      return FavoritesNotifier(ref);
-    });
+/// ---------------------- Favorites (FutureProvider) ----------------------
+final favoritesProvider = FutureProvider<FavoritesResponse>((ref) async {
+  final rides = await ref.watch(derivedFavoritesProvider.future);
+  return FavoritesResponse(
+    userId: 'user-9876',
+    lastUpdated: DateTime.now().toIso8601String(),
+    favoriteRides: rides,
+  );
+});
 
 /// ---------------------- ParkDetail (family StateNotifier) ----------------------
 class ParkDetailNotifier extends StateNotifier<AsyncValue<ParkDetail>> {
@@ -173,9 +143,10 @@ class ParkDetailNotifier extends StateNotifier<AsyncValue<ParkDetail>> {
   Future<void> _load() async {
     try {
       final loader = ref.read(assetLoaderProvider);
-      final raw = await loader('assets/data/attractions.json');
+      final raw = await loader('assets/data/parks.json');
       final decoded = json.decode(raw) as Map<String, dynamic>;
-      final parks = decoded['parks'] as List? ?? [];
+      final data = decoded['data'] as Map<String, dynamic>? ?? {};
+      final parks = data['parks'] as List? ?? decoded['parks'] as List? ?? [];
       final parkData = parks.firstWhere(
         (e) => (e as Map<String, dynamic>)['id'] == parkId,
         orElse: () => null,

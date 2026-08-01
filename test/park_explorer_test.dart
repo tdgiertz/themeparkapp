@@ -167,6 +167,84 @@ void main() {
       // Dense Desktop table rows should render
       expect(find.byType(DesktopAttractionRow), findsWidgets);
     });
+
+    testWidgets('Tapping Desktop checkbox filters updates checkbox state', (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1200, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            assetLoaderProvider.overrideWithValue(fileLoader),
+            locationPermissionProvider.overrideWith((ref) => MockLocationPermissionNotifier()),
+            userLocationProvider('p1').overrideWith(MockUserLocationNotifier.new),
+          ],
+          child: const MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: ParkPage(parkId: 'p1', parkName: 'Animal Kingdom'),
+          ),
+        ),
+      );
+
+      final context = tester.element(find.byType(ParkPage));
+      final container = ProviderScope.containerOf(context);
+      await tester.runAsync(() async {
+        await container.read(parkDetailProvider('p1').notifier).refresh();
+        await container.read(waitTimesProvider('p1').notifier).refresh();
+      });
+      await tester.pump();
+
+      final thrillCheckbox = find.byType(Checkbox).first;
+      expect(thrillCheckbox, findsOneWidget);
+      await tester.tap(thrillCheckbox);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+    });
+
+    testWidgets('Tapping FilterChip updates selectedFiltersProvider state on Mobile', (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(400, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            assetLoaderProvider.overrideWithValue(fileLoader),
+            locationPermissionProvider.overrideWith((ref) => MockLocationPermissionNotifier()),
+            userLocationProvider('p1').overrideWith(MockUserLocationNotifier.new),
+          ],
+          child: const MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: ParkPage(parkId: 'p1', parkName: 'Animal Kingdom'),
+          ),
+        ),
+      );
+
+      final context = tester.element(find.byType(ParkPage));
+      final container = ProviderScope.containerOf(context);
+      await tester.runAsync(() async {
+        await container.read(parkDetailProvider('p1').notifier).refresh();
+        await container.read(waitTimesProvider('p1').notifier).refresh();
+      });
+      await tester.pump();
+
+      final thrillChip = find.byType(FilterChip).first;
+      await tester.tap(thrillChip);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      final filters = container.read(selectedFiltersProvider('p1'));
+      expect(filters, equals({'thrill'}));
+    });
   });
 }
 

@@ -168,5 +168,75 @@ void main() {
       expect(find.text('Quick Actions'), findsOneWidget);
       expect(find.text('Wait Time Analytics'), findsOneWidget);
     });
+
+    testWidgets('Renders fallback text when facility ID is non-existent', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            assetLoaderProvider.overrideWithValue(fileLoader),
+          ],
+          child: const MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: FacilityDetailPage(facilityId: 'invalid_id_999', parkId: 'p1'),
+          ),
+        ),
+      );
+
+      final context = tester.element(find.byType(FacilityDetailPage));
+      final container = ProviderScope.containerOf(context);
+      await tester.runAsync(() async {
+        await container.read(parkDetailProvider('p1').notifier).refresh();
+      });
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+
+      expect(find.text('Facility not found.'), findsOneWidget);
+    });
+
+    testWidgets('Tapping Directions button opens Navigation Map dialog', (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(400, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            assetLoaderProvider.overrideWithValue(fileLoader),
+          ],
+          child: const MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: FacilityDetailPage(facilityId: 'a1', parkId: 'p1'),
+          ),
+        ),
+      );
+
+      final context = tester.element(find.byType(FacilityDetailPage));
+      final container = ProviderScope.containerOf(context);
+      await tester.runAsync(() async {
+        await container.read(parkDetailProvider('p1').notifier).refresh();
+        await container.read(waitTimesProvider('p1').notifier).refresh();
+      });
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      final directionsBtn = find.byIcon(Icons.navigation).first;
+      await tester.tap(directionsBtn);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(find.text('Navigate Here'), findsOneWidget);
+      expect(find.text('OK'), findsOneWidget);
+
+      await tester.tap(find.text('OK'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(find.text('Navigation & Wayfinding'), findsNothing);
+    });
   });
 }

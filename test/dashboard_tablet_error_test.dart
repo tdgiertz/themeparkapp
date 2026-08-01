@@ -8,15 +8,10 @@ import 'package:themeparkapp/l10n/app_localizations.dart';
 
 class ErrorParksNotifier extends ParksNotifier {
   ErrorParksNotifier(super.ref) {
-    state = AsyncValue.error('Failed to load parks', StackTrace.empty);
+    state = const AsyncValue.error('Failed to load parks', StackTrace.empty);
   }
 }
 
-class ErrorFavoritesNotifier extends FavoritesNotifier {
-  ErrorFavoritesNotifier(super.ref) {
-    state = AsyncValue.error('Failed to load favorites', StackTrace.empty);
-  }
-}
 
 void main() {
   testWidgets('Dashboard tablet/desktop layout handles error states cleanly', (
@@ -32,8 +27,8 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          parksProvider.overrideWith((ref) => ErrorParksNotifier(ref)),
-          favoritesProvider.overrideWith((ref) => ErrorFavoritesNotifier(ref)),
+          parksProvider.overrideWith(ErrorParksNotifier.new),
+          favoritesProvider.overrideWith((ref) => Future.error('Failed to load favorites', StackTrace.empty)),
         ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

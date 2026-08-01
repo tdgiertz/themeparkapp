@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+import 'package:themeparkapp/core/models/favorite.dart';
 import 'package:themeparkapp/core/theme.dart';
-import 'package:themeparkapp/models/favorite.dart';
 
 /// Enhanced favorite card with sparkline chart and swipe actions.
 class ExpandedFavoriteCard extends StatefulWidget {
@@ -35,7 +35,7 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
       },
       onHorizontalDragEnd: (details) {
         final dx = details.velocity.pixelsPerSecond.dx;
-        final dragThreshold = 500.0;
+        const dragThreshold = 500.0;
 
         if (dx < -dragThreshold && widget.onSwipeLeft != null) {
           widget.onSwipeLeft!();
@@ -426,12 +426,12 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
       isDown = !isUp;
     }
 
-    final String symbol = isUp ? '📈' : (isDown ? '📉' : '➡️');
-    final IconData icon = isUp ? Icons.trending_up : (isDown ? Icons.trending_down : Icons.trending_flat);
-    final Color color = isUp
+    final symbol = isUp ? '📈' : (isDown ? '📉' : '➡️');
+    final icon = isUp ? Icons.trending_up : (isDown ? Icons.trending_down : Icons.trending_flat);
+    final color = isUp
         ? Theme.of(context).colorScheme.error
         : (isDown ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurfaceVariant);
-    final String tooltipMsg = isUp ? 'Wait time trending up' : (isDown ? 'Wait time trending down' : 'Wait time steady');
+    final tooltipMsg = isUp ? 'Wait time trending up' : (isDown ? 'Wait time trending down' : 'Wait time steady');
 
     return Tooltip(
       message: tooltipMsg,
@@ -489,7 +489,7 @@ class _DiagonalStripensPainter extends CustomPainter {
       ..color = stripeColor ?? const Color(0xFF272A35)
       ..strokeWidth = 3;
 
-    final spacing = 12.0;
+    const spacing = 12.0;
     for (var i = -size.height; i < size.width; i += spacing) {
       canvas.drawLine(
         Offset(i, 0),

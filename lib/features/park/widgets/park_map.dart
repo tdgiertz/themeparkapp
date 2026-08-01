@@ -1,10 +1,11 @@
 import 'dart:math' as math;
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:themeparkapp/core/models/park_detail.dart';
+import 'package:themeparkapp/core/models/wait_time.dart';
 import 'package:themeparkapp/features/park/park_explorer_state.dart';
-import 'package:themeparkapp/models/park_detail.dart';
-import 'package:themeparkapp/models/wait_time.dart';
 
 /// Mapping of known coordinates for facilities.
 class AttractionLocation {
@@ -150,19 +151,19 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
       )
       ..scale(zoom);
 
-    _animateToMatrix(endMatrix, duration: const Duration(milliseconds: 300));
+    _animateToMatrix(endMatrix);
   }
 
   void _animateToBounds(List<Facility> facilities, Size mapSize, Size viewportSize) {
     if (facilities.isEmpty) {
-      _animateToMatrix(Matrix4.identity(), duration: const Duration(milliseconds: 300));
+      _animateToMatrix(Matrix4.identity());
       return;
     }
 
-    double minLat = double.infinity;
-    double maxLat = -double.infinity;
-    double minLng = double.infinity;
-    double maxLng = -double.infinity;
+    var minLat = double.infinity;
+    var maxLat = -double.infinity;
+    var minLng = double.infinity;
+    var maxLng = -double.infinity;
 
     for (final f in facilities) {
       final loc = AttractionLocation.fromId(f.id, _centerLat, _centerLng);
@@ -203,7 +204,7 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
       )
       ..scale(scale);
 
-    _animateToMatrix(endMatrix, duration: const Duration(milliseconds: 300));
+    _animateToMatrix(endMatrix);
   }
 
   double get _centerLat => widget.parkId == 'p2' ? 28.4194 : 28.3575;
@@ -272,7 +273,7 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
               final offset = getOffset(loc.latitude, loc.longitude);
               
               final cs = Theme.of(context).colorScheme;
-              Color heatColor = cs.primary;
+              var heatColor = cs.primary;
               if (historicalWait > 50) {
                 heatColor = cs.error;
               } else if (historicalWait > 20) {
@@ -306,7 +307,7 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget> with TickerProvid
               );
               _animateToFacility(target, mapSize);
             } else if (oldSelected != null) {
-              _animateToMatrix(Matrix4.identity(), duration: const Duration(milliseconds: 300));
+              _animateToMatrix(Matrix4.identity());
             }
           });
         }
@@ -571,7 +572,6 @@ class _HeatPoint {
 }
 
 class _MapBackgroundPainter extends CustomPainter {
-  final ThemeData theme;
   _MapBackgroundPainter({
     required this.theme,
     required this.isDark,
@@ -583,6 +583,7 @@ class _MapBackgroundPainter extends CustomPainter {
     required this.showWalkingRadius,
     required this.centerOffset,
   });
+  final ThemeData theme;
 
   final bool isDark;
   final String parkId;

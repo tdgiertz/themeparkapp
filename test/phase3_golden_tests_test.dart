@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:themeparkapp/core/models/favorite.dart';
+import 'package:themeparkapp/core/models/park.dart';
 import 'package:themeparkapp/core/providers.dart';
 import 'package:themeparkapp/core/theme.dart';
 import 'package:themeparkapp/features/dashboard/widgets/favorite_card_expanded.dart';
 import 'package:themeparkapp/features/dashboard/widgets/upcoming_shows_widget.dart';
 import 'package:themeparkapp/features/park/widgets/sparkline_chart.dart';
 import 'package:themeparkapp/features/parks/parks_page.dart';
-import 'package:themeparkapp/widgets/theme_color_settings_tile.dart';
-import 'package:themeparkapp/models/favorite.dart';
-import 'package:themeparkapp/models/park.dart';
+import 'package:themeparkapp/features/settings/widgets/theme_color_settings_tile.dart';
 
 void main() {
   group('Phase 3 Golden Tests', () {

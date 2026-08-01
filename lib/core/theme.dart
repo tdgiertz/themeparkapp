@@ -95,7 +95,7 @@ class AppTheme {
   static ThemeData darkTheme([Color? seedColor]) {
     return FlexThemeData.dark(
       colors: FlexSchemeColor.from(primary: seedColor ?? primaryAccent),
-      keyColors: const FlexKeyColors(useKeyColors: true),
+      keyColors: const FlexKeyColors(),
       surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
       subThemesData: const FlexSubThemesData(cardElevation: 4, cardRadius: 12),
     ).copyWith(
@@ -109,7 +109,7 @@ class AppTheme {
   static ThemeData lightTheme([Color? seedColor]) {
     return FlexThemeData.light(
       colors: FlexSchemeColor.from(primary: seedColor ?? primaryAccent),
-      keyColors: const FlexKeyColors(useKeyColors: true),
+      keyColors: const FlexKeyColors(),
       surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
       subThemesData: const FlexSubThemesData(cardElevation: 4, cardRadius: 12),
     ).copyWith(

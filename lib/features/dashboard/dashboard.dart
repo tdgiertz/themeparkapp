@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+import 'package:themeparkapp/core/models/favorite.dart';
+import 'package:themeparkapp/core/models/park.dart';
 import 'package:themeparkapp/core/providers.dart';
 import 'package:themeparkapp/features/dashboard/dashboard_geofence_provider.dart';
 import 'package:themeparkapp/features/dashboard/widgets/alerts_widget.dart';
 import 'package:themeparkapp/features/dashboard/widgets/context_widgets.dart';
 import 'package:themeparkapp/features/dashboard/widgets/favorite_card_expanded.dart';
 import 'package:themeparkapp/features/dashboard/widgets/upcoming_shows_widget.dart';
-import 'package:themeparkapp/models/favorite.dart';
-import 'package:themeparkapp/models/park.dart';
 
 Color crowdColor(BuildContext context, String? crowd) {
   final cs = Theme.of(context).colorScheme;
@@ -171,7 +171,7 @@ class Dashboard extends ConsumerWidget {
                         const UpcomingShowsWidget(),
                         // Onstage but invisible favorites list to satisfy tests expecting them in the tree but suppressed from visual UI
                         Opacity(
-                          opacity: 0.0,
+                          opacity: 0,
                           child: SizedBox(
                             height: 60,
                             child: SingleChildScrollView(
@@ -287,7 +287,6 @@ class Dashboard extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Expanded(
-                              flex: 1,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -296,15 +295,14 @@ class Dashboard extends ConsumerWidget {
                               ),
                             ),
                             const SizedBox(width: 24),
-                            Expanded(
-                              flex: 1,
-                              child: const UpcomingShowsWidget(),
+                            const Expanded(
+                              child: UpcomingShowsWidget(),
                             ),
                           ],
                         ),
                         // Onstage but invisible favorites grid to satisfy tests expecting them in the tree but suppressed from visual UI
                         Opacity(
-                          opacity: 0.0,
+                          opacity: 0,
                           child: SizedBox(
                             height: 60,
                             child: SingleChildScrollView(

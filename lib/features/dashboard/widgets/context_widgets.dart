@@ -24,7 +24,6 @@ class WeatherWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.3),
-          width: 1.0,
         ),
       ),
       child: Row(

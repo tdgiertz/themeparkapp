@@ -29,7 +29,7 @@ void main() {
       // Tap 'All Parks' in the dashboard selector
       final allParksSelector = find.byKey(const ValueKey('park_selector_all'));
       if (allParksSelector.evaluate().isNotEmpty) {
-        await tester.scrollUntilVisible(allParksSelector, 100.0, scrollable: find.byType(Scrollable).first);
+        await tester.scrollUntilVisible(allParksSelector, 100, scrollable: find.byType(Scrollable).first);
         await tester.tap(allParksSelector);
         await tester.pumpAndSettle();
       }
@@ -59,14 +59,14 @@ void main() {
       // Scroll to it if it's in a scrollable list
       if (parkCardBtn.evaluate().isNotEmpty) {
         // It might be off-screen
-        await tester.scrollUntilVisible(parkCardBtn, 200.0, scrollable: find.byType(Scrollable).first);
+        await tester.scrollUntilVisible(parkCardBtn, 200, scrollable: find.byType(Scrollable).first);
         await tester.tap(parkCardBtn);
         await tester.pumpAndSettle();
         
         // Tap a facility item (e.g. p2_f1)
         final facilityItem = find.byKey(const ValueKey('facility_list_item_p2_f1'));
         if (facilityItem.evaluate().isNotEmpty) {
-           await tester.scrollUntilVisible(facilityItem, 200.0, scrollable: find.byType(Scrollable).first);
+           await tester.scrollUntilVisible(facilityItem, 200, scrollable: find.byType(Scrollable).first);
            await tester.tap(facilityItem);
            await tester.pumpAndSettle();
 

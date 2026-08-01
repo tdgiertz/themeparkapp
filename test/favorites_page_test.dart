@@ -1,22 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:themeparkapp/features/favorites/favorites_page.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:themeparkapp/core/models/favorite.dart';
 import 'package:themeparkapp/core/providers.dart';
-import 'package:themeparkapp/models/favorite.dart';
-
-class MockFavoritesNotifier extends FavoritesNotifier {
-  MockFavoritesNotifier(Ref ref, AsyncValue<FavoritesResponse> state) : super(ref) {
-    this.state = state;
-  }
-}
-
+import 'package:themeparkapp/features/favorites/favorites_page.dart';
 void main() {
   testWidgets('FavoritesPage loading state', (WidgetTester tester) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          favoritesProvider.overrideWith((ref) => MockFavoritesNotifier(ref, const AsyncValue.loading())),
+          favoritesProvider.overrideWith((ref) => Completer<FavoritesResponse>().future),
         ],
         child: const MaterialApp(home: FavoritesPage()),
       ),
@@ -30,12 +25,13 @@ void main() {
       ProviderScope(
         overrides: [
           favoritesProvider.overrideWith(
-              (ref) => MockFavoritesNotifier(ref, const AsyncValue.error('Error', StackTrace.empty))),
+              (ref) => Future.error('Error', StackTrace.empty)),
         ],
         child: const MaterialApp(home: FavoritesPage()),
       ),
     );
 
+    await tester.pump();
     expect(find.text('Error loading favorites'), findsOneWidget);
   });
 
@@ -60,7 +56,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          favoritesProvider.overrideWith((ref) => MockFavoritesNotifier(ref, AsyncValue.data(FavoritesResponse(userId: 'u1', lastUpdated: DateTime.now().toIso8601String(), favoriteRides: mockFavorites)))),
+          favoritesProvider.overrideWith((ref) => Future.value(FavoritesResponse(userId: 'u1', lastUpdated: DateTime.now().toIso8601String(), favoriteRides: mockFavorites))),
         ],
         child: const MaterialApp(home: FavoritesPage()),
       ),
@@ -79,7 +75,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          favoritesProvider.overrideWith((ref) => MockFavoritesNotifier(ref, AsyncValue.data(FavoritesResponse(userId: 'u1', lastUpdated: DateTime.now().toIso8601String(), favoriteRides: [])))),
+          favoritesProvider.overrideWith((ref) => Future.value(FavoritesResponse(userId: 'u1', lastUpdated: DateTime.now().toIso8601String(), favoriteRides: []))),
         ],
         child: const MaterialApp(home: FavoritesPage()),
       ),

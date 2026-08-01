@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:themeparkapp/widgets/adaptive_image.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:themeparkapp/core/environment_providers.dart';
+import 'package:themeparkapp/core/widgets/adaptive_image.dart';
 
 void main() {
   testWidgets('D. AdaptiveNetworkImage renders high/low resolution and placeholder', (WidgetTester tester) async {

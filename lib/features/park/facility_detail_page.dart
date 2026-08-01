@@ -8,9 +8,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:go_router/go_router.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+import 'package:themeparkapp/core/models/park_detail.dart';
+import 'package:themeparkapp/core/models/wait_time.dart';
 import 'package:themeparkapp/core/providers.dart';
-import 'package:themeparkapp/models/park_detail.dart';
-import 'package:themeparkapp/models/wait_time.dart';
 
 /// Menu item model for restaurants.
 class MenuItem {
@@ -193,7 +193,9 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage> with Si
             children: [
               Icon(Icons.navigation, color: cs.primary),
               const SizedBox(width: 8),
-              const Text('Navigate Here'),
+              const Expanded(
+                child: Text('Navigate Here', overflow: TextOverflow.ellipsis),
+              ),
             ],
           ),
           content: Column(

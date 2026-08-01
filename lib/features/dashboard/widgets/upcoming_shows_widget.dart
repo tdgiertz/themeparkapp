@@ -105,7 +105,7 @@ DateTime? parseShowTime(String timeStr, DateTime currentDate) {
     if (parts.length != 2) return null;
     final hm = parts[0].split(':');
     if (hm.length != 2) return null;
-    int hour = int.parse(hm[0]);
+    var hour = int.parse(hm[0]);
     final minute = int.parse(hm[1]);
     final ampm = parts[1].toUpperCase();
 

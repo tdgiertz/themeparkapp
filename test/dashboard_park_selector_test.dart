@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:themeparkapp/core/models/favorite.dart';
 import 'package:themeparkapp/core/permissions.dart';
 import 'package:themeparkapp/core/providers.dart';
 import 'package:themeparkapp/features/dashboard/dashboard.dart';
 import 'package:themeparkapp/features/dashboard/dashboard_geofence_provider.dart';
 import 'package:themeparkapp/features/dashboard/widgets/upcoming_shows_widget.dart';
 import 'package:themeparkapp/features/park/park_explorer_state.dart';
+import 'package:themeparkapp/features/parks/providers/park_providers.dart';
 
 class FakeLocationPermissionNotifier extends LocationPermissionNotifier {
   FakeLocationPermissionNotifier(LocationPermission permission) {
@@ -74,6 +76,11 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          derivedFavoritesProvider.overrideWith((ref) => Future.value([
+            FavoriteRide(rideId: 'a46', name: 'PeopleMover', parkId: 'p2', parkName: 'Magic Kingdom', currentWait: {'status': 'Open', 'waitMinutes': 10, 'trend': 'down'}),
+            FavoriteRide(rideId: 'a88', name: 'Hagrid Motorbike', parkId: 'p5', parkName: 'Universal Studios', currentWait: {'status': 'Closed', 'waitMinutes': 0, 'trend': 'flat'}),
+          ])),
+
           assetLoaderProvider.overrideWithValue((path) async {
             if (path.contains('favorites.json')) return mockFavJson;
             if (path.contains('parks.json')) return mockParksJson;
@@ -141,6 +148,7 @@ void main() {
 
     final container = ProviderContainer(
       overrides: [
+        derivedFavoritesProvider.overrideWith((ref) => Future.value([])),
         assetLoaderProvider.overrideWithValue((path) async {
           if (path.contains('favorites.json')) return mockFavJson;
           if (path.contains('parks.json')) return mockParksJson;

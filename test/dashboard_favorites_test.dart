@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:themeparkapp/core/models/favorite.dart';
 import 'package:themeparkapp/core/providers.dart';
 import 'package:themeparkapp/features/dashboard/dashboard.dart';
 import 'package:themeparkapp/features/dashboard/widgets/favorite_card_expanded.dart';
-import 'package:themeparkapp/features/dashboard/widgets/upcoming_shows_widget.dart';
-import 'package:themeparkapp/models/favorite.dart';
+import 'package:themeparkapp/features/parks/providers/park_providers.dart';
 
 void main() {
   testWidgets('ExpandedFavoriteCard renders trend indicator beside wait time', (WidgetTester tester) async {
@@ -42,7 +42,7 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
 
-    final mockFavJson = '''
+    const mockFavJson = '''
     {
       "userId": "user-9876",
       "lastUpdated": "2026-07-28T14:30:00Z",
@@ -75,7 +75,7 @@ void main() {
     }
     ''';
 
-    final mockParksJson = '''
+    const mockParksJson = '''
     {
       "data": {
         "parks": [
@@ -89,6 +89,10 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          derivedFavoritesProvider.overrideWith((ref) => Future.value([
+            FavoriteRide(rideId: '1', name: 'Pirates of the Caribbean', parkId: '1', parkName: 'Magic Kingdom', currentWait: {'status': 'Open', 'waitMinutes': 45}), 
+            FavoriteRide(rideId: '88', name: 'Hagrid Motorbike', parkId: '3', parkName: 'Universal Studios', currentWait: {'status': 'Open', 'waitMinutes': 60})
+          ])), 
           assetLoaderProvider.overrideWithValue((path) async {
             if (path.contains('favorites.json')) return mockFavJson;
             if (path.contains('parks.json')) return mockParksJson;

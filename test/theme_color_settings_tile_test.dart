@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:themeparkapp/widgets/theme_color_settings_tile.dart';
+import 'package:themeparkapp/features/settings/widgets/theme_color_settings_tile.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

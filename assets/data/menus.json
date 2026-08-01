@@ -1,0 +1,34 @@
+{
+  "menus": [
+    {
+      "restaurantId": "r1",
+      "categories": [
+        {
+          "name": "Entrees",
+          "items": [
+            {
+              "name": "Mojo Bones",
+              "price": 28.99,
+              "description": "Pork spareribs, Smokin' Mojo BBQ sauce, coleslaw, safari fries"
+            },
+            {
+              "name": "Jungle Steak and Shrimp",
+              "price": 36.99,
+              "description": "Top sirloin steak, shrimp scampi, Caribbean rice, seasonal vegetables"
+            }
+          ]
+        },
+        {
+          "name": "Desserts",
+          "items": [
+            {
+              "name": "Volcano!",
+              "price": 18.99,
+              "description": "A giant chocolate brownie cake served with vanilla ice cream, creamy whipped topping, and caramel and chocolate sauces"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

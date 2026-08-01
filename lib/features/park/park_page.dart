@@ -8,6 +8,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:go_router/go_router.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+import 'package:themeparkapp/core/models/park_detail.dart';
+import 'package:themeparkapp/core/models/wait_time.dart';
 import 'package:themeparkapp/core/providers.dart';
 import 'package:themeparkapp/features/park/facility_detail_page.dart';
 import 'package:themeparkapp/features/park/park_explorer_state.dart';
@@ -17,8 +19,6 @@ import 'package:themeparkapp/features/park/widgets/park_map.dart';
 import 'package:themeparkapp/features/park/widgets/pulse_dot.dart';
 import 'package:themeparkapp/features/park/widgets/sparkline_chart.dart';
 import 'package:themeparkapp/l10n/app_localizations.dart';
-import 'package:themeparkapp/models/park_detail.dart';
-import 'package:themeparkapp/models/wait_time.dart';
 
 enum _MobileViewMode {
   split,
@@ -772,6 +772,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<String>(
                           value: _desktopSort,
+                          focusColor: Colors.transparent,
                           isExpanded: true,
                           icon: const Icon(Icons.arrow_drop_down, size: 20),
                           style: theme.textTheme.bodyMedium?.copyWith(
@@ -783,6 +784,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                               setState(() {
                                 _desktopSort = newValue;
                               });
+                              FocusManager.instance.primaryFocus?.unfocus();
                             }
                           },
                           items: const [
@@ -1182,6 +1184,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
                 value: _mobileSort,
+                focusColor: Colors.transparent,
                 isExpanded: true,
                 icon: const Icon(Icons.arrow_drop_down, size: 20),
                 style: theme.textTheme.bodyMedium?.copyWith(
@@ -1193,6 +1196,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
                     setState(() {
                       _mobileSort = newValue;
                     });
+                    FocusManager.instance.primaryFocus?.unfocus();
                   }
                 },
                 items: const [
@@ -1255,20 +1259,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
     );
   }
 
-  Widget _buildTopFilterAndSortRow(AppLocalizations? loc) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      child: Row(
-        children: [
-          Expanded(
-            child: _buildFilterChips(horizontal: true, loc: loc, height: 40),
-          ),
-          const SizedBox(width: 8),
-          _buildMobileSortIconButton(),
-        ],
-      ),
-    );
-  }
+
 }
 
 class _FilterOption {
@@ -1615,7 +1606,6 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
                           data: trendData,
                           lineColor: waitColor,
                           width: double.infinity,
-                          height: 36,
                         ),
                       ),
                     ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:themeparkapp/core/models/favorite.dart';
 import 'package:themeparkapp/features/dashboard/widgets/favorite_card_expanded.dart';
-import 'package:themeparkapp/models/favorite.dart';
 
 void main() {
   Widget buildTestableWidget(Widget child, {Size size = const Size(375, 812)}) {

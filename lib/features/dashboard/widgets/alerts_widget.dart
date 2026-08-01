@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:themeparkapp/models/favorite.dart';
+import 'package:themeparkapp/core/models/favorite.dart';
 
 class DashboardAlert {
   DashboardAlert({
@@ -9,11 +9,9 @@ class DashboardAlert {
     required this.message,
     required this.accentColor,
     required this.icon,
-    this.scarcityTag,
+    required this.actionTag, required this.parkId, this.scarcityTag,
     this.trendTag,
     this.statusTag,
-    required this.actionTag,
-    required this.parkId,
     this.onAction,
   });
 
@@ -317,7 +315,7 @@ List<DashboardAlert> generateDynamicAlerts({
     // 1. Reopened (Status Change): Offline/Closed -> Open in last 10 minutes
     // We mock this logic: if ride is Open and updatedAt is very recent (e.g. within 10 min)
     // For demo, we'll mark Pirates (id: "1") as just reopened if we want to demonstrate it
-    bool isReopened = false;
+    var isReopened = false;
     if (status == 'Open' && f.rideId == '1') {
       isReopened = true;
     }
@@ -342,7 +340,7 @@ List<DashboardAlert> generateDynamicAlerts({
     // 2. Last Call (Closing Soon): Queue Closure Time - (Current Time + Estimated Transit) <= 45 minutes
     // Let's mock a ride closing soon. E.g. Hagrid's (id: "88") closes at 15:30.
     // Current time: 14:40. Estimated Transit: 15 mins. Difference: 35 mins <= 45 mins.
-    bool isLastCall = f.rideId == '88' && status == 'Delayed'; // Let's trigger last call for demo
+    final isLastCall = f.rideId == '88' && status == 'Delayed'; // Let's trigger last call for demo
     if (isLastCall) {
       list.add(
         DashboardAlert(
