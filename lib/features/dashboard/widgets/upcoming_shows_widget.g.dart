@@ -42,7 +42,7 @@ final class SelectedDashboardParkProvider
 }
 
 String _$selectedDashboardParkHash() =>
-    r'c7dd4e0c9791bed2c6aed3b280c59ac5803fb970';
+    r'646192a958e35fb8964ef2c5c3b6db7b17c0e5d9';
 
 abstract class _$SelectedDashboardPark extends $Notifier<String> {
   String build();

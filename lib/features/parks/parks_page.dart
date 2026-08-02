@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:themeparkapp/core/models/enums.dart';
 import 'package:themeparkapp/core/models/park.dart';
 import 'package:themeparkapp/core/models/park_detail.dart';
 import 'package:themeparkapp/core/models/wait_time.dart';
@@ -38,7 +39,7 @@ final parkWaitTimeTrendProvider = Provider.family<List<int>, String>((
   final waitTimesAsync = ref.watch(waitTimesProvider(parkId));
   final waitTimes = waitTimesAsync.value?.waitTimes ?? [];
   final openRides = waitTimes
-      .where((w) => w.status == 'Open' && w.waitMinutes != null)
+      .where((w) => w.status.isOpen && w.waitMinutes != null)
       .toList();
 
   final currentAvg = openRides.isEmpty
@@ -500,7 +501,7 @@ class _ParkHeroCardState extends ConsumerState<ParkHeroCard> {
     final waitTimesAsync = ref.watch(waitTimesProvider(park.id));
     final waitTimes = waitTimesAsync.value?.waitTimes ?? [];
     final openRides = waitTimes
-        .where((w) => w.status == 'Open' && w.waitMinutes != null)
+        .where((w) => w.status.isOpen && w.waitMinutes != null)
         .toList();
     final currentAvg = openRides.isEmpty
         ? (park.id == 'p1'
@@ -849,14 +850,14 @@ bool _matchesGlobalFilter(Facility f, WaitTime? w, ParkFilters filters) {
   var matchesType = true;
   if (filters.types.isNotEmpty) {
     matchesType = false;
-    if (filters.types.contains('Rides') && f.type == 'Ride') matchesType = true;
+    if (filters.types.contains('Rides') && (f.type == 'Ride' || f.categoryEnum.isRide)) matchesType = true;
     if (filters.types.contains('Shows') &&
-        (f.type == 'Show' || f.category == 'Entertainment')) {
+        (f.type == 'Show' || f.categoryEnum.isShow)) {
       matchesType = true;
     }
     if (filters.types.contains('Dining / Restaurants') &&
         (f.type == 'Restaurant' ||
-            f.category == 'Dining' ||
+            f.categoryEnum.isDining ||
             f.name.toLowerCase().contains('cafe'))) {
       matchesType = true;
     }
@@ -874,16 +875,16 @@ bool _matchesGlobalFilter(Facility f, WaitTime? w, ParkFilters filters) {
   if (filters.statuses.isNotEmpty) {
     matchesStatus = false;
     final stat =
-        w?.status ?? 'Closed'; // default to Closed if no wait time object
-    if (filters.statuses.contains('Operating') && stat == 'Open') {
+        w?.status ?? WaitTimeStatus.closed; // default to Closed if no wait time object
+    if (filters.statuses.contains('Operating') && stat.isOpen) {
       matchesStatus = true;
     }
     if (filters.statuses.contains('Temporarily Closed / Down') &&
-        stat == 'Closed') {
+        (stat == WaitTimeStatus.closed || stat == WaitTimeStatus.down)) {
       matchesStatus = true;
     }
     if (filters.statuses.contains('Under Refurbishment') &&
-        stat == 'Refurbishment') {
+        stat == WaitTimeStatus.refurbishment) {
       matchesStatus = true;
     }
   }

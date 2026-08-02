@@ -64,7 +64,7 @@ final class SelectedFiltersProvider
   }
 }
 
-String _$selectedFiltersHash() => r'cbb714fd7a7a8061ea59daa9af668bc31a50a8b6';
+String _$selectedFiltersHash() => r'1998776f43cea56bdfe0d5d6de2b314739294222';
 
 /// Selected filter chips for a park.
 /// Allowed filters are: 'thrill', 'toddler', 'indoor', 'dining'
@@ -174,7 +174,7 @@ final class HeatmapEnabledProvider
   }
 }
 
-String _$heatmapEnabledHash() => r'25dc962484c105308d926dff52c40bde937bbce1';
+String _$heatmapEnabledHash() => r'15799bf3364a59ee48bececdf665cf5d3b9740e7';
 
 /// Track whether the heatmap overlay is active (Desktop).
 
@@ -274,7 +274,7 @@ final class HistoryHourOffsetProvider
   }
 }
 
-String _$historyHourOffsetHash() => r'41c9fffe62092c6d3057e7010a95c77d05d1893c';
+String _$historyHourOffsetHash() => r'281a8ca74dcaa8029e7d36df061ca060cd7a81dd';
 
 /// Track the hour offset for the historical crowd flow heatmap (0 = current, 3 = 3 hours ago).
 

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 // dart:convert not needed in this test
+import 'package:themeparkapp/core/models/enums.dart';
 import 'package:themeparkapp/core/models/park.dart';
 import 'package:themeparkapp/core/models/park_detail.dart';
 import 'package:themeparkapp/core/models/wait_time.dart';
@@ -107,7 +108,7 @@ void main() {
         (e) => e.rideId == 'a1',
       );
       expect(initialA1.waitMinutes, equals(15));
-      expect(initialA1.status, equals('Open'));
+      expect(initialA1.status, equals(WaitTimeStatus.open));
 
       // Trigger refresh (loads and merges wait_times_update.json)
       final notifier = container.read(waitTimesProvider('p1').notifier);
@@ -124,7 +125,7 @@ void main() {
       final updatedA3 = updatedResponse.waitTimes.firstWhere(
         (e) => e.rideId == 'a3',
       );
-      expect(updatedA3.status, equals('Closed'));
+      expect(updatedA3.status, equals(WaitTimeStatus.closed));
       expect(updatedA3.waitMinutes, isNull);
 
       // Verify ride a2 (which wasn't in partial update) is still 15 mins

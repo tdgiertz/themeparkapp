@@ -1,3 +1,5 @@
+import 'package:themeparkapp/core/models/enums.dart';
+
 /// A facility within a park (ride, shop, etc.).
 class Facility {
   Facility({
@@ -17,12 +19,17 @@ class Facility {
     thrillLevel: json['thrillLevel'] as String?,
     heightRequirementInches: json['heightRequirementInches'] as int?,
   );
+
   final String id;
   final String type;
   final String category;
   final String name;
   final String? thrillLevel;
   final int? heightRequirementInches;
+
+  FacilityCategory get categoryEnum => FacilityCategory.fromString(category);
+  ThrillLevel get thrillLevelEnum => ThrillLevel.fromString(thrillLevel);
+  ElementType get typeEnum => ElementType.fromString(type);
 }
 
 /// A themed land within a park, containing facilities.
@@ -46,6 +53,8 @@ class Land {
   final String type;
   final String name;
   final List<Facility> children;
+
+  ElementType get typeEnum => ElementType.fromString(type);
 }
 
 /// Detailed park structure including lands and facilities.
@@ -72,4 +81,6 @@ class ParkDetail {
   final String type;
   final String name;
   final List<Land> children;
+
+  ElementType get typeEnum => ElementType.fromString(type);
 }

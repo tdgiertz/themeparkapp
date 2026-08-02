@@ -265,7 +265,7 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget>
         ? widget.facilities.where((f) {
             final matchedWait = widget.waitTimes.where((w) => w.rideId == f.id);
             final wait = matchedWait.isEmpty ? null : matchedWait.first;
-            return wait != null && wait.status == 'Open';
+            return wait != null && wait.status.isOpen;
           }).toList()
         : widget.facilities;
 
@@ -451,7 +451,7 @@ class _ParkMapWidgetState extends ConsumerState<ParkMapWidget>
         final matchedWait = widget.waitTimes.where((w) => w.rideId == f.id);
         final wait = matchedWait.isEmpty ? null : matchedWait.first;
 
-        final isClosed = wait == null || wait.status != 'Open';
+        final isClosed = wait == null || !wait.status.isOpen;
         final waitMinutes = wait?.waitMinutes ?? 0;
 
         final cs = theme.colorScheme;

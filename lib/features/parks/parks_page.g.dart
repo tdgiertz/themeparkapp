@@ -41,7 +41,7 @@ final class SelectedParkIdProvider
   }
 }
 
-String _$selectedParkIdHash() => r'a8bb4d2d81f6387f8c08b293ea36f004537ce14c';
+String _$selectedParkIdHash() => r'b6ba3b40fe565379ba0e0e08ca583d044f9a2e6d';
 
 abstract class _$SelectedParkId extends $Notifier<String?> {
   String? build();
@@ -93,7 +93,7 @@ final class GlobalParkFilterProvider
   }
 }
 
-String _$globalParkFilterHash() => r'990e3feb28ff839c139a449ae953e302b9cba891';
+String _$globalParkFilterHash() => r'ff0eddd04403b1cef0578784896fb6a6bcd7b234';
 
 abstract class _$GlobalParkFilter extends $Notifier<ParkFilters> {
   ParkFilters build();
@@ -145,7 +145,7 @@ final class ParkWaitTimeSortProvider
   }
 }
 
-String _$parkWaitTimeSortHash() => r'b0aa96b26dcc672c568b4e365910d7f7b13cd1a4';
+String _$parkWaitTimeSortHash() => r'240b973b88f0db70352d0db95f5b3cc161a10d6c';
 
 abstract class _$ParkWaitTimeSort extends $Notifier<String> {
   String build();
@@ -198,7 +198,7 @@ final class ParkFilterDrawerOpenProvider
 }
 
 String _$parkFilterDrawerOpenHash() =>
-    r'f595be643bcbb8a950b25b9373741fd9207b3c28';
+    r'0ae749c78d3eeba8b9506dd0e554d787ba521fdc';
 
 abstract class _$ParkFilterDrawerOpen extends $Notifier<bool> {
   bool build();

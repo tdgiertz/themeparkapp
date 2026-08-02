@@ -222,8 +222,8 @@ return $default(_that.id,_that.type,_that.name,_that.operatingHours,_that.crowdL
 /// @nodoc
 @JsonSerializable()
 
-class _Park implements Park {
-  const _Park({required this.id, required this.type, required this.name, required this.operatingHours, required this.crowdLevel, final  List<ParkChild> children = const []}): _children = children;
+class _Park extends Park {
+  const _Park({required this.id, required this.type, required this.name, required this.operatingHours, required this.crowdLevel, final  List<ParkChild> children = const []}): _children = children,super._();
   factory _Park.fromJson(Map<String, dynamic> json) => _$ParkFromJson(json);
 
 @override final  String id;
@@ -780,8 +780,8 @@ return $default(_that.id,_that.type,_that.name,_that.children);case _:
 /// @nodoc
 @JsonSerializable()
 
-class _ParkChild implements ParkChild {
-  const _ParkChild({required this.id, required this.type, required this.name, final  List<Facility> children = const []}): _children = children;
+class _ParkChild extends ParkChild {
+  const _ParkChild({required this.id, required this.type, required this.name, final  List<Facility> children = const []}): _children = children,super._();
   factory _ParkChild.fromJson(Map<String, dynamic> json) => _$ParkChildFromJson(json);
 
 @override final  String id;
@@ -1062,8 +1062,8 @@ return $default(_that.id,_that.type,_that.category,_that.name,_that.thrillLevel,
 /// @nodoc
 @JsonSerializable()
 
-class _Facility implements Facility {
-  const _Facility({required this.id, required this.type, required this.category, required this.name, required this.thrillLevel, required this.heightRequirementInches});
+class _Facility extends Facility {
+  const _Facility({required this.id, required this.type, required this.category, required this.name, required this.thrillLevel, required this.heightRequirementInches}): super._();
   factory _Facility.fromJson(Map<String, dynamic> json) => _$FacilityFromJson(json);
 
 @override final  String id;

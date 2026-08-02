@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:themeparkapp/core/models/enums.dart';
 import 'package:themeparkapp/core/models/favorite.dart';
 import 'package:themeparkapp/features/park/facility_detail_page.dart';
 
@@ -306,7 +307,11 @@ List<DashboardAlert> generateDynamicAlerts({
       : normalizedFavs.where((f) => f.parkId == selectedParkId).toList();
 
   for (final f in filteredFavs) {
-    final status = f.currentWait?['status'] as String? ?? 'Closed';
+    final rawStatus = f.currentWait?['status'];
+    final statusEnum = rawStatus is WaitTimeStatus
+        ? rawStatus
+        : WaitTimeStatus.fromString(rawStatus as String?);
+    final status = statusEnum.jsonValue;
     final wait = f.currentWait?['waitMinutes'] as int? ?? 0;
 
     // Simulate user-defined threshold for demo. We'll say Pirates has a threshold of 50.
@@ -316,7 +321,7 @@ List<DashboardAlert> generateDynamicAlerts({
     // We mock this logic: if ride is Open and updatedAt is very recent (e.g. within 10 min)
     // For demo, we'll mark Pirates (id: "1") as just reopened if we want to demonstrate it
     var isReopened = false;
-    if (status == 'Open' && f.rideId == '1') {
+    if (statusEnum.isOpen && f.rideId == '1') {
       isReopened = true;
     }
 

@@ -237,8 +237,8 @@ class _ParkPageState extends ConsumerState<ParkPage> {
       });
     } else if (_mobileSort == 'waitTime') {
       items.sort((a, b) {
-        final isClosedA = a.wait == null || a.wait!.status != 'Open';
-        final isClosedB = b.wait == null || b.wait!.status != 'Open';
+        final isClosedA = a.wait == null || !a.wait!.status.isOpen;
+        final isClosedB = b.wait == null || !b.wait!.status.isOpen;
         final waitA = isClosedA ? 9999 : (a.wait!.waitMinutes ?? 0);
         final waitB = isClosedB ? 9999 : (b.wait!.waitMinutes ?? 0);
         if (waitA == waitB) {
@@ -328,7 +328,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
         // 2. Check wait time filters
         if (_desktopActiveWaitTimes.isNotEmpty) {
           final waitMinutes = wait?.waitMinutes ?? 0;
-          final isClosed = wait == null || wait.status != 'Open';
+          final isClosed = wait == null || !wait.status.isOpen;
           if (isClosed) continue;
 
           var matchesWait = false;
@@ -1753,7 +1753,7 @@ class InlineAccordionAttractionTile extends ConsumerWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final isClosed = wait == null || wait!.status != 'Open';
+    final isClosed = wait == null || !wait!.status.isOpen;
     final currentWait = wait?.waitMinutes ?? 0;
     final waitText = isClosed ? 'Closed' : '${currentWait}m';
 
@@ -2219,7 +2219,7 @@ class MobileAttractionTile extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final isClosed = wait == null || wait!.status != 'Open';
+    final isClosed = wait == null || !wait!.status.isOpen;
     final waitText = isClosed ? 'Closed' : '${wait!.waitMinutes}m';
     final currentWait = wait?.waitMinutes ?? 0;
 
@@ -2442,7 +2442,7 @@ class TabletAttractionTile extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final isClosed = wait == null || wait!.status != 'Open';
+    final isClosed = wait == null || !wait!.status.isOpen;
     final currentWait = wait?.waitMinutes ?? 0;
 
     var waitColor = theme.colorScheme.primary;
@@ -2641,7 +2641,7 @@ class _DesktopAttractionRowState extends State<DesktopAttractionRow> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final isClosed = widget.wait == null || widget.wait!.status != 'Open';
+    final isClosed = widget.wait == null || !widget.wait!.status.isOpen;
     final waitText = isClosed ? 'Closed' : '${widget.wait!.waitMinutes}m';
     final currentWait = widget.wait?.waitMinutes ?? 0;
 

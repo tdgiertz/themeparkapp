@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:themeparkapp/core/models/enums.dart';
 import 'package:themeparkapp/core/models/favorite.dart';
 import 'package:themeparkapp/core/repositories/repositories.dart';
 import 'package:themeparkapp/features/dashboard/widgets/upcoming_shows_widget.dart';
@@ -119,7 +120,7 @@ final derivedFavoritesProvider = FutureProvider<List<FavoriteRide>>((
           parkId: parkId,
           parkName: parkName,
           currentWait: wait != null
-              ? {'status': 'Open', 'waitMinutes': wait.waitMinutes}
+              ? {'status': WaitTimeStatus.open.jsonValue, 'waitMinutes': wait.waitMinutes}
               : null,
         ),
       );
@@ -185,7 +186,7 @@ final upcomingShowsProvider = FutureProvider<List<ShowEvent>>((ref) async {
     for (final park in parks) {
       for (final land in park.children) {
         for (final facility in land.children) {
-          if (facility.category == 'Show' ||
+          if (facility.categoryEnum.isShow ||
               scheduleMap.containsKey(facility.id)) {
             final times = scheduleMap[facility.id] ?? const [];
 
@@ -201,7 +202,7 @@ final upcomingShowsProvider = FutureProvider<List<ShowEvent>>((ref) async {
                   venue: land.name,
                   category: facility.category.isNotEmpty
                       ? facility.category
-                      : 'Show',
+                      : FacilityCategory.show.displayName,
                   durationMinutes: 20,
                   isOnlyPerformanceToday: times.length == 1,
                   scarcityTag: times.length == 1

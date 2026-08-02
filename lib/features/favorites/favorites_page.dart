@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:themeparkapp/core/logging/logger.dart';
+import 'package:themeparkapp/core/models/enums.dart';
 import 'package:themeparkapp/core/providers.dart';
 
 /// Full page showing the user's favorites.
@@ -21,7 +22,11 @@ class FavoritesPage extends ConsumerWidget {
             separatorBuilder: (_, __) => const Divider(),
             itemBuilder: (context, index) {
               final f = favorites.favoriteRides[index];
-              final status = f.currentWait?['status']?.toString() ?? 'n/a';
+              final rawStatus = f.currentWait?['status'];
+              final statusEnum = rawStatus is WaitTimeStatus
+                  ? rawStatus
+                  : WaitTimeStatus.fromString(rawStatus?.toString());
+              final status = statusEnum.displayName;
               final waitMinutes = f.currentWait?['waitMinutes'];
               return ListTile(
                 leading: Icon(

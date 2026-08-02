@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:themeparkapp/core/models/enums.dart';
 import 'package:themeparkapp/core/models/favorite.dart';
 import 'package:themeparkapp/core/models/park.dart';
 import 'package:themeparkapp/core/providers.dart';
@@ -141,13 +142,13 @@ void main() {
           Park(
             id: 'p1',
             name: 'Animal Kingdom',
-            type: 'park',
+            type: ElementType.park,
             operatingHours: {},
           ),
           Park(
             id: 'p2',
             name: 'Magic Kingdom',
-            type: 'park',
+            type: ElementType.park,
             operatingHours: {},
           ),
         ];

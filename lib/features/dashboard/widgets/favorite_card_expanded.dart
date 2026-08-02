@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+import 'package:themeparkapp/core/models/enums.dart';
 import 'package:themeparkapp/core/models/favorite.dart';
 import 'package:themeparkapp/core/theme.dart';
 import 'package:themeparkapp/features/park/facility_detail_page.dart';
@@ -26,9 +27,11 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
   Widget build(BuildContext context) {
     final waitMinutes =
         widget.favorite.currentWait?['waitMinutes'] as int? ?? 0;
-    final status =
-        widget.favorite.currentWait?['status'] as String? ?? 'Unknown';
-    final isClosed = status != 'Open';
+    final rawStatus = widget.favorite.currentWait?['status'];
+    final statusEnum = rawStatus is WaitTimeStatus
+        ? rawStatus
+        : WaitTimeStatus.fromString(rawStatus as String?);
+    final isClosed = !statusEnum.isOpen;
     final isPiratesCard =
         widget.favorite.rideId.toLowerCase().contains('pirates') ||
         widget.favorite.name.toLowerCase().contains('pirates');
@@ -194,7 +197,7 @@ class _ExpandedFavoriteCardState extends State<ExpandedFavoriteCard> {
                                 ),
                               ),
                               child: Text(
-                                isClosed ? 'OFFLINE' : status.toUpperCase(),
+                                isClosed ? 'OFFLINE' : statusEnum.displayName.toUpperCase(),
                                 style: TextStyle(
                                   fontSize: 9,
                                   fontWeight: FontWeight.w800,

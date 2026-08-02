@@ -1,3 +1,6 @@
+import 'package:themeparkapp/core/models/enums.dart';
+export 'package:themeparkapp/core/models/enums.dart';
+
 /// Represents a park summary returned by the parks API.
 class Park {
   Park({
@@ -11,17 +14,23 @@ class Park {
 
   factory Park.fromJson(Map<String, dynamic> json) => Park(
     id: json['id'] as String,
-    type: json['type'] as String,
+    type: json['type'] is ElementType
+        ? json['type'] as ElementType
+        : ElementType.fromString(json['type'] as String?),
     name: json['name'] as String,
     operatingHours: (json['operatingHours'] as Map?)?.cast<String, String>(),
-    crowdLevel: json['crowdLevel'] as String?,
+    crowdLevel: json['crowdLevel'] is CrowdLevel
+        ? json['crowdLevel'] as CrowdLevel
+        : (json['crowdLevel'] != null
+              ? CrowdLevel.fromString(json['crowdLevel'] as String?)
+              : null),
     highlights: json['highlights'] as Map<String, dynamic>?,
   );
   final String id;
-  final String type;
+  final ElementType type;
   final String name;
   final Map<String, String>? operatingHours;
-  final String? crowdLevel;
+  final CrowdLevel? crowdLevel;
   final Map<String, dynamic>? highlights;
 }
 

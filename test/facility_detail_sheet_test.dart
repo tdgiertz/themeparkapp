@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:themeparkapp/core/models/enums.dart';
 import 'package:themeparkapp/core/models/park_detail.dart';
 import 'package:themeparkapp/core/models/wait_time.dart';
 import 'package:themeparkapp/core/theme.dart';
@@ -29,14 +30,14 @@ void main() {
       rideId: 'ride_1',
       updatedAt: '2026-07-31T20:00:00Z',
       waitMinutes: 45,
-      status: 'Open',
+      status: WaitTimeStatus.open,
     );
 
     final mockClosedWait = WaitTime(
       rideId: 'ride_1',
       updatedAt: '2026-07-31T20:00:00Z',
       waitMinutes: 0,
-      status: 'Closed',
+      status: WaitTimeStatus.closed,
     );
 
     Widget buildTestSheet({

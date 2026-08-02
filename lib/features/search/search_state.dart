@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import 'package:themeparkapp/core/models/enums.dart';
 import 'package:themeparkapp/core/models/park_detail.dart';
 import 'package:themeparkapp/core/providers.dart';
 import 'package:themeparkapp/features/park/park_explorer_state.dart';
@@ -234,26 +235,26 @@ class SearchNotifier extends _$SearchNotifier {
       final mockPretzelStands = [
         Facility(
           id: 'pretzel_1',
-          type: 'Facility',
-          category: 'Dining',
+          type: ElementType.facility.jsonValue,
+          category: FacilityCategory.dining.displayName,
           name: 'Fantasyland Pretzel Oasis',
-          thrillLevel: 'Low',
+          thrillLevel: ThrillLevel.low.displayName,
           heightRequirementInches: 0,
         ),
         Facility(
           id: 'pretzel_2',
-          type: 'Facility',
-          category: 'Dining',
+          type: ElementType.facility.jsonValue,
+          category: FacilityCategory.dining.displayName,
           name: 'Tomorrowland Pretzel Cart',
-          thrillLevel: 'Low',
+          thrillLevel: ThrillLevel.low.displayName,
           heightRequirementInches: 0,
         ),
         Facility(
           id: 'pretzel_3',
-          type: 'Facility',
-          category: 'Dining',
+          type: ElementType.facility.jsonValue,
+          category: FacilityCategory.dining.displayName,
           name: 'Adventureland Pretzel & Slush',
-          thrillLevel: 'Low',
+          thrillLevel: ThrillLevel.low.displayName,
           heightRequirementInches: 0,
         ),
       ];
@@ -370,8 +371,8 @@ class SearchNotifier extends _$SearchNotifier {
           (f) => f.id == rideId,
           orElse: () => Facility(
             id: rideId,
-            type: 'Facility',
-            category: 'Ride',
+            type: ElementType.facility.jsonValue,
+            category: FacilityCategory.ride.displayName,
             name: rideId == 'a15'
                 ? 'Big Thunder Mountain Railroad'
                 : (rideId == 'a1'

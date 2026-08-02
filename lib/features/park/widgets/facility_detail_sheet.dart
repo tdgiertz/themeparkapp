@@ -228,7 +228,7 @@ class _FacilityDetailSheetContentState
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final isClosed = widget.wait == null || widget.wait!.status != 'Open';
+    final isClosed = widget.wait == null || !widget.wait!.status.isOpen;
     final currentWait = widget.wait?.waitMinutes ?? 0;
     final waitText = isClosed ? 'Closed' : '${currentWait}m';
 

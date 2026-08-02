@@ -1,3 +1,6 @@
+import 'package:themeparkapp/core/models/enums.dart';
+export 'package:themeparkapp/core/models/enums.dart';
+
 /// Wait time information for a single ride.
 class WaitTime {
   WaitTime({
@@ -13,15 +16,28 @@ class WaitTime {
   factory WaitTime.fromJson(Map<String, dynamic> json) => WaitTime(
     rideId: json['rideId'] as String,
     updatedAt: json['updatedAt'] as String,
-    status: json['status'] as String,
+    status: json['status'] is WaitTimeStatus
+        ? json['status'] as WaitTimeStatus
+        : WaitTimeStatus.fromString(json['status'] as String?),
     waitMinutes: json['waitMinutes'] as int?,
     singleRider: json['singleRider'] as bool? ?? false,
     fastLane: json['fastLane'] as bool? ?? false,
     sourceId: json['sourceId'] as String?,
   );
+
+  Map<String, dynamic> toJson() => {
+    'rideId': rideId,
+    'updatedAt': updatedAt,
+    'status': status.jsonValue,
+    'waitMinutes': waitMinutes,
+    'singleRider': singleRider,
+    'fastLane': fastLane,
+    'sourceId': sourceId,
+  };
+
   final String rideId;
   final String updatedAt;
-  final String status;
+  final WaitTimeStatus status;
   final int? waitMinutes;
   final bool singleRider;
   final bool fastLane;

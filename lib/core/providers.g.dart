@@ -105,7 +105,7 @@ final class ThemeModeNotifierProvider
   }
 }
 
-String _$themeModeNotifierHash() => r'21098a6ac98ee372e04ca080813cee7a17a665e6';
+String _$themeModeNotifierHash() => r'376a8fba56d4d44a8af56be8f02562207c6d5e3e';
 
 /// Theme mode provider: system / light / dark
 

@@ -1029,7 +1029,7 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage>
     ThemeData theme,
     bool isDark,
   ) {
-    final isClosed = wait == null || wait.status != 'Open';
+    final isClosed = wait == null || !wait.status.isOpen;
     final waitMinutes = wait?.waitMinutes ?? 0;
     final waitColor = isClosed
         ? Colors.grey

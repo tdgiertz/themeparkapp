@@ -43,7 +43,7 @@ final class ScreenWidthProvider extends $NotifierProvider<ScreenWidth, double> {
   }
 }
 
-String _$screenWidthHash() => r'6b208c50200adf137d9bb42b2a6fc0056ca42db1';
+String _$screenWidthHash() => r'634d80a86c0decde8d669802b9125005db29dd43';
 
 /// Simple screen width holder for UI to write current width into.
 
