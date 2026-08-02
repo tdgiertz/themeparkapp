@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:themeparkapp/core/models/enums.dart';
 import 'package:themeparkapp/core/models/favorite.dart';
 import 'package:themeparkapp/core/models/park.dart';
 import 'package:themeparkapp/core/providers.dart';

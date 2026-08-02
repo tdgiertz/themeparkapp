@@ -105,7 +105,7 @@ class Dashboard extends ConsumerWidget {
     final detectedParkId = ref.watch(userDetectedParkIdProvider);
     final allParks = parks?.parks ?? [];
 
-    return Container(
+    return ColoredBox(
       color: Theme.of(context).colorScheme.surface,
       child: SafeArea(
         bottom: false,
