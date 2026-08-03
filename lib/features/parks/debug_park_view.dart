@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'providers/park_providers.dart';
+import 'package:themeparkapp/features/parks/providers/park_providers.dart';
 
 class DebugParkView extends ConsumerWidget {
   const DebugParkView({super.key});

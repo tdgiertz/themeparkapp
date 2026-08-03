@@ -1,10 +1,10 @@
 import 'package:drift/drift.dart';
-import '../database/database.dart';
+import 'package:themeparkapp/core/database/database.dart';
 
 class ParkRepository {
-  final AppDatabase db;
-
   ParkRepository(this.db);
+
+  final AppDatabase db;
 
   Stream<List<Region>> watchParks() {
     return (db.select(db.regions)..where((r) => r.type.equals('Park'))).watch();

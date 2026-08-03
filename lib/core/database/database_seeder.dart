@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:drift/drift.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:themeparkapp/core/database/data_import_service.dart';
 import 'package:themeparkapp/core/database/database.dart';
 
 Future<void> seedDatabase(AppDatabase db) async {
@@ -12,22 +13,28 @@ Future<void> seedDatabase(AppDatabase db) async {
     for (final parkData in parks) {
       final parkMap = parkData as Map<String, dynamic>;
       final parkId = parkMap['id'] as String;
-      await db.into(db.regions).insert(RegionsCompanion.insert(
-            id: parkId,
-            name: parkMap['name'] as String,
-            type: parkMap['type'] as String,
-          ));
+      await db.into(db.regions).insert(
+            RegionsCompanion.insert(
+              id: parkId,
+              name: parkMap['name'] as String,
+              type: parkMap['type'] as String,
+            ),
+            mode: InsertMode.insertOrIgnore,
+          );
           
       final lands = parkMap['children'] as List<dynamic>? ?? [];
       for (final landData in lands) {
         final landMap = landData as Map<String, dynamic>;
         final landId = landMap['id'] as String;
-        await db.into(db.regions).insert(RegionsCompanion.insert(
-              id: landId,
-              parentId: Value(parkId),
-              name: landMap['name'] as String,
-              type: landMap['type'] as String,
-            ));
+        await db.into(db.regions).insert(
+              RegionsCompanion.insert(
+                id: landId,
+                parentId: Value(parkId),
+                name: landMap['name'] as String,
+                type: landMap['type'] as String,
+              ),
+              mode: InsertMode.insertOrIgnore,
+            );
             
         final facilities = landMap['children'] as List<dynamic>? ?? [];
         for (final facilityData in facilities) {
@@ -38,42 +45,24 @@ Future<void> seedDatabase(AppDatabase db) async {
               ?.map((e) => e.toString())
               .toList();
           
-          await db.into(db.locations).insert(LocationsCompanion.insert(
-                id: facilityId,
-                regionId: landId,
-                name: facilityMap['name'] as String,
-                type: (facilityMap['type'] as String?) ?? 'Facility',
-                subtype: Value(facilityMap['category'] as String?),
-                targetAges: Value(targetAgesList),
-              ));
+          await db.into(db.locations).insert(
+                LocationsCompanion.insert(
+                  id: facilityId,
+                  regionId: landId,
+                  name: facilityMap['name'] as String,
+                  type: (facilityMap['type'] as String?) ?? 'Facility',
+                  subtype: Value(facilityMap['category'] as String?),
+                  targetAges: Value(targetAgesList),
+                ),
+                mode: InsertMode.insertOrIgnore,
+              );
         }
       }
     }
     
-    // Parse restaurants to update operating hours
-    try {
-      final restaurantsString = await rootBundle.loadString('assets/data/restaurants.json');
-      final restaurantsData = json.decode(restaurantsString) as Map<String, dynamic>;
-      final restaurants = restaurantsData['restaurants'] as List<dynamic>;
-      for (final r in restaurants) {
-        final restaurantMap = r as Map<String, dynamic>;
-        final facId = restaurantMap['facilityId'] as String;
-        final operatingHours = restaurantMap['operatingHours'] as Map<String, dynamic>?;
-        if (operatingHours != null) {
-          final open = operatingHours['open'] as String?;
-          final close = operatingHours['close'] as String?;
-          
-          await (db.update(db.locations)..where((tbl) => tbl.id.equals(facId))).write(
-            LocationsCompanion(
-              openTime: Value(open),
-              closeTime: Value(close),
-            ),
-          );
-        }
-      }
-    } catch (e) {
-      // Ignored if missing
-    }
+    // Import additional datasets (Wait Times, Favorites, Restaurants, Menus, Showtimes)
+    final importService = DataImportService(db);
+    await importService.importAllData();
   } catch (e) {
     // ignore: avoid_print
     print('Error seeding database: $e');

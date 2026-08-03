@@ -1,12 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:themeparkapp/core/database/database.dart' hide Showtime;
 import 'package:themeparkapp/core/models/enums.dart';
 import 'package:themeparkapp/core/models/favorite.dart';
+import 'package:themeparkapp/core/repositories/park_repository.dart' as drift;
 import 'package:themeparkapp/core/repositories/repositories.dart';
 import 'package:themeparkapp/features/dashboard/widgets/upcoming_shows_widget.dart';
 import 'package:themeparkapp/features/parks/models/live_data_models.dart';
 import 'package:themeparkapp/features/parks/models/park_models.dart';
-import 'package:themeparkapp/core/database/database.dart';
-import 'package:themeparkapp/core/repositories/park_repository.dart' as drift;
 
 // Repository Providers
 final parkRepositoryProvider = Provider<ParkRepository>(

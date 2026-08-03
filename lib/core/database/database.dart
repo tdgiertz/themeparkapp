@@ -47,9 +47,67 @@ class Locations extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-@DriftDatabase(tables: [Regions, Locations])
+@TableIndex(name: 'idx_wait_times_facility_timestamp', columns: {#facilityId, #timestamp})
+class WaitTimes extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get facilityId => text().references(Locations, #id)();
+  DateTimeColumn get timestamp => dateTime()();
+  TextColumn get status => text()();
+  IntColumn get waitMinutes => integer().nullable()();
+  BoolColumn get singleRider => boolean()();
+  BoolColumn get fastLane => boolean()();
+}
+
+class Favorites extends Table {
+  TextColumn get facilityId => text().references(Locations, #id)();
+  DateTimeColumn get savedAt => dateTime().withDefault(currentDateAndTime)();
+
+  @override
+  Set<Column> get primaryKey => {facilityId};
+}
+
+class RestaurantDetails extends Table {
+  TextColumn get facilityId => text().references(Locations, #id)();
+  TextColumn get cuisine => text().nullable()();
+  TextColumn get priceRange => text().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {facilityId};
+}
+
+class MenuCategories extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get facilityId => text().references(Locations, #id)();
+  TextColumn get name => text()();
+}
+
+class MenuItems extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get categoryId => integer().references(MenuCategories, #id)();
+  TextColumn get name => text()();
+  RealColumn get price => real()();
+  TextColumn get description => text().nullable()();
+}
+
+class Showtimes extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get facilityId => text().references(Locations, #id)();
+  TextColumn get startTime => text()();
+}
+
+@DriftDatabase(tables: [
+  Regions,
+  Locations,
+  WaitTimes,
+  Favorites,
+  RestaurantDetails,
+  MenuCategories,
+  MenuItems,
+  Showtimes,
+])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
+  AppDatabase.forTesting(super.e);
 
   @override
   int get schemaVersion => 1;
