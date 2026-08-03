@@ -1,10 +1,7 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:drift/drift.dart';
-import 'package:drift/native.dart';
-import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
+import 'package:themeparkapp/core/database/connection/connection.dart' as impl;
 import 'package:themeparkapp/core/database/database_seeder.dart';
 
 part 'database.g.dart';
@@ -106,7 +103,7 @@ class Showtimes extends Table {
   Showtimes,
 ])
 class AppDatabase extends _$AppDatabase {
-  AppDatabase() : super(_openConnection());
+  AppDatabase() : super(impl.openConnection());
   AppDatabase.forTesting(super.e);
 
   @override
@@ -121,12 +118,4 @@ class AppDatabase extends _$AppDatabase {
       },
     );
   }
-}
-
-LazyDatabase _openConnection() {
-  return LazyDatabase(() async {
-    final dbFolder = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dbFolder.path, 'themepark_db.sqlite'));
-    return NativeDatabase.createInBackground(file);
-  });
 }

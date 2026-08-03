@@ -1,8 +1,6 @@
 import 'dart:async';
-import 'dart:io' show Platform;
 import 'dart:math' as math;
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glassmorphism/glassmorphism.dart';
@@ -12,6 +10,7 @@ import 'package:themeparkapp/core/logging/logger.dart';
 import 'package:themeparkapp/core/models/park_detail.dart';
 import 'package:themeparkapp/core/models/wait_time.dart';
 import 'package:themeparkapp/core/providers.dart';
+import 'package:themeparkapp/core/utils/platform_utils.dart';
 
 /// Menu item model for restaurants.
 class MenuItem {
@@ -152,7 +151,7 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage>
   }
 
   void _startAutoPan() {
-    if (!kIsWeb && Platform.environment.containsKey('FLUTTER_TEST')) return;
+    if (isTestEnvironment) return;
     _autoPanTimer?.cancel();
     _autoPanTimer = Timer.periodic(const Duration(milliseconds: 30), (timer) {
       if (!_isUserDragging) {
@@ -299,7 +298,7 @@ class _FacilityDetailPageState extends ConsumerState<FacilityDetailPage>
     double? height,
     BoxFit fit = BoxFit.cover,
   }) {
-    if (!kIsWeb && Platform.environment.containsKey('FLUTTER_TEST')) {
+    if (isTestEnvironment) {
       return Container(
         width: width,
         height: height,

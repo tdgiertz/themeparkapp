@@ -1,10 +1,8 @@
 // ignore_for_file: prefer_int_literals
 
 import 'dart:async';
-import 'dart:io' show Platform;
 import 'dart:math' as math;
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glassmorphism/glassmorphism.dart';
@@ -14,6 +12,7 @@ import 'package:themeparkapp/core/logging/logger.dart';
 import 'package:themeparkapp/core/models/park_detail.dart';
 import 'package:themeparkapp/core/models/wait_time.dart';
 import 'package:themeparkapp/core/providers.dart';
+import 'package:themeparkapp/core/utils/platform_utils.dart';
 import 'package:themeparkapp/features/park/facility_detail_page.dart';
 import 'package:themeparkapp/features/park/park_explorer_state.dart';
 import 'package:themeparkapp/features/park/widgets/area_chart.dart';
@@ -97,7 +96,7 @@ class _ParkPageState extends ConsumerState<ParkPage> {
   }
 
   void _startAutoRefresh() {
-    if (!kIsWeb && Platform.environment.containsKey('FLUTTER_TEST')) return;
+    if (isTestEnvironment) return;
     _autoRefreshTimer?.cancel();
     _autoRefreshTimer = Timer.periodic(_refreshInterval, (_) {
       try {
