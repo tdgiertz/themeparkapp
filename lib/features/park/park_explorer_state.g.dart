@@ -107,7 +107,7 @@ abstract class _$SelectedFilters extends $Notifier<Set<String>> {
   Set<String> build(String parkId);
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<Set<String>, Set<String>>;
     final element =
         ref.element
@@ -117,7 +117,7 @@ abstract class _$SelectedFilters extends $Notifier<Set<String>> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, () => build(_$args));
+    return element.handleCreate(ref, () => build(_$args));
   }
 }
 
@@ -207,7 +207,7 @@ abstract class _$HeatmapEnabled extends $Notifier<bool> {
   bool build(String parkId);
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<bool, bool>;
     final element =
         ref.element
@@ -217,7 +217,7 @@ abstract class _$HeatmapEnabled extends $Notifier<bool> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, () => build(_$args));
+    return element.handleCreate(ref, () => build(_$args));
   }
 }
 
@@ -307,7 +307,7 @@ abstract class _$HistoryHourOffset extends $Notifier<int> {
   int build(String parkId);
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<int, int>;
     final element =
         ref.element
@@ -317,7 +317,7 @@ abstract class _$HistoryHourOffset extends $Notifier<int> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, () => build(_$args));
+    return element.handleCreate(ref, () => build(_$args));
   }
 }
 
@@ -414,7 +414,7 @@ abstract class _$UserLocation extends $Notifier<ParkCoordinate> {
   ParkCoordinate build(String parkId);
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<ParkCoordinate, ParkCoordinate>;
     final element =
         ref.element
@@ -424,6 +424,6 @@ abstract class _$UserLocation extends $Notifier<ParkCoordinate> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, () => build(_$args));
+    return element.handleCreate(ref, () => build(_$args));
   }
 }

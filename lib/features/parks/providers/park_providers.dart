@@ -5,6 +5,8 @@ import 'package:themeparkapp/core/repositories/repositories.dart';
 import 'package:themeparkapp/features/dashboard/widgets/upcoming_shows_widget.dart';
 import 'package:themeparkapp/features/parks/models/live_data_models.dart';
 import 'package:themeparkapp/features/parks/models/park_models.dart';
+import 'package:themeparkapp/core/database/database.dart';
+import 'package:themeparkapp/core/repositories/park_repository.dart' as drift;
 
 // Repository Providers
 final parkRepositoryProvider = Provider<ParkRepository>(
@@ -220,6 +222,34 @@ final upcomingShowsProvider = FutureProvider<List<ShowEvent>>((ref) async {
   } catch (_) {
     return <ShowEvent>[];
   }
+});
+
+// -----------------------------------------------------------------------------
+// Drift Providers
+// -----------------------------------------------------------------------------
+
+final appDatabaseProvider = Provider<AppDatabase>((ref) {
+  return AppDatabase();
+});
+
+final driftParkRepositoryProvider = Provider<drift.ParkRepository>((ref) {
+  final db = ref.watch(appDatabaseProvider);
+  return drift.ParkRepository(db);
+});
+
+final driftParksProvider = StreamProvider<List<Region>>((ref) {
+  final repo = ref.watch(driftParkRepositoryProvider);
+  return repo.watchParks();
+});
+
+final landsByParkProvider = StreamProvider.family<List<Region>, String>((ref, parkId) {
+  final repo = ref.watch(driftParkRepositoryProvider);
+  return repo.watchLandsForPark(parkId);
+});
+
+final locationsByRegionProvider = StreamProvider.family<List<Location>, String>((ref, regionId) {
+  final repo = ref.watch(driftParkRepositoryProvider);
+  return repo.watchLocationsForRegion(regionId);
 });
 
 String formatShowtimeString(String time24) {

@@ -55,7 +55,7 @@ abstract class _$Counter extends $Notifier<int> {
   int build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<int, int>;
     final element =
         ref.element
@@ -65,7 +65,7 @@ abstract class _$Counter extends $Notifier<int> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
@@ -113,7 +113,7 @@ abstract class _$ThemeModeNotifier extends $Notifier<ThemeMode> {
   ThemeMode build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<ThemeMode, ThemeMode>;
     final element =
         ref.element
@@ -123,7 +123,7 @@ abstract class _$ThemeModeNotifier extends $Notifier<ThemeMode> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
@@ -171,7 +171,7 @@ abstract class _$ThemeSeedColor extends $Notifier<Color?> {
   Color? build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<Color?, Color?>;
     final element =
         ref.element
@@ -181,7 +181,7 @@ abstract class _$ThemeSeedColor extends $Notifier<Color?> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
@@ -315,7 +315,7 @@ abstract class _$Parks extends $AsyncNotifier<ParksResponse> {
   FutureOr<ParksResponse> build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<AsyncValue<ParksResponse>, ParksResponse>;
     final element =
         ref.element
@@ -325,7 +325,7 @@ abstract class _$Parks extends $AsyncNotifier<ParksResponse> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
@@ -461,7 +461,7 @@ abstract class _$ParkDetailNotifier extends $AsyncNotifier<ParkDetail> {
   FutureOr<ParkDetail> build(String parkId);
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<AsyncValue<ParkDetail>, ParkDetail>;
     final element =
         ref.element
@@ -471,7 +471,7 @@ abstract class _$ParkDetailNotifier extends $AsyncNotifier<ParkDetail> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, () => build(_$args));
+    return element.handleCreate(ref, () => build(_$args));
   }
 }
 
@@ -560,7 +560,7 @@ abstract class _$WaitTimes extends $AsyncNotifier<WaitTimesResponse> {
   FutureOr<WaitTimesResponse> build(String parkId);
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref =
         this.ref as $Ref<AsyncValue<WaitTimesResponse>, WaitTimesResponse>;
     final element =
@@ -571,6 +571,6 @@ abstract class _$WaitTimes extends $AsyncNotifier<WaitTimesResponse> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, () => build(_$args));
+    return element.handleCreate(ref, () => build(_$args));
   }
 }

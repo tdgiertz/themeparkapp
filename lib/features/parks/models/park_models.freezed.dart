@@ -583,8 +583,7 @@ as String,
 /// @nodoc
 mixin _$ParkChild {
 
- String get id; String get type; String get name;// We assume children of a Land are Facilities
- List<Facility> get children;
+ String get id; String get type; String get name; List<Facility> get children;
 /// Create a copy of ParkChild
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -787,9 +786,7 @@ class _ParkChild extends ParkChild {
 @override final  String id;
 @override final  String type;
 @override final  String name;
-// We assume children of a Land are Facilities
  final  List<Facility> _children;
-// We assume children of a Land are Facilities
 @override@JsonKey() List<Facility> get children {
   if (_children is EqualUnmodifiableListView) return _children;
   // ignore: implicit_dynamic_type
